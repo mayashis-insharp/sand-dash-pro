@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
+
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Plus, ShoppingCart, Wallet, Truck, TrendingUp, Calendar } from "lucide-react";
+import { Search, Download, Plus, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
 const orders: Order[] = [
@@ -21,45 +21,25 @@ const tabs = ["Orders", "Pre-Orders", "Drafts"] as const;
 const Index = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Orders");
 
+  const addLabel = tab === "Orders" ? "Add Order" : tab === "Pre-Orders" ? "Add Pre-Order" : "New Draft";
+
   return (
     <DashboardLayout>
       {/* Page header */}
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <span>Operations</span>
-            <span>/</span>
-            <span className="text-foreground font-medium">Orders</span>
-          </div>
-          <h1 className="text-3xl font-display font-bold tracking-tight">Orders Overview</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage and track all customer sand orders in real time.</p>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+          <span>Operations</span>
+          <span>/</span>
+          <span className="text-foreground font-medium">Orders</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.success("Export started", { description: "Your CSV will download shortly." })}>
-            <Download className="h-4 w-4" /> Export
-          </Button>
-          <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth" onClick={() => toast("New order draft created")}>
-            <Plus className="h-4 w-4" /> Add Order
-          </Button>
-        </div>
+        <h1 className="text-3xl font-display font-bold tracking-tight">Orders Overview</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Manage and track all customer sand orders in real time.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total Orders" value="1,284" delta="+12.4%" icon={ShoppingCart} accent="primary" />
-        <StatCard label="Revenue (LKR)" value="4.82M" delta="+8.2%" icon={Wallet} accent="success" />
-        <StatCard label="Active Deliveries" value="37" delta="+3" icon={Truck} accent="info" />
-        <StatCard label="Pending Dues" value="921K" delta="-4.1%" trend="down" icon={TrendingUp} accent="warning" />
-      </div>
-
-      {/* Tabbed card */}
+      {/* Tabbed card with contextual actions */}
       <div className="rounded-2xl border border-border bg-card shadow-soft mb-6">
-        <div className="flex flex-col gap-4 p-6 border-b border-border">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-display font-semibold">Orders</h2>
-            <p className="text-sm text-muted-foreground">All customer sand orders</p>
-          </div>
-          <div className="flex items-center gap-1 border-b border-border -mb-6 -mx-6 px-6">
+        <div className="flex items-end justify-between gap-4 px-6 pt-2">
+          <div className="flex items-center gap-1">
             {tabs.map((t) => (
               <button
                 key={t}
@@ -72,6 +52,14 @@ const Index = () => {
                 {tab === t && <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full gradient-primary" />}
               </button>
             ))}
+          </div>
+          <div className="flex items-center gap-2 pb-2">
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.success("Export started", { description: "Your CSV will download shortly." })}>
+              <Download className="h-4 w-4" /> Export
+            </Button>
+            <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth" onClick={() => toast(`${addLabel} created`)}>
+              <Plus className="h-4 w-4" /> {addLabel}
+            </Button>
           </div>
         </div>
       </div>
