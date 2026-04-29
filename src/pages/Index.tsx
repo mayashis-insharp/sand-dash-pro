@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
+
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
