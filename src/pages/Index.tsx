@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
+import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,8 +23,14 @@ const tabs = ["Orders", "Pre-Orders", "Drafts"] as const;
 const Index = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Orders");
   const [view, setView] = useState<"table" | "card">("table");
+  const [addOpen, setAddOpen] = useState(false);
 
   const addLabel = tab === "Orders" ? "Add Order" : tab === "Pre-Orders" ? "Add Pre-Order" : "New Draft";
+
+  const handleAdd = () => {
+    if (tab === "Orders") setAddOpen(true);
+    else toast(`${addLabel} created`);
+  };
 
   return (
     <DashboardLayout>
@@ -59,7 +66,7 @@ const Index = () => {
             <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.success("Export started", { description: "Your CSV will download shortly." })}>
               <Download className="h-4 w-4" /> Export
             </Button>
-            <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth" onClick={() => toast(`${addLabel} created`)}>
+            <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth" onClick={handleAdd}>
               <Plus className="h-4 w-4" /> {addLabel}
             </Button>
           </div>
@@ -135,6 +142,8 @@ const Index = () => {
           <Button variant="outline" size="sm">Next</Button>
         </div>
       </div>
+
+      <AddOrderDialog open={addOpen} onOpenChange={setAddOpen} />
     </DashboardLayout>
   );
 };
