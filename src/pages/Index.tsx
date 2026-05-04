@@ -100,10 +100,32 @@ const Index = () => {
               <SelectItem value="pending">Pending</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* View toggle */}
+          <div className="ml-auto lg:ml-2 inline-flex items-center rounded-lg border border-border bg-card p-0.5">
+            <button
+              onClick={() => setView("table")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-smooth ${
+                view === "table" ? "bg-muted text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label="Table view"
+            >
+              <List className="h-3.5 w-3.5" /> Table
+            </button>
+            <button
+              onClick={() => setView("card")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-smooth ${
+                view === "card" ? "bg-muted text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label="Card view"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" /> Cards
+            </button>
+          </div>
         </div>
       </div>
 
-      <OrdersTable orders={orders} />
+      {view === "table" ? <OrdersTable orders={orders} /> : <OrdersCards orders={orders} />}
 
       {/* Footer / pagination */}
       <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
