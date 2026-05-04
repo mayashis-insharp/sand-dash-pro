@@ -142,6 +142,8 @@ const Index = () => {
           <Button variant="outline" size="sm">Next</Button>
         </div>
       </div>
+
+      <AddOrderDialog open={addOpen} onOpenChange={setAddOpen} />
     </DashboardLayout>
   );
 };
