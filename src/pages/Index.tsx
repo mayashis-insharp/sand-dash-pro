@@ -21,6 +21,7 @@ const tabs = ["Orders", "Pre-Orders", "Drafts"] as const;
 
 const Index = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Orders");
+  const [view, setView] = useState<"table" | "card">("table");
 
   const addLabel = tab === "Orders" ? "Add Order" : tab === "Pre-Orders" ? "Add Pre-Order" : "New Draft";
 
