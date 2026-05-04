@@ -2,10 +2,11 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
+import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Plus, Calendar } from "lucide-react";
+import { Search, Download, Plus, Calendar, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
 
 const orders: Order[] = [
