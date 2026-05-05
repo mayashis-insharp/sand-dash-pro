@@ -34,14 +34,14 @@ export function PageShell({ breadcrumb = [], title, description, actions, childr
   );
 }
 
-interface TabBarProps<T extends string> {
-  tabs: readonly T[];
-  active: T;
-  onChange: (t: T) => void;
+interface TabBarProps {
+  tabs: readonly string[];
+  active: string;
+  onChange: (t: any) => void;
   right?: ReactNode;
 }
 
-export function TabBar<T extends string>({ tabs, active, onChange, right }: TabBarProps<T>) {
+export function TabBar({ tabs, active, onChange, right }: TabBarProps) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-soft mb-6">
       <div className="flex items-end justify-between gap-4 px-4 sm:px-6 pt-2 flex-wrap">
