@@ -8,32 +8,33 @@
 
 @layer base {
   :root {
-    --background: 36 30% 97%;
-    --foreground: 25 25% 15%;
+    /* Sand Supply — Clean white theme, primary #E48444 */
+    --background: 30 20% 98%;
+    --foreground: 25 15% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 25 25% 15%;
+    --card-foreground: 25 15% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 25% 15%;
+    --popover-foreground: 25 15% 18%;
 
-    /* Earthy muted orange primary */
-    --primary: 24 70% 52%;
-    --primary-foreground: 36 30% 98%;
-    --primary-glow: 30 85% 65%;
+    /* #E48444 ≈ hsl(24 75% 58%) */
+    --primary: 24 75% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 28 90% 70%;
 
-    /* Warm sand secondary */
-    --secondary: 36 35% 92%;
-    --secondary-foreground: 25 30% 20%;
+    /* Soft cream cards/surfaces */
+    --secondary: 30 35% 96%;
+    --secondary-foreground: 25 20% 22%;
 
-    --muted: 36 25% 94%;
-    --muted-foreground: 25 10% 45%;
+    --muted: 30 20% 96%;
+    --muted-foreground: 25 8% 48%;
 
-    --accent: 32 55% 88%;
-    --accent-foreground: 25 30% 20%;
+    --accent: 24 75% 95%;
+    --accent-foreground: 24 60% 35%;
 
     --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --success: 145 55% 42%;
     --success-foreground: 0 0% 100%;
@@ -44,36 +45,34 @@
     --info: 210 80% 55%;
     --info-foreground: 0 0% 100%;
 
-    --border: 30 20% 88%;
-    --input: 30 20% 90%;
-    --ring: 24 70% 52%;
+    --border: 30 15% 90%;
+    --input: 30 15% 92%;
+    --ring: 24 75% 58%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
-    /* Sidebar */
-    --sidebar-background: 28 20% 14%;
-    --sidebar-foreground: 36 25% 85%;
+    /* Sidebar — clean white */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 25 15% 30%;
     --sidebar-primary: 24 75% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 28 18% 20%;
-    --sidebar-accent-foreground: 36 30% 95%;
-    --sidebar-border: 28 15% 22%;
-    --sidebar-ring: 24 70% 52%;
+    --sidebar-accent: 30 30% 96%;
+    --sidebar-accent-foreground: 25 20% 20%;
+    --sidebar-border: 30 15% 92%;
+    --sidebar-ring: 24 75% 58%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(24 75% 55%), hsl(32 80% 65%));
-    --gradient-sand: linear-gradient(180deg, hsl(36 40% 96%), hsl(32 30% 92%));
-    --gradient-dark: linear-gradient(160deg, hsl(28 22% 16%), hsl(25 25% 10%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(36 30% 98%) 100%);
+    /* Gradients (subtle only) */
+    --gradient-primary: linear-gradient(135deg, hsl(24 75% 58%), hsl(28 85% 65%));
+    --gradient-sand: linear-gradient(180deg, hsl(30 40% 98%), hsl(30 30% 95%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(30 30% 99%) 100%);
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(25 30% 20% / 0.05);
-    --shadow-md: 0 4px 16px -4px hsl(25 30% 20% / 0.08);
-    --shadow-lg: 0 12px 32px -8px hsl(25 30% 20% / 0.12);
-    --shadow-glow: 0 8px 32px -8px hsl(24 75% 55% / 0.35);
+    /* Soft shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(25 20% 30% / 0.04);
+    --shadow-md: 0 4px 14px -4px hsl(25 20% 30% / 0.06);
+    --shadow-lg: 0 12px 28px -8px hsl(25 20% 30% / 0.08);
+    --shadow-glow: 0 8px 24px -8px hsl(24 75% 58% / 0.28);
 
-    /* Transitions */
-    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
