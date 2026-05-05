@@ -16,7 +16,7 @@ const payStyles: Record<Order["payment"], string> = {
   Pending: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
-export function OrdersCards({ orders }: { orders: Order[] }) {
+export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; onView?: (o: Order) => void; onInvoice?: (o: Order) => void }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {orders.map((o) => (
@@ -91,10 +91,10 @@ export function OrdersCards({ orders }: { orders: Order[] }) {
 
           {/* Actions */}
           <div className="flex items-center gap-2 pt-1">
-            <button className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-smooth">
+            <button onClick={() => onView?.(o)} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-smooth">
               <Eye className="h-3.5 w-3.5" /> View
             </button>
-            <button className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-info hover:bg-info/10 transition-smooth">
+            <button onClick={() => onInvoice?.(o)} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-info hover:bg-info/10 transition-smooth">
               <FileText className="h-3.5 w-3.5" /> Invoice
             </button>
           </div>
