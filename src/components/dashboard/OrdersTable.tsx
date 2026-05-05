@@ -31,7 +31,7 @@ const payStyles: Record<Order["payment"], string> = {
   Pending: "text-destructive",
 };
 
-export function OrdersTable({ orders }: { orders: Order[] }) {
+export function OrdersTable({ orders, onView, onInvoice }: { orders: Order[]; onView?: (o: Order) => void; onInvoice?: (o: Order) => void }) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
       <div className="overflow-x-auto">
@@ -75,10 +75,10 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
                 <td className={cn("px-4 py-4 font-semibold", payStyles[o.payment])}>{o.payment}</td>
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-1">
-                    <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-info hover:bg-info/10 transition-smooth">
+                    <button onClick={() => onInvoice?.(o)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-info hover:bg-info/10 transition-smooth">
                       <FileText className="h-3.5 w-3.5" /> Invoice
                     </button>
-                    <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted transition-smooth">
+                    <button onClick={() => onView?.(o)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted transition-smooth">
                       <Eye className="h-3.5 w-3.5" /> View
                     </button>
                     <button className="grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted transition-smooth">

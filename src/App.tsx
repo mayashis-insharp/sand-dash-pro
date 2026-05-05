@@ -13,6 +13,8 @@ import Employees from "./pages/Employees.tsx";
 import Customers from "./pages/Customers.tsx";
 import Users from "./pages/Users.tsx";
 import SettingsPage from "./pages/Settings.tsx";
+import Login from "./pages/Login.tsx";
+import ChangePassword from "./pages/ChangePassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,8 @@ const App = () => (
           <Route path="/customers" element={<Customers />} />
           <Route path="/users" element={<Users />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
