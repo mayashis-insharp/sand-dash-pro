@@ -3,7 +3,16 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import Orders from "./pages/Orders.tsx";
+import Payments from "./pages/Payments.tsx";
+import Inventory from "./pages/Inventory.tsx";
+import Suppliers from "./pages/Suppliers.tsx";
+import Expenses from "./pages/Expenses.tsx";
+import Employees from "./pages/Employees.tsx";
+import Customers from "./pages/Customers.tsx";
+import Users from "./pages/Users.tsx";
+import SettingsPage from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -15,8 +24,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/inventories" element={<Inventory />} />
+          <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/expenses" element={<Expenses />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
