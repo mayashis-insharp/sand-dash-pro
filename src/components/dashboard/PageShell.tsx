@@ -9,22 +9,12 @@ interface PageShellProps {
   children: ReactNode;
 }
 
-export function PageShell({ breadcrumb = [], title, description, actions, children }: PageShellProps) {
+export function PageShell({ breadcrumb: _b = [], title, description, actions, children }: PageShellProps) {
   return (
     <DashboardLayout>
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          {breadcrumb.length > 0 && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              {breadcrumb.map((b, i) => (
-                <span key={i} className={i === breadcrumb.length - 1 ? "text-foreground font-medium" : ""}>
-                  {b}
-                  {i < breadcrumb.length - 1 && <span className="ml-2">/</span>}
-                </span>
-              ))}
-            </div>
-          )}
-          <h1 className="text-3xl font-display font-bold tracking-tight">{title}</h1>
+          <h1 className="text-2xl md:text-3xl font-display font-bold tracking-tight">{title}</h1>
           {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
         </div>
         {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
@@ -43,23 +33,24 @@ interface TabBarProps {
 
 export function TabBar({ tabs, active, onChange, right }: TabBarProps) {
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-soft mb-6">
-      <div className="flex items-end justify-between gap-4 px-4 sm:px-6 pt-2 flex-wrap">
-        <div className="flex items-center gap-1 flex-wrap">
+    <div className="rounded-2xl border border-border bg-card shadow-soft mb-6 p-2 sm:p-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {tabs.map((t) => (
             <button
               key={t}
               onClick={() => onChange(t)}
-              className={`relative px-4 py-3 text-sm font-medium transition-smooth ${
-                active === t ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              className={`rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-smooth ${
+                active === t
+                  ? "bg-primary text-primary-foreground shadow-glow"
+                  : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {t}
-              {active === t && <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full gradient-primary" />}
             </button>
           ))}
         </div>
-        {right && <div className="flex items-center gap-2 pb-2 flex-wrap">{right}</div>}
+        {right && <div className="flex items-center gap-2 flex-wrap">{right}</div>}
       </div>
     </div>
   );
