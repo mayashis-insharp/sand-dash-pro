@@ -9,22 +9,12 @@ interface PageShellProps {
   children: ReactNode;
 }
 
-export function PageShell({ breadcrumb = [], title, description, actions, children }: PageShellProps) {
+export function PageShell({ breadcrumb: _b = [], title, description, actions, children }: PageShellProps) {
   return (
     <DashboardLayout>
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          {breadcrumb.length > 0 && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              {breadcrumb.map((b, i) => (
-                <span key={i} className={i === breadcrumb.length - 1 ? "text-foreground font-medium" : ""}>
-                  {b}
-                  {i < breadcrumb.length - 1 && <span className="ml-2">/</span>}
-                </span>
-              ))}
-            </div>
-          )}
-          <h1 className="text-3xl font-display font-bold tracking-tight">{title}</h1>
+          <h1 className="text-2xl md:text-3xl font-display font-bold tracking-tight">{title}</h1>
           {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
         </div>
         {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
