@@ -126,7 +126,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
-        <div className={`flex items-center gap-3 rounded-xl px-2 py-2 ${collapsed ? "justify-center" : ""}`}>
+        <div className={`flex items-center rounded-xl ${collapsed ? "justify-center" : "gap-3 px-2 py-2"}`}>
           <Avatar className="h-9 w-9 shrink-0">
             <AvatarFallback className="text-xs font-semibold text-white" style={{ background: BRAND }}>A1</AvatarFallback>
           </Avatar>
@@ -138,9 +138,12 @@ export function AppSidebar() {
           )}
         </div>
         <button
-          className={`mt-1 flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-destructive transition-smooth ${collapsed ? "justify-center" : ""}`}
+          aria-label="Logout"
+          className={`mt-1 flex items-center rounded-xl text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-destructive transition-smooth ${
+            collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2"
+          }`}
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && <span>Logout</span>}
         </button>
       </SidebarFooter>
