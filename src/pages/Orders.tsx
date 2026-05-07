@@ -157,7 +157,7 @@ const Orders = () => {
         </div>
       )}
 
-      <AddOrderDialog open={addOpen} onOpenChange={(o) => { if (!o) handleAddOrder(); else setAddOpen(true); }} />
+      <AddOrderDialog open={addOpen} onOpenChange={setAddOpen} onSubmitted={handleAddOrder} />
 
       {/* View Order */}
       <Dialog open={!!viewOrder} onOpenChange={(o) => !o && setViewOrder(null)}>
