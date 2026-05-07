@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
 import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
 import { DataCards } from "@/components/dashboard/DataCards";
+import { FormShell, FormSection } from "@/components/dashboard/FormShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X } from "lucide-react";
+import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -28,14 +28,33 @@ const alertList = [
   { id: 3, sand: "M-Sand", unit: "sqft", level: 300 },
 ];
 
-const received = [
-  { date: "12/02/2026", id: "ST_4421", supplier: "Riverside Mining", sand: "River Sand – Soft", qty: "200 sqft", amount: 360000, paid: 200000, due: 160000, method: "Bank Transfer" },
-  { date: "10/02/2026", id: "ST_4419", supplier: "Lanka Quarry", sand: "Quarry Dust", qty: "300 sqft", amount: 360000, paid: 360000, due: 0, method: "Cash" },
-];
-
 const drafts = [
   { no: "DR_S05", type: "Stock", created: "08/02/2026 14:21", edited: "10/02/2026 09:11" },
 ];
+
+const Fld = ({ label, children, full, hint }: { label: string; children: ReactNode; full?: boolean; hint?: string }) => (
+  <div className={full ? "col-span-2" : ""}>
+    <div className="flex items-center justify-between">
+      <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</Label>
+      {hint && <span className="text-[10px] text-muted-foreground">{hint}</span>}
+    </div>
+    <div className="mt-1.5">{children}</div>
+  </div>
+);
+
+const FooterBtns = ({
+  onCancel, onDraft, onSave, saveLabel = "Save", saveIcon,
+}: { onCancel: () => void; onDraft?: () => void; onSave: () => void; saveLabel?: string; saveIcon?: ReactNode }) => (
+  <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+    <Button variant="ghost" className="text-muted-foreground" onClick={onCancel}>Cancel</Button>
+    <div className="flex items-center gap-2">
+      {onDraft && <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary" onClick={onDraft}>Save as Draft</Button>}
+      <Button className="gap-2 gradient-primary border-0 shadow-glow px-6" onClick={onSave}>
+        {saveIcon}{saveLabel}
+      </Button>
+    </div>
+  </div>
+);
 
 const Inventory = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Sand Stock");
@@ -152,8 +171,6 @@ const Inventory = () => {
         </div>
       )}
 
-
-
       {tab === "Drafts" && (
         <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
           <table className="w-full text-sm">
@@ -174,112 +191,141 @@ const Inventory = () => {
       )}
 
       {/* Add Stock */}
-      <Dialog open={addStock} onOpenChange={setAddStock}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Add Stock</DialogTitle></DialogHeader>
-          <div className="space-y-5">
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Stock Details</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Date</Label><Input type="date" className="mt-1.5" /></div>
-                <div><Label>Time</Label><Input type="time" className="mt-1.5" /></div>
-                <div><Label>Supplier</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select supplier" /></SelectTrigger><SelectContent><SelectItem value="r">Riverside Mining</SelectItem></SelectContent></Select></div>
-                <div><Label>Sand Type</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select sand type" /></SelectTrigger><SelectContent><SelectItem value="rs">River Sand – Soft</SelectItem></SelectContent></Select></div>
-                <div><Label>Quantity</Label><Input className="mt-1.5" placeholder="200" /></div>
-                <div><Label>Supplier Unit Price</Label><Input className="mt-1.5" placeholder="1800" /></div>
-                <div className="col-span-2"><Label>Total Price</Label><Input className="mt-1.5" disabled value="360,000" /></div>
-                <div className="col-span-2"><Label>Supplier Invoice</Label><button className="mt-1.5 w-full rounded-xl border-2 border-dashed border-border p-4 text-center hover:bg-muted/30"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Upload invoice</p></button></div>
-              </div>
-            </section>
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Delivery Details</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Vehicle Type</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="own">Own</SelectItem><SelectItem value="sup">Supplier</SelectItem></SelectContent></Select></div>
-                <div><Label>Vehicle No</Label><Input className="mt-1.5" /></div>
-                <div><Label>Vehicle Capacity</Label><Input className="mt-1.5" /></div>
-                <div><Label>Driver Name</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Driver Contact</Label><Input className="mt-1.5" /></div>
-              </div>
-            </section>
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Quality Status</h4>
-              <RadioGroup value={qStatus} onValueChange={setQStatus} className="grid grid-cols-2 gap-3">
-                {[{ v: "ip", l: "In Progress" }, { v: "ck", l: "Quality Checked" }].map(o => (
-                  <label key={o.v} className={`flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${qStatus === o.v ? "border-primary bg-primary/5" : "border-border"}`}><RadioGroupItem value={o.v} /><span className="font-medium text-sm">{o.l}</span></label>
-                ))}
-              </RadioGroup>
-              {qStatus === "ck" && (
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="col-span-2"><Label>Quality Result</Label>
-                    <Select value={qResult} onValueChange={setQResult}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                      <SelectContent><SelectItem value="none">No Quality Difference</SelectItem><SelectItem value="dropped">Quality Dropped</SelectItem></SelectContent>
-                    </Select>
-                  </div>
-                  {qResult === "dropped" && <div className="col-span-2"><Label>Actual Order Quantity</Label><Input className="mt-1.5" /></div>}
-                  <div><Label>Final Unit Price</Label><Input className="mt-1.5" /></div>
-                  <div><Label>Selling Unit Price</Label><Input className="mt-1.5" /></div>
-                  <div className="col-span-2"><Label>Payment Method</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem><SelectItem value="cheque">Cheque</SelectItem><SelectItem value="credit">Credit</SelectItem></SelectContent></Select></div>
-                </div>
-              )}
-            </section>
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Additional Charges</h4>
-              <div className="space-y-2">
-                {charges.map(c => (
-                  <div key={c.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
-                    <Input placeholder="Type / Description" />
-                    <Input placeholder="Amount" />
-                    <Input placeholder="Comments" />
-                    <Button size="icon" variant="ghost" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
-                  </div>
-                ))}
-                <Button size="sm" variant="outline" className="gap-1" onClick={() => setCharges(s => [...s, { id: Date.now() + "" }])}><Plus className="h-3.5 w-3.5" /> Add Charge</Button>
-              </div>
-            </section>
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Comments</h4>
-              <Textarea placeholder="Notes about this stock entry..." />
-            </section>
+      <FormShell
+        open={addStock}
+        onOpenChange={setAddStock}
+        title="Add Stock"
+        subtitle="Record a new sand stock arrival."
+        icon={<Boxes className="h-5 w-5" />}
+        size="xl"
+        footer={
+          <FooterBtns
+            onCancel={() => setAddStock(false)}
+            onDraft={() => { toast.success("Saved as draft"); setAddStock(false); }}
+            onSave={() => { toast.success("Stock added"); setAddStock(false); }}
+            saveLabel="Add Stock"
+            saveIcon={<Plus className="h-4 w-4" />}
+          />
+        }
+      >
+        <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Details" description="Supplier and material information.">
+          <div className="grid grid-cols-2 gap-4">
+            <Fld label="Date"><Input type="date" className="h-11 bg-background" /></Fld>
+            <Fld label="Time"><Input type="time" className="h-11 bg-background" /></Fld>
+            <Fld label="Supplier"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select supplier" /></SelectTrigger><SelectContent><SelectItem value="r">Riverside Mining</SelectItem></SelectContent></Select></Fld>
+            <Fld label="Sand Type"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select sand type" /></SelectTrigger><SelectContent><SelectItem value="rs">River Sand – Soft</SelectItem></SelectContent></Select></Fld>
+            <Fld label="Quantity"><Input className="h-11 bg-background" placeholder="200" /></Fld>
+            <Fld label="Supplier Unit Price"><Input className="h-11 bg-background" placeholder="1800" /></Fld>
+            <Fld label="Total Price" full hint="Auto-calculated"><Input className="h-11 bg-muted/40" disabled value="360,000" /></Fld>
+            <Fld label="Supplier Invoice" full>
+              <button className="w-full rounded-xl border-2 border-dashed border-border bg-background p-4 text-center hover:bg-muted/30 transition-smooth"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Upload invoice</p></button>
+            </Fld>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddStock(false)}>Cancel</Button>
-            <Button variant="outline" onClick={() => { toast.success("Saved as draft"); setAddStock(false); }}>Save as Draft</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("Stock added"); setAddStock(false); }}>Add Stock</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </FormSection>
+
+        <FormSection icon={<Truck className="h-4 w-4" />} title="Delivery Details" description="Vehicle and driver information.">
+          <div className="grid grid-cols-2 gap-4">
+            <Fld label="Vehicle Type"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="own">Own</SelectItem><SelectItem value="sup">Supplier</SelectItem></SelectContent></Select></Fld>
+            <Fld label="Vehicle No"><Input className="h-11 bg-background" /></Fld>
+            <Fld label="Vehicle Capacity"><Input className="h-11 bg-background" /></Fld>
+            <Fld label="Driver Name"><Input className="h-11 bg-background" /></Fld>
+            <Fld label="Driver Contact" full><Input className="h-11 bg-background" /></Fld>
+          </div>
+        </FormSection>
+
+        <FormSection icon={<BadgeCheck className="h-4 w-4" />} title="Quality Status" description="Inspection result and pricing.">
+          <RadioGroup value={qStatus} onValueChange={setQStatus} className="grid grid-cols-2 gap-3">
+            {[{ v: "ip", l: "In Progress" }, { v: "ck", l: "Quality Checked" }].map(o => (
+              <label key={o.v} className={`flex items-center gap-3 rounded-xl border-2 bg-background p-3 cursor-pointer ${qStatus === o.v ? "border-primary bg-primary/5" : "border-border"}`}><RadioGroupItem value={o.v} /><span className="font-medium text-sm">{o.l}</span></label>
+            ))}
+          </RadioGroup>
+          {qStatus === "ck" && (
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <Fld label="Quality Result" full>
+                <Select value={qResult} onValueChange={setQResult}><SelectTrigger className="h-11 bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="none">No Quality Difference</SelectItem><SelectItem value="dropped">Quality Dropped</SelectItem></SelectContent>
+                </Select>
+              </Fld>
+              {qResult === "dropped" && <Fld label="Actual Order Quantity" full><Input className="h-11 bg-background" /></Fld>}
+              <Fld label="Final Unit Price"><Input className="h-11 bg-background" /></Fld>
+              <Fld label="Selling Unit Price"><Input className="h-11 bg-background" /></Fld>
+              <Fld label="Payment Method" full><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem><SelectItem value="cheque">Cheque</SelectItem><SelectItem value="credit">Credit</SelectItem></SelectContent></Select></Fld>
+            </div>
+          )}
+        </FormSection>
+
+        <FormSection icon={<Wallet className="h-4 w-4" />} title="Additional Charges" description="Loading, transport, or other costs.">
+          <div className="space-y-2">
+            {charges.map(c => (
+              <div key={c.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
+                <Input placeholder="Type / Description" className="h-11 bg-background" />
+                <Input placeholder="Amount" className="h-11 bg-background" />
+                <Input placeholder="Comments" className="h-11 bg-background" />
+                <Button size="icon" variant="ghost" className="h-11 w-11" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
+              </div>
+            ))}
+            <Button size="sm" variant="outline" className="gap-1 mt-2" onClick={() => setCharges(s => [...s, { id: Date.now() + "" }])}><Plus className="h-3.5 w-3.5" /> Add Charge</Button>
+          </div>
+        </FormSection>
+
+        <FormSection icon={<FileText className="h-4 w-4" />} title="Comments">
+          <Textarea placeholder="Notes about this stock entry..." className="bg-background" />
+        </FormSection>
+      </FormShell>
 
       {/* View Stock */}
-      <Dialog open={!!viewStock} onOpenChange={(o) => !o && setViewStock(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Stock Details</DialogTitle></DialogHeader>
-          {viewStock && (
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-3">
+      <FormShell
+        open={!!viewStock}
+        onOpenChange={(o) => !o && setViewStock(null)}
+        title="Stock Details"
+        subtitle={viewStock?.id}
+        icon={<Boxes className="h-5 w-5" />}
+        size="lg"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="outline" className="text-destructive border-destructive/30" onClick={() => { setDelStock(viewStock); setViewStock(null); }}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setViewStock(null)}>Close</Button>
+              <Button className="gradient-primary border-0 shadow-glow px-5" onClick={() => { setEditStock(viewStock); setViewStock(null); }}>Edit</Button>
+            </div>
+          </div>
+        }
+      >
+        {viewStock && (
+          <>
+            <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Information">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 {Object.entries(viewStock).map(([k, v]) => (
                   <div key={k}><p className="text-xs text-muted-foreground capitalize">{k}</p><p className="font-medium">{String(v)}</p></div>
                 ))}
               </div>
-              <div className="rounded-xl border border-border p-3 bg-muted/30"><p className="text-xs text-muted-foreground">Additional Charges</p><p className="text-sm">Loading + cleaning · LKR 4,500</p></div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" className="text-destructive border-destructive/30" onClick={() => { setDelStock(viewStock); setViewStock(null); }}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
-            <Button className="gradient-primary border-0" onClick={() => { setEditStock(viewStock); setViewStock(null); }}>Edit</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </FormSection>
+            <FormSection icon={<Wallet className="h-4 w-4" />} title="Additional Charges">
+              <div className="rounded-xl border border-border p-3 bg-background"><p className="text-sm">Loading + cleaning · LKR 4,500</p></div>
+            </FormSection>
+          </>
+        )}
+      </FormShell>
 
-      <Dialog open={!!editStock} onOpenChange={(o) => !o && setEditStock(null)}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader><DialogTitle>Edit Stock</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Editing form prefilled with existing values.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditStock(null)}>Cancel</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("Changes saved"); setEditStock(null); }}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Stock */}
+      <FormShell
+        open={!!editStock}
+        onOpenChange={(o) => !o && setEditStock(null)}
+        title="Edit Stock"
+        icon={<Edit className="h-5 w-5" />}
+        size="lg"
+        footer={<FooterBtns onCancel={() => setEditStock(null)} onSave={() => { toast.success("Changes saved"); setEditStock(null); }} saveLabel="Save Changes" />}
+      >
+        <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Details" description="Editing form prefilled with existing values.">
+          <div className="grid grid-cols-2 gap-4">
+            <Fld label="Sand Type" full><Input className="h-11 bg-background" defaultValue={editStock?.sand} /></Fld>
+            <Fld label="Quantity"><Input className="h-11 bg-background" defaultValue={editStock?.qty} /></Fld>
+            <Fld label="Vehicle"><Input className="h-11 bg-background" defaultValue={editStock?.vehicle} /></Fld>
+            <Fld label="Final Price"><Input className="h-11 bg-background" defaultValue={editStock?.finalPrice} /></Fld>
+            <Fld label="Selling Price"><Input className="h-11 bg-background" defaultValue={editStock?.sellPrice} /></Fld>
+          </div>
+        </FormSection>
+      </FormShell>
 
       <AlertDialog open={!!delStock} onOpenChange={(o) => !o && setDelStock(null)}>
         <AlertDialogContent>
@@ -289,64 +335,73 @@ const Inventory = () => {
       </AlertDialog>
 
       {/* Quality Check */}
-      <Dialog open={!!qcOpen} onOpenChange={(o) => !o && setQcOpen(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Quality Check Status</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <RadioGroup defaultValue={qcOpen?.status === "Quality Checked" ? "ck" : "ip"} onValueChange={setQStatus} className="grid grid-cols-2 gap-3">
-              {[{ v: "ip", l: "In Progress" }, { v: "ck", l: "Quality Checked" }].map(o => (
-                <label key={o.v} className="flex items-center gap-2 rounded-xl border border-border p-2.5 cursor-pointer hover:bg-muted/30"><RadioGroupItem value={o.v} /> {o.l}</label>
-              ))}
-            </RadioGroup>
-            {qStatus === "ck" && (
-              <div className="space-y-3">
-                <div><Label>Quality Result</Label>
-                  <Select value={qResult} onValueChange={setQResult}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                    <SelectContent><SelectItem value="none">No Quality Difference</SelectItem><SelectItem value="dropped">Quality Dropped</SelectItem></SelectContent>
-                  </Select>
-                </div>
-                {qResult === "dropped" && <div><Label>Actual Order Quantity</Label><Input className="mt-1.5" /></div>}
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Final Unit Price</Label><Input className="mt-1.5" /></div>
-                  <div><Label>Selling Unit Price</Label><Input className="mt-1.5" /></div>
-                </div>
-                <div><Label>Payment Method</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem></SelectContent></Select></div>
-                <div><Label>Comments</Label><Textarea className="mt-1.5" /></div>
-              </div>
-            )}
-          </div>
-          <DialogFooter><Button variant="outline" onClick={() => setQcOpen(null)}>Cancel</Button><Button className="gradient-primary border-0" onClick={() => { toast.success("Saved"); setQcOpen(null); }}>Save</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <FormShell
+        open={!!qcOpen}
+        onOpenChange={(o) => !o && setQcOpen(null)}
+        title="Quality Check Status"
+        icon={<BadgeCheck className="h-5 w-5" />}
+        size="md"
+        footer={<FooterBtns onCancel={() => setQcOpen(null)} onSave={() => { toast.success("Saved"); setQcOpen(null); }} saveLabel="Save" />}
+      >
+        <FormSection icon={<BadgeCheck className="h-4 w-4" />} title="Status">
+          <RadioGroup defaultValue={qcOpen?.status === "Quality Checked" ? "ck" : "ip"} onValueChange={setQStatus} className="grid grid-cols-2 gap-3">
+            {[{ v: "ip", l: "In Progress" }, { v: "ck", l: "Quality Checked" }].map(o => (
+              <label key={o.v} className="flex items-center gap-2 rounded-xl border border-border bg-background p-3 cursor-pointer hover:bg-muted/30"><RadioGroupItem value={o.v} /> {o.l}</label>
+            ))}
+          </RadioGroup>
+        </FormSection>
+        {qStatus === "ck" && (
+          <FormSection icon={<Wallet className="h-4 w-4" />} title="Result & Pricing">
+            <div className="grid grid-cols-2 gap-4">
+              <Fld label="Quality Result" full>
+                <Select value={qResult} onValueChange={setQResult}><SelectTrigger className="h-11 bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="none">No Quality Difference</SelectItem><SelectItem value="dropped">Quality Dropped</SelectItem></SelectContent>
+                </Select>
+              </Fld>
+              {qResult === "dropped" && <Fld label="Actual Order Quantity" full><Input className="h-11 bg-background" /></Fld>}
+              <Fld label="Final Unit Price"><Input className="h-11 bg-background" /></Fld>
+              <Fld label="Selling Unit Price"><Input className="h-11 bg-background" /></Fld>
+              <Fld label="Payment Method" full><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem></SelectContent></Select></Fld>
+              <Fld label="Comments" full><Textarea className="bg-background" /></Fld>
+            </div>
+          </FormSection>
+        )}
+      </FormShell>
 
       {/* Set Alert */}
-      <Dialog open={setAlertOpen} onOpenChange={setSetAlertOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Set Alert Level</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div><Label>Sand Type</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="rs">River Sand – Soft</SelectItem></SelectContent></Select></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Quantity Level</Label><Input className="mt-1.5" placeholder="500" /></div>
-              <div><Label>Unit</Label><Select defaultValue="sqft"><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="sqft">sqft</SelectItem><SelectItem value="cube">cube</SelectItem></SelectContent></Select></div>
-            </div>
+      <FormShell
+        open={setAlertOpen}
+        onOpenChange={setSetAlertOpen}
+        title="Set Alert Level"
+        icon={<Bell className="h-5 w-5" />}
+        size="md"
+        footer={<FooterBtns onCancel={() => setSetAlertOpen(false)} onSave={() => { toast.success("Alert set"); setSetAlertOpen(false); }} saveLabel="Save" />}
+      >
+        <FormSection icon={<Bell className="h-4 w-4" />} title="Alert Configuration">
+          <div className="grid grid-cols-2 gap-4">
+            <Fld label="Sand Type" full><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="rs">River Sand – Soft</SelectItem></SelectContent></Select></Fld>
+            <Fld label="Quantity Level"><Input className="h-11 bg-background" placeholder="500" /></Fld>
+            <Fld label="Unit"><Select defaultValue="sqft"><SelectTrigger className="h-11 bg-background"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="sqft">sqft</SelectItem><SelectItem value="cube">cube</SelectItem></SelectContent></Select></Fld>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setSetAlertOpen(false)}>Cancel</Button><Button className="gradient-primary border-0" onClick={() => { toast.success("Alert set"); setSetAlertOpen(false); }}>Save</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </FormSection>
+      </FormShell>
 
-      <Dialog open={!!editAlert} onOpenChange={(o) => !o && setEditAlert(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Edit Alert</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div><Label>Sand Type</Label><Input className="mt-1.5" defaultValue={editAlert?.sand} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Quantity Level</Label><Input className="mt-1.5" defaultValue={editAlert?.level} /></div>
-              <div><Label>Unit</Label><Input className="mt-1.5" defaultValue={editAlert?.unit} /></div>
-            </div>
+      <FormShell
+        open={!!editAlert}
+        onOpenChange={(o) => !o && setEditAlert(null)}
+        title="Edit Alert"
+        icon={<Edit className="h-5 w-5" />}
+        size="md"
+        footer={<FooterBtns onCancel={() => setEditAlert(null)} onSave={() => { toast.success("Updated"); setEditAlert(null); }} saveLabel="Save Changes" />}
+      >
+        <FormSection icon={<Bell className="h-4 w-4" />} title="Alert Configuration">
+          <div className="grid grid-cols-2 gap-4">
+            <Fld label="Sand Type" full><Input className="h-11 bg-background" defaultValue={editAlert?.sand} /></Fld>
+            <Fld label="Quantity Level"><Input className="h-11 bg-background" defaultValue={editAlert?.level} /></Fld>
+            <Fld label="Unit"><Input className="h-11 bg-background" defaultValue={editAlert?.unit} /></Fld>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setEditAlert(null)}>Cancel</Button><Button className="gradient-primary border-0" onClick={() => { toast.success("Updated"); setEditAlert(null); }}>Save Changes</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </FormSection>
+      </FormShell>
 
       <AlertDialog open={!!delAlert} onOpenChange={(o) => !o && setDelAlert(null)}>
         <AlertDialogContent>
@@ -355,39 +410,57 @@ const Inventory = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Record / View Payment */}
-      <Dialog open={!!recordPay} onOpenChange={(o) => !o && setRecordPay(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
-          {recordPay && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-muted/30 p-3 text-sm">
+      {/* Record Payment */}
+      <FormShell
+        open={!!recordPay}
+        onOpenChange={(o) => !o && setRecordPay(null)}
+        title="Record Payment"
+        icon={<Wallet className="h-5 w-5" />}
+        size="md"
+        footer={<FooterBtns onCancel={() => setRecordPay(null)} onSave={() => { toast.success("Payment recorded"); setRecordPay(null); }} saveLabel="Save" />}
+      >
+        {recordPay && (
+          <>
+            <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Summary">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div><p className="text-xs text-muted-foreground">Supplier</p><p className="font-medium">{recordPay.supplier}</p></div>
                 <div><p className="text-xs text-muted-foreground">Stock ID</p><p className="font-mono">{recordPay.id}</p></div>
                 <div><p className="text-xs text-muted-foreground">Sand</p><p>{recordPay.sand}</p></div>
-                <div><p className="text-xs text-muted-foreground">Outstanding</p><p className="font-mono text-destructive">{recordPay.due.toLocaleString()}</p></div>
+                <div><p className="text-xs text-muted-foreground">Outstanding</p><p className="font-mono text-destructive">{recordPay.due?.toLocaleString()}</p></div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Amount</Label><Input className="mt-1.5" /></div>
-                <div><Label>Method</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem></SelectContent></Select></div>
+            </FormSection>
+            <FormSection icon={<Wallet className="h-4 w-4" />} title="Payment">
+              <div className="grid grid-cols-2 gap-4">
+                <Fld label="Amount"><Input className="h-11 bg-background" /></Fld>
+                <Fld label="Method"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="bank">Bank Transfer</SelectItem></SelectContent></Select></Fld>
+                <Fld label="Comments" full><Textarea className="bg-background" /></Fld>
               </div>
-              <div><Label>Comments</Label><Textarea className="mt-1.5" /></div>
-            </div>
-          )}
-          <DialogFooter><Button variant="outline" onClick={() => setRecordPay(null)}>Cancel</Button><Button className="gradient-primary border-0" onClick={() => { toast.success("Payment recorded"); setRecordPay(null); }}>Save</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </FormSection>
+          </>
+        )}
+      </FormShell>
 
-      <Dialog open={!!viewPay} onOpenChange={(o) => !o && setViewPay(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Payment Details</DialogTitle></DialogHeader>
-          {viewPay && (
-            <div className="grid grid-cols-2 gap-3 text-sm">
+      {/* View Payment */}
+      <FormShell
+        open={!!viewPay}
+        onOpenChange={(o) => !o && setViewPay(null)}
+        title="Payment Details"
+        icon={<ReceiptIcon className="h-5 w-5" />}
+        size="md"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-end gap-3">
+            <Button variant="outline" onClick={() => setViewPay(null)}>Close</Button>
+          </div>
+        }
+      >
+        {viewPay && (
+          <FormSection icon={<FileText className="h-4 w-4" />} title="Information">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               {Object.entries(viewPay).map(([k, v]) => <div key={k}><p className="text-xs text-muted-foreground capitalize">{k}</p><p className="font-medium">{String(v)}</p></div>)}
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+          </FormSection>
+        )}
+      </FormShell>
     </PageShell>
   );
 };
