@@ -14,7 +14,7 @@ import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const tabs = ["Sand Stock", "Set Alert", "Received", "Drafts"] as const;
+const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
 const stocks = [
   { date: "12/02/2026 09:30", id: "ST_4421", supplier: "Riverside Mining", sand: "River Sand – Soft", qty: "200 sqft", status: "Quality Checked", finalPrice: 1800, sellPrice: 2400, vehicle: "WP-7891" },
@@ -152,37 +152,7 @@ const Inventory = () => {
         </div>
       )}
 
-      {tab === "Received" && (
-        <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="bg-muted/50 border-b border-border">{["Date", "Stock ID", "Supplier", "Sand Type", "Quantity", "Total", "Paid", "Due", "Method", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>)}</tr></thead>
-              <tbody>
-                {received.map(r => (
-                  <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                    <td className="px-4 py-4 text-muted-foreground">{r.date}</td>
-                    <td className="px-4 py-4 font-mono text-xs font-semibold">{r.id}</td>
-                    <td className="px-4 py-4">{r.supplier}</td>
-                    <td className="px-4 py-4">{r.sand}</td>
-                    <td className="px-4 py-4">{r.qty}</td>
-                    <td className="px-4 py-4 font-mono">{r.amount.toLocaleString()}</td>
-                    <td className="px-4 py-4 font-mono text-success">{r.paid.toLocaleString()}</td>
-                    <td className={`px-4 py-4 font-mono ${r.due > 0 ? "text-destructive" : "text-success"}`}>{r.due.toLocaleString()}</td>
-                    <td className="px-4 py-4">{r.method}</td>
-                    <td className="px-4 py-4">
-                      <div className="flex gap-1">
-                        {r.due > 0
-                          ? <Button size="sm" variant="outline" onClick={() => setRecordPay(r)}>Record Payment</Button>
-                          : <Button size="sm" variant="outline" onClick={() => setViewPay(r)}>View Payment</Button>}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+
 
       {tab === "Drafts" && (
         <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
