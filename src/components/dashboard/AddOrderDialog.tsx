@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { FormShell } from "@/components/dashboard/FormShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -210,32 +210,42 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="p-0 gap-0 w-full sm:max-w-[820px] sm:w-[95vw] flex flex-col bg-muted/20 border-l"
-      >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-border bg-card flex items-center gap-4">
-          <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shadow-glow shrink-0">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-display font-bold tracking-tight truncate">New Order</h2>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
-                OD_12458
-              </span>
+    <FormShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Add Order"
+      subtitle="Fill in the sections below to create a new order."
+      icon={<Sparkles className="h-5 w-5" />}
+      badge={
+        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+          OD_12458
+        </span>
+      }
+      size="xl"
+      footer={
+        <>
+          <div className="px-5 md:px-8 py-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs border-b border-border/60">
+            <div className="flex items-center gap-2"><span className="text-muted-foreground">Subtotal</span><span className="font-mono font-semibold">{fmt(subtotal)}</span></div>
+            {discountVal > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Discount</span><span className="font-mono text-destructive">−{fmt(discountVal)}</span></div>}
+            {totalCharges > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Charges</span><span className="font-mono">+{fmt(totalCharges)}</span></div>}
+            <div className="ml-auto flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
+              <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
             </div>
-            <p className="text-xs text-muted-foreground truncate">
-              Fill in the sections below to create a new order.
-            </p>
+            {paid > 0 && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
           </div>
-        </div>
-
-        {/* Form */}
-        <div className="overflow-y-auto px-5 md:px-8 py-6 flex-1">
-          <div className="max-w-3xl mx-auto space-y-5">
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground">Cancel</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={saveDraft} className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary">Save as Draft</Button>
+              <Button onClick={submit} className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth px-6">
+                <Plus className="h-4 w-4" /> Add Order
+              </Button>
+            </div>
+          </div>
+        </>
+      }
+    >
             <Section icon={CalendarIcon} title="Schedule" description="When should this order be fulfilled?">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Order Date" required>
