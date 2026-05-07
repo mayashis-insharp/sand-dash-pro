@@ -51,6 +51,7 @@ const drafts = [
 
 const Employees = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Employees");
+  const [view, setView] = useState<ViewMode>("table");
   const [salSub, setSalSub] = useState<typeof salarySubs[number]>("Fixed Salary");
   const [addEmp, setAddEmp] = useState(false);
   const [addRole, setAddRole] = useState(false);
