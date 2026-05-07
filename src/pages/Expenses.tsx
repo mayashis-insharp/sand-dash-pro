@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
-import { Plus, Search, Eye, Edit, Download, Upload, Trash2, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Search, Eye, Edit, Download, Upload, Trash2, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Paperclip, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 const tabs = ["Bill Payments", "Transport", "Petty Cash", "Drafts"] as const;
