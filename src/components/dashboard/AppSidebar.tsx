@@ -52,37 +52,42 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="py-5">
-        <div className={`flex items-center gap-2 px-2 ${collapsed ? "justify-center" : ""}`}>
-          <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-soft"
-            style={{ background: BRAND }}
-          >
-            <Mountain className="h-5 w-5 text-white" />
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-xl shadow-soft"
+              style={{ background: BRAND }}
+            >
+              <Mountain className="h-5 w-5 text-white" />
+            </div>
+            <button
+              onClick={toggleSidebar}
+              className="h-8 w-8 grid place-items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-smooth"
+              aria-label="Expand sidebar"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
           </div>
-          {!collapsed && (
-            <>
-              <div className="flex flex-col leading-tight min-w-0 flex-1">
-                <span className="font-display font-bold text-foreground truncate">Sand Supply</span>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">ERP Console</span>
-              </div>
-              <button
-                onClick={toggleSidebar}
-                className="h-8 w-8 grid place-items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-smooth"
-                aria-label="Collapse sidebar"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </button>
-            </>
-          )}
-        </div>
-        {collapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="mx-auto mt-2 h-8 w-8 grid place-items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-smooth"
-            aria-label="Expand sidebar"
-          >
-            <PanelLeft className="h-4 w-4" />
-          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-2">
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-soft"
+              style={{ background: BRAND }}
+            >
+              <Mountain className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex flex-col leading-tight min-w-0 flex-1">
+              <span className="font-display font-bold text-foreground truncate">Sand Supply</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">ERP Console</span>
+            </div>
+            <button
+              onClick={toggleSidebar}
+              className="h-8 w-8 grid place-items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-smooth"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          </div>
         )}
       </SidebarHeader>
 
