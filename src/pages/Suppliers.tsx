@@ -20,6 +20,7 @@ const suppliers = [
 
 const Suppliers = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Suppliers");
+  const [view, setView] = useState<ViewMode>("table");
   const [addOpen, setAddOpen] = useState(false);
   const [viewSupplier, setViewSupplier] = useState<typeof suppliers[number] | null>(null);
   const [sandList, setSandList] = useState<{ id: string; type: string; price: string }[]>([{ id: "1", type: "", price: "" }]);
