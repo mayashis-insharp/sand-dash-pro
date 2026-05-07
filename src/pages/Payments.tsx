@@ -41,6 +41,7 @@ const fmt = (n: number) => "LKR " + n.toLocaleString();
 
 const Payments = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("All Payments");
+  const [view, setView] = useState<ViewMode>("table");
 
   const filtered = tab === "All Payments" ? payments : payments.filter(p => p.method === tab);
   const showOutstanding = tab === "Credits" || tab === "Other";
