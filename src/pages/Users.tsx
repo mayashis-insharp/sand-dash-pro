@@ -25,6 +25,7 @@ const actions = ["Add", "View", "Edit", "Delete"];
 
 const Users = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Users");
+  const [view, setView] = useState<ViewMode>("table");
   const [addOpen, setAddOpen] = useState(false);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ Dashboard: true, Orders: true, Payments: true });
 
