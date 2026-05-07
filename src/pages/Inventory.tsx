@@ -75,33 +75,61 @@ const Inventory = () => {
             <div className="relative flex-1 max-w-sm"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input placeholder="Search stock…" className="pl-9 h-10 bg-card" /></div>
             <Select defaultValue="feb"><SelectTrigger className="w-[160px] h-10 bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="feb">February 2026</SelectItem></SelectContent></Select>
             <Select><SelectTrigger className="w-[160px] h-10 bg-card"><SelectValue placeholder="Quality Status" /></SelectTrigger><SelectContent><SelectItem value="ip">In Progress</SelectItem><SelectItem value="ck">Quality Checked</SelectItem></SelectContent></Select>
+            <ViewToggle value={view} onChange={setView} className="ml-auto" />
           </div>
-          <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className="bg-muted/50 border-b border-border">{["Date & Time", "Stock ID", "Supplier", "Sand Type", "Quantity", "Quality Status", "Final Price", "Selling Price", "Vehicle", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>)}</tr></thead>
-                <tbody>
-                  {stocks.map(s => (
-                    <tr key={s.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                      <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">{s.date}</td>
-                      <td className="px-4 py-4 font-mono text-xs font-semibold">{s.id}</td>
-                      <td className="px-4 py-4">{s.supplier}</td>
-                      <td className="px-4 py-4">{s.sand}</td>
-                      <td className="px-4 py-4 font-medium">{s.qty}</td>
-                      <td className="px-4 py-4">
-                        <button onClick={() => setQcOpen(s)} className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium hover:opacity-80",
-                          s.status === "Quality Checked" ? "bg-success/10 text-success border-success/20" : "bg-warning/15 text-warning border-warning/30")}>{s.status}</button>
-                      </td>
-                      <td className="px-4 py-4 font-mono">{s.finalPrice.toLocaleString()}</td>
-                      <td className="px-4 py-4 font-mono">{s.sellPrice.toLocaleString()}</td>
-                      <td className="px-4 py-4 font-mono text-xs">{s.vehicle}</td>
-                      <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {view === "table" ? (
+            <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="bg-muted/50 border-b border-border">{["Date & Time", "Stock ID", "Supplier", "Sand Type", "Quantity", "Quality Status", "Final Price", "Selling Price", "Vehicle", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {stocks.map(s => (
+                      <tr key={s.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
+                        <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">{s.date}</td>
+                        <td className="px-4 py-4 font-mono text-xs font-semibold">{s.id}</td>
+                        <td className="px-4 py-4">{s.supplier}</td>
+                        <td className="px-4 py-4">{s.sand}</td>
+                        <td className="px-4 py-4 font-medium">{s.qty}</td>
+                        <td className="px-4 py-4">
+                          <button onClick={() => setQcOpen(s)} className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium hover:opacity-80",
+                            s.status === "Quality Checked" ? "bg-success/10 text-success border-success/20" : "bg-warning/15 text-warning border-warning/30")}>{s.status}</button>
+                        </td>
+                        <td className="px-4 py-4 font-mono">{s.finalPrice.toLocaleString()}</td>
+                        <td className="px-4 py-4 font-mono">{s.sellPrice.toLocaleString()}</td>
+                        <td className="px-4 py-4 font-mono text-xs">{s.vehicle}</td>
+                        <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : (
+            <DataCards
+              items={stocks.map(s => ({
+                id: s.id,
+                title: s.sand,
+                subtitle: <span className="font-mono">{s.id} · {s.date}</span>,
+                badge: (
+                  <button onClick={() => setQcOpen(s)} className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium hover:opacity-80",
+                    s.status === "Quality Checked" ? "bg-success/10 text-success border-success/20" : "bg-warning/15 text-warning border-warning/30")}>{s.status}</button>
+                ),
+                fields: [
+                  { label: "Supplier", value: s.supplier, full: true },
+                  { label: "Quantity", value: s.qty },
+                  { label: "Vehicle", value: s.vehicle, mono: true },
+                  { label: "Final Price", value: s.finalPrice.toLocaleString(), mono: true },
+                  { label: "Selling Price", value: s.sellPrice.toLocaleString(), mono: true },
+                ],
+                actions: (
+                  <>
+                    <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setViewStock(s)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                    <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setEditStock(s)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                  </>
+                ),
+              }))}
+            />
+          )}
           <Pagination from={1} to={3} total={186} />
         </>
       )}
