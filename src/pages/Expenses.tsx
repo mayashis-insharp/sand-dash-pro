@@ -211,6 +211,8 @@ const Expenses = () => {
         />
       )}
 
+      {tab !== "Drafts" && <Pagination from={1} to={3} total={68} />}
+
       {/* Add Expense */}
       <FormShell
         open={addOpen}
