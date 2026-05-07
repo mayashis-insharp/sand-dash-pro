@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Download, FileText, Receipt as ReceiptIcon } from "lucide-react";
