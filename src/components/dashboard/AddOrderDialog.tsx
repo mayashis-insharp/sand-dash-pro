@@ -513,33 +513,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
 
             <Section icon={StickyNote} title="Notes" description="Internal comments or special instructions.">
               <Textarea placeholder="Anything the team should know..." value={notes} onChange={(e) => setNotes(e.target.value)} className="min-h-[110px] bg-background resize-none" />
-            </Section>
-          </div>
-        </div>
-
-        {/* Footer with totals */}
-        <div className="border-t border-border bg-card">
-          <div className="px-5 md:px-8 py-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs border-b border-border/60">
-            <div className="flex items-center gap-2"><span className="text-muted-foreground">Subtotal</span><span className="font-mono font-semibold">{fmt(subtotal)}</span></div>
-            {discountVal > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Discount</span><span className="font-mono text-destructive">−{fmt(discountVal)}</span></div>}
-            {totalCharges > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Charges</span><span className="font-mono">+{fmt(totalCharges)}</span></div>}
-            <div className="ml-auto flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
-              <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
-            </div>
-            {paid > 0 && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
-          </div>
-          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
-            <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground">Cancel</Button>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={saveDraft} className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary">Save as Draft</Button>
-              <Button onClick={submit} className="gap-2 gradient-primary border-0 shadow-glow hover:shadow-elevated transition-smooth px-6">
-                <Plus className="h-4 w-4" /> Add Order
-              </Button>
-            </div>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+    </FormShell>
   );
 }
+
