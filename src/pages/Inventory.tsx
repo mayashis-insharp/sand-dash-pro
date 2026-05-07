@@ -39,6 +39,7 @@ const drafts = [
 
 const Inventory = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Sand Stock");
+  const [view, setView] = useState<ViewMode>("table");
   const [addStock, setAddStock] = useState(false);
   const [viewStock, setViewStock] = useState<any>(null);
   const [editStock, setEditStock] = useState<any>(null);
