@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, Eye, Edit, Download, Upload, Trash2 } from "lucide-react";
+import { FormShell, FormSection } from "@/components/dashboard/FormShell";
+import { Plus, Search, Eye, Edit, Download, Upload, Trash2, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 
 const tabs = ["Bill Payments", "Transport", "Petty Cash", "Drafts"] as const;
