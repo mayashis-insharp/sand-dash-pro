@@ -201,45 +201,6 @@ const Suppliers = () => {
         )}
       </FormShell>
 
-      {/* View */}
-      <Dialog open={!!viewSupplier} onOpenChange={(o) => !o && setViewSupplier(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Supplier Details</DialogTitle></DialogHeader>
-          {viewSupplier && (
-            <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><p className="text-muted-foreground text-xs">Name</p><p className="font-medium">{viewSupplier.name}</p></div>
-                <div><p className="text-muted-foreground text-xs">ID</p><p className="font-mono">{viewSupplier.id}</p></div>
-                <div><p className="text-muted-foreground text-xs">Address</p><p>{viewSupplier.address}</p></div>
-                <div><p className="text-muted-foreground text-xs">Contact</p><p className="font-mono">{viewSupplier.contact}</p></div>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">Vehicles</p>
-                <div className="flex flex-wrap gap-2">
-                  {["WP-7891", "MD-0214", "GH-5423"].map(v => (
-                    <span key={v} className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-mono">
-                      <Truck className="h-3 w-3" /> {v}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-display font-bold mb-2">Recent Transactions</p>
-                <div className="rounded-xl border border-border overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-muted/50"><tr>{["Date", "Stock ID", "Qty", "Amount"].map(h => <th key={h} className="px-3 py-2 text-left font-semibold text-muted-foreground">{h}</th>)}</tr></thead>
-                    <tbody>
-                      {[["12/02/2026", "ST_4421", "200 sqft", "360,000"], ["05/02/2026", "ST_4410", "150 sqft", "270,000"]].map((r, i) => (
-                        <tr key={i} className="border-t border-border"><td className="px-3 py-2">{r[0]}</td><td className="px-3 py-2 font-mono">{r[1]}</td><td className="px-3 py-2">{r[2]}</td><td className="px-3 py-2 font-medium">{r[3]}</td></tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </PageShell>
   );
 };
