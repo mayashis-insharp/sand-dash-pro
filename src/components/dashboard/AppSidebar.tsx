@@ -43,7 +43,9 @@ export function AppSidebar() {
   }, []);
 
   const linkCls = (active: boolean) =>
-    `group/link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-smooth ${
+    `group/link flex items-center rounded-xl text-sm transition-smooth ${
+      collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5"
+    } ${
       active
         ? "bg-primary text-primary-foreground font-semibold shadow-glow"
         : "text-sidebar-foreground hover:bg-sidebar-accent"
