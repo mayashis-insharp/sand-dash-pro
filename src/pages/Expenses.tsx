@@ -150,93 +150,123 @@ const Expenses = () => {
       <Pagination from={1} to={3} total={68} />
 
       {/* Add Expense */}
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Add Expense</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Expense Type</Label>
-              <Select value={expType} onValueChange={(v) => setExpType(v as ExpType)}>
-                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bill">Bill Payment</SelectItem>
-                  <SelectItem value="transport">Transport</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                  <SelectItem value="petty">Petty Cash</SelectItem>
-                </SelectContent>
-              </Select>
+      <FormShell
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        title="Add Expense"
+        subtitle="Record a new business expense."
+        icon={<ReceiptIcon className="h-5 w-5" />}
+        size="lg"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="ghost" className="text-muted-foreground" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary" onClick={() => { toast.success("Saved as draft"); setAddOpen(false); }}>Save as Draft</Button>
+              <Button className="gap-2 gradient-primary border-0 shadow-glow px-6" onClick={() => { toast.success("Expense added"); setAddOpen(false); }}>
+                <Plus className="h-4 w-4" /> Add Expense
+              </Button>
             </div>
-
-            {expType === "bill" && (
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Date</Label><Input type="date" className="mt-1.5" /></div>
-                <div><Label>Bill Type</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="e">Electricity</SelectItem><SelectItem value="f">Fuel</SelectItem><SelectItem value="m">Maintenance</SelectItem></SelectContent></Select></div>
-                <div><Label>Bill Amount</Label><Input className="mt-1.5" /></div>
-                <div><Label>Paid Amount</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Bill Reference No</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Upload Bill</Label><button className="mt-1.5 w-full rounded-xl border-2 border-dashed border-border p-4 text-center hover:bg-muted/30 transition-smooth"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Click to upload</p></button></div>
-                <div className="col-span-2"><Label>Comments</Label><Textarea className="mt-1.5" /></div>
-              </div>
-            )}
-
-            {expType === "transport" && (
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Date</Label><Input type="date" className="mt-1.5" /></div>
-                <div><Label>Cost Amount</Label><Input className="mt-1.5" /></div>
-                <div><Label>Order / Stock Reference</Label><Input className="mt-1.5" /></div>
-                <div><Label>Vehicle No</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Driver</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Upload Receipt</Label><button className="mt-1.5 w-full rounded-xl border-2 border-dashed border-border p-4 text-center"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Optional receipt</p></button></div>
-                <div className="col-span-2"><Label>Comments</Label><Textarea className="mt-1.5" /></div>
-              </div>
-            )}
-
-            {(expType === "petty" || expType === "other") && (
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Date</Label><Input type="date" className="mt-1.5" /></div>
-                <div><Label>Cost Amount</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>{expType === "other" ? "Expense Type" : "Description"}</Label><Input className="mt-1.5" /></div>
-                <div className="col-span-2"><Label>Comments</Label><Textarea className="mt-1.5" /></div>
-              </div>
-            )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button variant="outline" onClick={() => { toast.success("Saved as draft"); setAddOpen(false); }}>Save as Draft</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("Expense added"); setAddOpen(false); }}>Add Expense</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        }
+      >
+        <FormSection icon={<FileText className="h-4 w-4" />} title="Expense Type" description="Choose the category of expense.">
+          <Select value={expType} onValueChange={(v) => setExpType(v as ExpType)}>
+            <SelectTrigger className="h-11 bg-background"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="bill">Bill Payment</SelectItem>
+              <SelectItem value="transport">Transport</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+              <SelectItem value="petty">Petty Cash</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormSection>
+
+        {expType === "bill" && (
+          <FormSection icon={<CalendarIcon className="h-4 w-4" />} title="Bill Details">
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Date</Label><Input type="date" className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Type</Label><Select><SelectTrigger className="mt-1.5 h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="e">Electricity</SelectItem><SelectItem value="f">Fuel</SelectItem><SelectItem value="m">Maintenance</SelectItem></SelectContent></Select></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Amount</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Paid Amount</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Reference No</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Upload Bill</Label><button className="mt-1.5 w-full rounded-xl border-2 border-dashed border-border p-4 text-center hover:bg-muted/30 transition-smooth bg-background"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Click to upload</p></button></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Comments</Label><Textarea className="mt-1.5 bg-background" /></div>
+            </div>
+          </FormSection>
+        )}
+
+        {expType === "transport" && (
+          <FormSection icon={<CalendarIcon className="h-4 w-4" />} title="Transport Details">
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Date</Label><Input type="date" className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Cost Amount</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Order / Stock Reference</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Vehicle No</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Driver</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Upload Receipt</Label><button className="mt-1.5 w-full rounded-xl border-2 border-dashed border-border p-4 text-center bg-background"><Upload className="h-5 w-5 mx-auto text-muted-foreground" /><p className="text-xs text-muted-foreground mt-1">Optional receipt</p></button></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Comments</Label><Textarea className="mt-1.5 bg-background" /></div>
+            </div>
+          </FormSection>
+        )}
+
+        {(expType === "petty" || expType === "other") && (
+          <FormSection icon={<CalendarIcon className="h-4 w-4" />} title={expType === "other" ? "Other Expense" : "Petty Cash"}>
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Date</Label><Input type="date" className="mt-1.5 h-11 bg-background" /></div>
+              <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Cost Amount</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{expType === "other" ? "Expense Type" : "Description"}</Label><Input className="mt-1.5 h-11 bg-background" /></div>
+              <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Comments</Label><Textarea className="mt-1.5 bg-background" /></div>
+            </div>
+          </FormSection>
+        )}
+      </FormShell>
 
       {/* View Expense */}
-      <Dialog open={!!view} onOpenChange={(o) => !o && setView(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Expense Details</DialogTitle></DialogHeader>
-          {view && (
-            <div className="grid grid-cols-2 gap-3 text-sm">
+      <FormShell
+        open={!!view}
+        onOpenChange={(o) => !o && setView(null)}
+        title="Expense Details"
+        icon={<ReceiptIcon className="h-5 w-5" />}
+        size="md"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="outline" className="text-destructive border-destructive/30" onClick={() => { setDel(view); setView(null); }}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setView(null)}>Close</Button>
+              <Button className="gradient-primary border-0 shadow-glow px-5" onClick={() => { setEdit(view); setView(null); }}>Edit Expense</Button>
+            </div>
+          </div>
+        }
+      >
+        {view && (
+          <FormSection icon={<FileText className="h-4 w-4" />} title="Information">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               {Object.entries(view).map(([k, v]) => (
                 <div key={k}><p className="text-xs text-muted-foreground capitalize">{k}</p><p className="font-medium">{String(v)}</p></div>
               ))}
             </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" className="text-destructive border-destructive/30" onClick={() => { setDel(view); setView(null); }}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
-            <Button className="gradient-primary border-0" onClick={() => { setEdit(view); setView(null); }}>Edit Expense</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </FormSection>
+        )}
+      </FormShell>
 
-      {/* Edit Expense (reuse Add) */}
-      <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader><DialogTitle>Edit Expense</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Editing form prefilled with existing values.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEdit(null)}>Cancel</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("Changes saved"); setEdit(null); }}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Expense */}
+      <FormShell
+        open={!!edit}
+        onOpenChange={(o) => !o && setEdit(null)}
+        title="Edit Expense"
+        icon={<Edit className="h-5 w-5" />}
+        size="lg"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="ghost" className="text-muted-foreground" onClick={() => setEdit(null)}>Cancel</Button>
+            <Button className="gradient-primary border-0 shadow-glow px-6" onClick={() => { toast.success("Changes saved"); setEdit(null); }}>Save Changes</Button>
+          </div>
+        }
+      >
+        <FormSection icon={<FileText className="h-4 w-4" />} title="Expense Details" description="Editing form prefilled with existing values.">
+          <p className="text-sm text-muted-foreground">Form fields appear here, prefilled from the selected record.</p>
+        </FormSection>
+      </FormShell>
 
       <AlertDialog open={!!del} onOpenChange={(o) => !o && setDel(null)}>
         <AlertDialogContent>
