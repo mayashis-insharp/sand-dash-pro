@@ -40,6 +40,7 @@ const Expenses = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Bill Payments");
   const [addOpen, setAddOpen] = useState(false);
   const [view, setView] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [edit, setEdit] = useState<any>(null);
   const [del, setDel] = useState<any>(null);
   const [expType, setExpType] = useState<ExpType>("bill");
