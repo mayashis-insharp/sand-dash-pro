@@ -5,8 +5,8 @@ import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Search, Eye, X, Truck } from "lucide-react";
+import { FormShell, FormSection } from "@/components/dashboard/FormShell";
+import { Plus, Search, Eye, X, Truck, Building2, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 
 const tabs = ["Suppliers", "Drafts"] as const;
