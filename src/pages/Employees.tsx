@@ -141,11 +141,12 @@ const Employees = () => {
 
       {tab === "Employees" && (
         <>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search employees…" className="pl-9 h-10 bg-card" />
             </div>
+            <ViewToggle value={view} onChange={setView} className="ml-auto" />
           </div>
           {renderEmpTable("working")}{renderEmpTable("not-working")}
         </>
