@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +40,7 @@ const Expenses = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Bill Payments");
   const [addOpen, setAddOpen] = useState(false);
   const [view, setView] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [edit, setEdit] = useState<any>(null);
   const [del, setDel] = useState<any>(null);
   const [expType, setExpType] = useState<ExpType>("bill");
@@ -140,14 +143,75 @@ const Expenses = () => {
             <Input placeholder="Search expenses…" className="pl-9 h-10 bg-card" />
           </div>
           <Select defaultValue="feb"><SelectTrigger className="w-[160px] h-10 bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="feb">February 2026</SelectItem><SelectItem value="jan">January 2026</SelectItem></SelectContent></Select>
+          <ViewToggle value={viewMode} onChange={setViewMode} className="ml-auto" />
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-        <div className="overflow-x-auto">{renderTable()}</div>
-      </div>
+      {tab === "Drafts" || viewMode === "table" ? (
+        <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+          <div className="overflow-x-auto">{renderTable()}</div>
+        </div>
+      ) : (
+        <DataCards
+          items={
+            tab === "Bill Payments"
+              ? bills.map(b => ({
+                  id: b.id,
+                  title: b.type,
+                  subtitle: b.id,
+                  badge: <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md border ${b.paid < b.amount ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-success/10 text-success border-success/20"}`}>{b.paid < b.amount ? "Partial" : "Paid"}</span>,
+                  fields: [
+                    { label: "Date", value: b.date },
+                    { label: "Reference", value: b.ref, mono: true },
+                    { label: "Amount", value: b.amount.toLocaleString(), mono: true },
+                    { label: "Paid", value: b.paid.toLocaleString(), mono: true },
+                    { label: "Comments", value: b.comments || "—", full: true },
+                  ],
+                  actions: (
+                    <>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setView(b)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setEdit(b)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                    </>
+                  ),
+                }))
+              : tab === "Transport"
+              ? transport.map((t, i) => ({
+                  id: String(i),
+                  title: t.vehicle,
+                  subtitle: t.ref,
+                  fields: [
+                    { label: "Date", value: t.date },
+                    { label: "Cost", value: t.amount.toLocaleString(), mono: true },
+                    { label: "Comments", value: t.comments || "—", full: true },
+                  ],
+                  actions: (
+                    <>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setView(t)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setEdit(t)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                    </>
+                  ),
+                }))
+              : petty.map(p => ({
+                  id: p.id,
+                  title: p.desc,
+                  subtitle: p.id,
+                  fields: [
+                    { label: "Date", value: p.date },
+                    { label: "Cost", value: p.amount.toLocaleString(), mono: true },
+                    { label: "Comments", value: p.comments || "—", full: true },
+                  ],
+                  actions: (
+                    <>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setView(p)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                      <Button size="sm" variant="outline" className="gap-1 flex-1" onClick={() => setEdit(p)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                    </>
+                  ),
+                }))
+          }
+        />
+      )}
 
-      <Pagination from={1} to={3} total={68} />
+      {tab !== "Drafts" && <Pagination from={1} to={3} total={68} />}
 
       {/* Add Expense */}
       <FormShell
