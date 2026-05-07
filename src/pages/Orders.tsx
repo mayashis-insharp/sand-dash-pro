@@ -53,10 +53,7 @@ const Orders = () => {
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
 
-  const handleAddOrder = () => {
-    setAddOpen(false);
-    setPostAddPrompt(true);
-  };
+  const handleAddOrder = () => setPostAddPrompt(true);
 
   return (
     <PageShell title="Orders" description="Manage and track all customer sand orders.">
