@@ -513,6 +513,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
 
             <Section icon={StickyNote} title="Notes" description="Internal comments or special instructions.">
               <Textarea placeholder="Anything the team should know..." value={notes} onChange={(e) => setNotes(e.target.value)} className="min-h-[110px] bg-background resize-none" />
+            </Section>
     </FormShell>
   );
 }
