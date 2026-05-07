@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +51,7 @@ const drafts = [
 
 const Employees = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Employees");
+  const [view, setView] = useState<ViewMode>("table");
   const [salSub, setSalSub] = useState<typeof salarySubs[number]>("Fixed Salary");
   const [addEmp, setAddEmp] = useState(false);
   const [addRole, setAddRole] = useState(false);
@@ -64,33 +67,61 @@ const Employees = () => {
   const [salaryType, setSalaryType] = useState("basic");
   const [epf, setEpf] = useState(false);
 
-  const renderEmpTable = (status: "working" | "not-working") => (
-    <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden mb-5">
-      <div className="px-5 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
-        <h4 className="text-sm font-display font-bold">{status === "working" ? "Working" : "Not Working"}</h4>
-        <span className="text-xs text-muted-foreground">{employees.filter(e => e.status === status).length} employees</span>
+  const renderEmpTable = (status: "working" | "not-working") => {
+    const list = employees.filter(e => e.status === status);
+    return (
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-display font-bold">{status === "working" ? "Working" : "Not Working"}</h4>
+          <span className="text-xs text-muted-foreground">{list.length} employees</span>
+        </div>
+        {view === "table" ? (
+          <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead><tr className="bg-muted/50 border-b border-border">{["ID", "Full Name", "Contact", "NIC", "Job Role", "Salary Type", "Salary", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>)}</tr></thead>
+                <tbody>
+                  {list.map(e => (
+                    <tr key={e.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
+                      <td className="px-4 py-4 font-mono text-xs font-semibold">{e.id}</td>
+                      <td className="px-4 py-4 font-medium">{e.name}</td>
+                      <td className="px-4 py-4 font-mono text-xs">{e.contact}</td>
+                      <td className="px-4 py-4 font-mono text-xs">{e.nic}</td>
+                      <td className="px-4 py-4">{e.role}</td>
+                      <td className="px-4 py-4"><span className="inline-flex rounded-md border border-info/20 bg-info/10 text-info px-2 py-0.5 text-[11px] font-medium">{e.salaryType}</span></td>
+                      <td className="px-4 py-4 font-mono">{e.salary.toLocaleString()}</td>
+                      <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewEmp(e)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditEmp(e)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <DataCards
+            items={list.map(e => ({
+              id: e.id,
+              title: e.name,
+              subtitle: <span className="font-mono">{e.id}</span>,
+              badge: <span className="inline-flex rounded-md border border-info/20 bg-info/10 text-info px-2 py-0.5 text-[11px] font-medium">{e.salaryType}</span>,
+              fields: [
+                { label: "Role", value: e.role },
+                { label: "Salary", value: e.salary.toLocaleString(), mono: true },
+                { label: "Contact", value: e.contact, mono: true },
+                { label: "NIC", value: e.nic, mono: true },
+              ],
+              actions: (
+                <>
+                  <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setViewEmp(e)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                  <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setEditEmp(e)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                </>
+              ),
+            }))}
+          />
+        )}
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead><tr className="bg-muted/50 border-b border-border">{["ID", "Full Name", "Contact", "NIC", "Job Role", "Salary Type", "Salary", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>)}</tr></thead>
-          <tbody>
-            {employees.filter(e => e.status === status).map(e => (
-              <tr key={e.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                <td className="px-4 py-4 font-mono text-xs font-semibold">{e.id}</td>
-                <td className="px-4 py-4 font-medium">{e.name}</td>
-                <td className="px-4 py-4 font-mono text-xs">{e.contact}</td>
-                <td className="px-4 py-4 font-mono text-xs">{e.nic}</td>
-                <td className="px-4 py-4">{e.role}</td>
-                <td className="px-4 py-4"><span className="inline-flex rounded-md border border-info/20 bg-info/10 text-info px-2 py-0.5 text-[11px] font-medium">{e.salaryType}</span></td>
-                <td className="px-4 py-4 font-mono">{e.salary.toLocaleString()}</td>
-                <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewEmp(e)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditEmp(e)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <PageShell title="Employees" description="Manage your team, roles, and salary payments.">
@@ -110,11 +141,12 @@ const Employees = () => {
 
       {tab === "Employees" && (
         <>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search employees…" className="pl-9 h-10 bg-card" />
             </div>
+            <ViewToggle value={view} onChange={setView} className="ml-auto" />
           </div>
           {renderEmpTable("working")}{renderEmpTable("not-working")}
         </>

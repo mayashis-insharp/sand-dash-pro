@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +20,7 @@ const suppliers = [
 
 const Suppliers = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Suppliers");
+  const [view, setView] = useState<ViewMode>("table");
   const [addOpen, setAddOpen] = useState(false);
   const [viewSupplier, setViewSupplier] = useState<typeof suppliers[number] | null>(null);
   const [sandList, setSandList] = useState<{ id: string; type: string; price: string }[]>([{ id: "1", type: "", price: "" }]);
@@ -37,42 +40,64 @@ const Suppliers = () => {
 
       {tab === "Suppliers" && (
         <>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search suppliers…" className="pl-9 h-10 bg-card" />
             </div>
+            <ViewToggle value={view} onChange={setView} className="ml-auto" />
           </div>
-          <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-muted/50 border-b border-border">
-                    {["Supplier ID", "Name", "Address", "Contact", "Sand Type", "Unit Price", "Actions"].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {suppliers.map(s => (
-                    <tr key={s.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-smooth">
-                      <td className="px-4 py-4 font-mono text-xs font-semibold">{s.id}</td>
-                      <td className="px-4 py-4 font-medium">{s.name}</td>
-                      <td className="px-4 py-4 text-muted-foreground">{s.address}</td>
-                      <td className="px-4 py-4 font-mono text-xs">{s.contact}</td>
-                      <td className="px-4 py-4">{s.sand}</td>
-                      <td className="px-4 py-4 font-mono">{s.price.toLocaleString()}</td>
-                      <td className="px-4 py-4">
-                        <Button size="sm" variant="ghost" className="gap-1" onClick={() => setViewSupplier(s)}>
-                          <Eye className="h-3.5 w-3.5" /> View
-                        </Button>
-                      </td>
+          {view === "table" ? (
+            <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b border-border">
+                      {["Supplier ID", "Name", "Address", "Contact", "Sand Type", "Unit Price", "Actions"].map(h => (
+                        <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {suppliers.map(s => (
+                      <tr key={s.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-smooth">
+                        <td className="px-4 py-4 font-mono text-xs font-semibold">{s.id}</td>
+                        <td className="px-4 py-4 font-medium">{s.name}</td>
+                        <td className="px-4 py-4 text-muted-foreground">{s.address}</td>
+                        <td className="px-4 py-4 font-mono text-xs">{s.contact}</td>
+                        <td className="px-4 py-4">{s.sand}</td>
+                        <td className="px-4 py-4 font-mono">{s.price.toLocaleString()}</td>
+                        <td className="px-4 py-4">
+                          <Button size="sm" variant="ghost" className="gap-1" onClick={() => setViewSupplier(s)}>
+                            <Eye className="h-3.5 w-3.5" /> View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : (
+            <DataCards
+              items={suppliers.map(s => ({
+                id: s.id,
+                title: s.name,
+                subtitle: s.id,
+                badge: <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">{s.sand}</span>,
+                fields: [
+                  { label: "Address", value: s.address, full: true },
+                  { label: "Contact", value: s.contact, mono: true },
+                  { label: "Unit Price", value: s.price.toLocaleString(), mono: true },
+                ],
+                actions: (
+                  <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setViewSupplier(s)}>
+                    <Eye className="h-3.5 w-3.5" /> View
+                  </Button>
+                ),
+              }))}
+            />
+          )}
           <Pagination from={1} to={4} total={24} />
         </>
       )}

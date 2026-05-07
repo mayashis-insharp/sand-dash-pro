@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +25,7 @@ const actions = ["Add", "View", "Edit", "Delete"];
 
 const Users = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Users");
+  const [view, setView] = useState<ViewMode>("table");
   const [addOpen, setAddOpen] = useState(false);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ Dashboard: true, Orders: true, Payments: true });
 
@@ -37,27 +40,46 @@ const Users = () => {
 
       {tab === "Users" && (
         <>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search users…" className="pl-9 h-10 bg-card" />
             </div>
+            <ViewToggle value={view} onChange={setView} className="ml-auto" />
           </div>
-          <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-            <table className="w-full text-sm">
-              <thead><tr className="bg-muted/50 border-b border-border">{["Name", "Email", "Role", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>)}</tr></thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                    <td className="px-4 py-4 font-medium">{u.name}</td>
-                    <td className="px-4 py-4 text-muted-foreground">{u.email}</td>
-                    <td className="px-4 py-4"><span className="inline-flex rounded-md border border-primary/20 bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-medium">{u.role}</span></td>
-                    <td className="px-4 py-4"><div className="flex gap-1"><button className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button><button className="rounded-md px-2 py-1 hover:bg-muted text-destructive"><Trash2 className="h-3.5 w-3.5" /></button></div></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {view === "table" ? (
+            <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+              <table className="w-full text-sm">
+                <thead><tr className="bg-muted/50 border-b border-border">{["Name", "Email", "Role", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>)}</tr></thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
+                      <td className="px-4 py-4 font-medium">{u.name}</td>
+                      <td className="px-4 py-4 text-muted-foreground">{u.email}</td>
+                      <td className="px-4 py-4"><span className="inline-flex rounded-md border border-primary/20 bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-medium">{u.role}</span></td>
+                      <td className="px-4 py-4"><div className="flex gap-1"><button className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button><button className="rounded-md px-2 py-1 hover:bg-muted text-destructive"><Trash2 className="h-3.5 w-3.5" /></button></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <DataCards
+              items={users.map(u => ({
+                id: u.id,
+                title: u.name,
+                subtitle: u.email,
+                badge: <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">{u.role}</span>,
+                fields: [],
+                actions: (
+                  <>
+                    <Button size="sm" variant="outline" className="flex-1 gap-1"><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                    <Button size="sm" variant="outline" className="gap-1 text-destructive border-destructive/30"><Trash2 className="h-3.5 w-3.5" /></Button>
+                  </>
+                ),
+              }))}
+            />
+          )}
           <Pagination from={1} to={3} total={3} />
         </>
       )}

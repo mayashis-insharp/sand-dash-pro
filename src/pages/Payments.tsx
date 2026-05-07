@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
+import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
+import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Download, FileText, Receipt as ReceiptIcon } from "lucide-react";
@@ -39,6 +41,7 @@ const fmt = (n: number) => "LKR " + n.toLocaleString();
 
 const Payments = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("All Payments");
+  const [view, setView] = useState<ViewMode>("table");
 
   const filtered = tab === "All Payments" ? payments : payments.filter(p => p.method === tab);
   const showOutstanding = tab === "Credits" || tab === "Other";
@@ -72,49 +75,72 @@ const Payments = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search payments…" className="pl-9 h-10 bg-card" />
         </div>
+        <ViewToggle value={view} onChange={setView} className="ml-auto" />
       </div>
 
-      <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-muted/50 border-b border-border">
-                {["Date", "Order ID", "Customer", "Amount", "Method", "Reference", "Comments", "Actions"].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p, i) => (
-                <tr key={i} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-smooth">
-                  <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">{p.date}</td>
-                  <td className="px-4 py-4 font-mono text-xs font-semibold">{p.orderId}</td>
-                  <td className="px-4 py-4 font-medium">{p.customer}</td>
-                  <td className="px-4 py-4 font-semibold">{fmt(p.amount)}</td>
-                  <td className="px-4 py-4">
-                    <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", methodStyles[p.method])}>
-                      {p.method}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 font-mono text-xs">{p.ref || "—"}</td>
-                  <td className="px-4 py-4 text-muted-foreground text-xs max-w-[180px] truncate">{p.comments || "—"}</td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-1">
-                      <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-info hover:bg-info/10"><FileText className="h-3.5 w-3.5" /> Invoice</button>
-                      <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted"><ReceiptIcon className="h-3.5 w-3.5" /> Receipt</button>
-                    </div>
-                  </td>
+      {view === "table" ? (
+        <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/50 border-b border-border">
+                  {["Date", "Order ID", "Customer", "Amount", "Method", "Reference", "Comments", "Actions"].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map((p, i) => (
+                  <tr key={i} className="border-b border-border/60 last:border-0 hover:bg-muted/30 transition-smooth">
+                    <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">{p.date}</td>
+                    <td className="px-4 py-4 font-mono text-xs font-semibold">{p.orderId}</td>
+                    <td className="px-4 py-4 font-medium">{p.customer}</td>
+                    <td className="px-4 py-4 font-semibold">{fmt(p.amount)}</td>
+                    <td className="px-4 py-4">
+                      <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", methodStyles[p.method])}>
+                        {p.method}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 font-mono text-xs">{p.ref || "—"}</td>
+                    <td className="px-4 py-4 text-muted-foreground text-xs max-w-[180px] truncate">{p.comments || "—"}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-1">
+                        <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-info hover:bg-info/10"><FileText className="h-3.5 w-3.5" /> Invoice</button>
+                        <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted"><ReceiptIcon className="h-3.5 w-3.5" /> Receipt</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : (
+        <DataCards
+          items={filtered.map((p, i) => ({
+            id: p.orderId + "-" + i,
+            title: p.customer,
+            subtitle: <span className="font-mono">{p.orderId} · {p.date}</span>,
+            badge: <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", methodStyles[p.method])}>{p.method}</span>,
+            fields: [
+              { label: "Amount", value: fmt(p.amount) },
+              { label: "Reference", value: p.ref || "—", mono: true },
+              { label: "Comments", value: p.comments || "—", full: true },
+            ],
+            actions: (
+              <>
+                <Button size="sm" variant="outline" className="flex-1 gap-1 text-info"><FileText className="h-3.5 w-3.5" /> Invoice</Button>
+                <Button size="sm" variant="outline" className="flex-1 gap-1"><ReceiptIcon className="h-3.5 w-3.5" /> Receipt</Button>
+              </>
+            ),
+          }))}
+        />
+      )}
       <Pagination from={1} to={filtered.length} total={482} />
     </PageShell>
   );

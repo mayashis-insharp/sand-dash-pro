@@ -53,10 +53,7 @@ const Orders = () => {
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
 
-  const handleAddOrder = () => {
-    setAddOpen(false);
-    setPostAddPrompt(true);
-  };
+  const handleAddOrder = () => setPostAddPrompt(true);
 
   return (
     <PageShell title="Orders" description="Manage and track all customer sand orders.">
@@ -160,7 +157,7 @@ const Orders = () => {
         </div>
       )}
 
-      <AddOrderDialog open={addOpen} onOpenChange={(o) => { if (!o) handleAddOrder(); else setAddOpen(true); }} />
+      <AddOrderDialog open={addOpen} onOpenChange={setAddOpen} onSubmitted={handleAddOrder} />
 
       {/* View Order */}
       <Dialog open={!!viewOrder} onOpenChange={(o) => !o && setViewOrder(null)}>
