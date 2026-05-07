@@ -16,6 +16,7 @@ import SettingsPage from "./pages/Settings.tsx";
 import Login from "./pages/Login.tsx";
 import ChangePassword from "./pages/ChangePassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { ThemeApplier } from "./components/ThemeApplier";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ThemeApplier />
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
