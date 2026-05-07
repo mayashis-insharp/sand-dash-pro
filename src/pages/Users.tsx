@@ -4,30 +4,30 @@ import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
 import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { UserFormDialog, type UserMode, type UserFormValue } from "@/components/dashboard/UserFormDialog";
 
 const tabs = ["Users", "Drafts"] as const;
 
-const users = [
+const initialUsers = [
   { id: "U_01", name: "Admin 123", email: "admin@sandsupply.lk", role: "Super Admin" },
   { id: "U_02", name: "Nadeesha", email: "nadeesha@sandsupply.lk", role: "Manager" },
   { id: "U_03", name: "Roshan", email: "roshan@sandsupply.lk", role: "Cashier" },
 ];
 
-const modules = ["Dashboard", "Orders", "Payments", "Inventory", "Suppliers", "Expenses", "Employees", "Customers", "Users", "Settings"];
-const actions = ["Add", "View", "Edit", "Delete"];
-
 const Users = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Users");
   const [view, setView] = useState<ViewMode>("table");
-  const [addOpen, setAddOpen] = useState(false);
-  const [enabled, setEnabled] = useState<Record<string, boolean>>({ Dashboard: true, Orders: true, Payments: true });
+  const [mode, setMode] = useState<UserMode | null>(null);
+  const [target, setTarget] = useState<Partial<UserFormValue> | undefined>();
+  const [delTarget, setDelTarget] = useState<typeof initialUsers[number] | null>(null);
+
+  const open = (m: UserMode, u?: typeof initialUsers[number]) => {
+    setMode(m);
+    setTarget(u ? { id: u.id, name: u.name, email: u.email, role: u.role } : undefined);
+  };
 
   return (
     <PageShell breadcrumb={["Settings", "Users"]} title="Users" description="Manage staff access and module permissions.">
@@ -35,7 +35,7 @@ const Users = () => {
         tabs={tabs}
         active={tab}
         onChange={setTab}
-        right={<Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" /> Add User</Button>}
+        right={<Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => open("add")}><Plus className="h-4 w-4" /> Add User</Button>}
       />
 
       {tab === "Users" && (
@@ -52,12 +52,18 @@ const Users = () => {
               <table className="w-full text-sm">
                 <thead><tr className="bg-muted/50 border-b border-border">{["Name", "Email", "Role", "Actions"].map(h => <th key={h} className="px-4 py-3 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>)}</tr></thead>
                 <tbody>
-                  {users.map(u => (
+                  {initialUsers.map(u => (
                     <tr key={u.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
                       <td className="px-4 py-4 font-medium">{u.name}</td>
                       <td className="px-4 py-4 text-muted-foreground">{u.email}</td>
                       <td className="px-4 py-4"><span className="inline-flex rounded-md border border-primary/20 bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-medium">{u.role}</span></td>
-                      <td className="px-4 py-4"><div className="flex gap-1"><button className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button><button className="rounded-md px-2 py-1 hover:bg-muted text-destructive"><Trash2 className="h-3.5 w-3.5" /></button></div></td>
+                      <td className="px-4 py-4">
+                        <div className="flex gap-1">
+                          <button className="rounded-md px-2 py-1 hover:bg-muted" onClick={() => open("view", u)}><Eye className="h-3.5 w-3.5" /></button>
+                          <button className="rounded-md px-2 py-1 hover:bg-muted" onClick={() => open("edit", u)}><Edit className="h-3.5 w-3.5" /></button>
+                          <button className="rounded-md px-2 py-1 hover:bg-muted text-destructive" onClick={() => setDelTarget(u)}><Trash2 className="h-3.5 w-3.5" /></button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -65,7 +71,7 @@ const Users = () => {
             </div>
           ) : (
             <DataCards
-              items={users.map(u => ({
+              items={initialUsers.map(u => ({
                 id: u.id,
                 title: u.name,
                 subtitle: u.email,
@@ -73,8 +79,9 @@ const Users = () => {
                 fields: [],
                 actions: (
                   <>
-                    <Button size="sm" variant="outline" className="flex-1 gap-1"><Edit className="h-3.5 w-3.5" /> Edit</Button>
-                    <Button size="sm" variant="outline" className="gap-1 text-destructive border-destructive/30"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => open("view", u)}><Eye className="h-3.5 w-3.5" /> View</Button>
+                    <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => open("edit", u)}><Edit className="h-3.5 w-3.5" /> Edit</Button>
+                    <Button size="sm" variant="outline" className="gap-1 text-destructive border-destructive/30" onClick={() => setDelTarget(u)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </>
                 ),
               }))}
@@ -86,52 +93,25 @@ const Users = () => {
 
       {tab === "Drafts" && <div className="rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center text-sm text-muted-foreground">No user drafts.</div>}
 
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Add User</DialogTitle></DialogHeader>
-          <div className="space-y-5">
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">User Details</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Full Name</Label><Input className="mt-1.5" /></div>
-                <div><Label>Email</Label><Input className="mt-1.5" type="email" /></div>
-                <div><Label>Password</Label><Input className="mt-1.5" type="password" /></div>
-                <div><Label>User Role</Label><Select><SelectTrigger className="mt-1.5"><SelectValue placeholder="Select role" /></SelectTrigger><SelectContent><SelectItem value="a">Admin</SelectItem><SelectItem value="m">Manager</SelectItem><SelectItem value="c">Cashier</SelectItem></SelectContent></Select></div>
-              </div>
-            </section>
-            <section>
-              <h4 className="text-sm font-display font-bold mb-3">Access Permissions</h4>
-              <div className="space-y-2">
-                {modules.map(m => {
-                  const isOn = !!enabled[m];
-                  return (
-                    <div key={m} className="rounded-xl border border-border overflow-hidden">
-                      <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30">
-                        <span className="text-sm font-medium">{m}</span>
-                        <Switch checked={isOn} onCheckedChange={(v) => setEnabled(e => ({ ...e, [m]: v }))} />
-                      </div>
-                      {isOn && (
-                        <div className="px-4 py-3 border-t border-border flex flex-wrap items-center gap-x-5 gap-y-2">
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Actions:</span>
-                          {actions.map(a => (
-                            <label key={a} className="flex items-center gap-1.5 text-xs cursor-pointer">
-                              <Checkbox defaultChecked={a === "View"} /> {a}
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("User added"); setAddOpen(false); }}>Add User</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UserFormDialog
+        open={mode !== null}
+        onOpenChange={(o) => !o && setMode(null)}
+        mode={mode ?? "add"}
+        initial={target}
+      />
+
+      <AlertDialog open={!!delTarget} onOpenChange={(o) => !o && setDelTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this user?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={() => { toast.success("User deleted"); setDelTarget(null); }}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 };
