@@ -239,13 +239,33 @@ const Expenses = () => {
         }
       >
         {view && (
-          <FormSection icon={<FileText className="h-4 w-4" />} title="Information">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {Object.entries(view).map(([k, v]) => (
-                <div key={k}><p className="text-xs text-muted-foreground capitalize">{k}</p><p className="font-medium">{String(v)}</p></div>
-              ))}
-            </div>
-          </FormSection>
+          <>
+            <FormSection icon={<FileText className="h-4 w-4" />} title="Information">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                {Object.entries(view).map(([k, v]) => (
+                  <div key={k}><p className="text-xs text-muted-foreground capitalize">{k}</p><p className="font-medium">{String(v)}</p></div>
+                ))}
+              </div>
+            </FormSection>
+            <FormSection icon={<Paperclip className="h-4 w-4" />} title="Attachment" description="Uploaded receipt or supporting document.">
+              <a
+                href="#"
+                onClick={(e) => { e.preventDefault(); toast.success("Opening receipt…"); }}
+                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background hover:bg-muted/40 transition-smooth px-4 py-3 group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary grid place-items-center ring-1 ring-primary/20 shrink-0">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">receipt-{(view as any).id || (view as any).ref || "file"}.pdf</p>
+                    <p className="text-xs text-muted-foreground">Click to open in a new tab</p>
+                  </div>
+                </div>
+                <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+              </a>
+            </FormSection>
+          </>
         )}
       </FormShell>
 
@@ -254,6 +274,7 @@ const Expenses = () => {
         open={!!edit}
         onOpenChange={(o) => !o && setEdit(null)}
         title="Edit Expense"
+        subtitle="Update details for this expense record."
         icon={<Edit className="h-5 w-5" />}
         size="lg"
         footer={
@@ -263,8 +284,40 @@ const Expenses = () => {
           </div>
         }
       >
-        <FormSection icon={<FileText className="h-4 w-4" />} title="Expense Details" description="Editing form prefilled with existing values.">
-          <p className="text-sm text-muted-foreground">Form fields appear here, prefilled from the selected record.</p>
+        <FormSection icon={<CalendarIcon className="h-4 w-4" />} title="Bill Details" description="Editing form prefilled with existing values.">
+          <div className="grid grid-cols-2 gap-4">
+            <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Date</Label><Input type="date" defaultValue={(edit as any)?.date ? "" : ""} className="mt-1.5 h-11 bg-background" /></div>
+            <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Type</Label><Select defaultValue={(edit as any)?.type?.toLowerCase?.()}><SelectTrigger className="mt-1.5 h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="electricity">Electricity</SelectItem><SelectItem value="fuel">Fuel</SelectItem><SelectItem value="maintenance">Maintenance</SelectItem></SelectContent></Select></div>
+            <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Amount</Label><Input defaultValue={(edit as any)?.amount} className="mt-1.5 h-11 bg-background" /></div>
+            <div><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Paid Amount</Label><Input defaultValue={(edit as any)?.paid} className="mt-1.5 h-11 bg-background" /></div>
+            <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Bill Reference No</Label><Input defaultValue={(edit as any)?.ref} className="mt-1.5 h-11 bg-background" /></div>
+            <div className="col-span-2"><Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Comments</Label><Textarea defaultValue={(edit as any)?.comments} className="mt-1.5 bg-background" /></div>
+          </div>
+        </FormSection>
+
+        <FormSection icon={<Paperclip className="h-4 w-4" />} title="Attachment" description="View, replace, or remove the existing receipt.">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3 mb-3">
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); toast.success("Opening receipt…"); }}
+              className="flex items-center gap-3 min-w-0 group"
+            >
+              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary grid place-items-center ring-1 ring-primary/20 shrink-0">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate group-hover:text-primary transition-smooth">receipt-{(edit as any)?.id || (edit as any)?.ref || "file"}.pdf</p>
+                <p className="text-xs text-muted-foreground">Click to open in a new tab</p>
+              </div>
+            </a>
+            <div className="flex items-center gap-1 shrink-0">
+              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => toast.success("Attachment removed")}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          </div>
+          <button className="w-full rounded-xl border-2 border-dashed border-border p-4 text-center hover:bg-muted/30 transition-smooth bg-background">
+            <Upload className="h-5 w-5 mx-auto text-muted-foreground" />
+            <p className="text-xs text-muted-foreground mt-1">Click to replace receipt</p>
+          </button>
         </FormSection>
       </FormShell>
 
