@@ -45,10 +45,7 @@ const Login = () => {
                   <Input id="password" type="password" placeholder="••••••••" className="pl-9 h-11 bg-background" />
                 </div>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
-                  <input type="checkbox" className="rounded border-border" /> Remember me
-                </label>
+              <div className="flex items-center justify-end text-xs">
                 <Link to="/change-password" className="text-primary font-medium hover:underline">
                   Forgot password?
                 </Link>
@@ -58,13 +55,6 @@ const Login = () => {
               </Button>
             </div>
           </div>
-
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            Need help? Contact{" "}
-            <a href="mailto:support@insharptech.com" className="text-primary hover:underline">
-              support@insharptech.com
-            </a>
-          </p>
         </div>
       </main>
 
