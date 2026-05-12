@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Download, FileText, Receipt as ReceiptIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["All Payments", "Cash", "Bank Transfer", "Cheque", "Credits", "Other"] as const;
 
