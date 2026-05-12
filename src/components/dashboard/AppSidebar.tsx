@@ -79,7 +79,7 @@ export function AppSidebar() {
               <Mountain className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col leading-tight min-w-0 flex-1">
-              <span className="font-display font-bold text-foreground truncate">Sand Supply</span>
+              <span className="font-display font-bold text-foreground truncate">Cita ERP</span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">ERP Console</span>
             </div>
             <button

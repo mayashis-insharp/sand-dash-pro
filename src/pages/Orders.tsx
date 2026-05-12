@@ -214,7 +214,7 @@ const Orders = () => {
             <div className="rounded-xl border border-border bg-muted/20 p-6 space-y-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-display font-bold text-xl">Sand Supply</p>
+                  <p className="font-display font-bold text-xl">Cita ERP</p>
                   <p className="text-xs text-muted-foreground">No. 25, Colombo Rd, Kaduwela</p>
                 </div>
                 <div className="text-right text-xs">
