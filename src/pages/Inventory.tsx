@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
@@ -72,6 +73,7 @@ const Inventory = () => {
   const [qStatus, setQStatus] = useState("ip");
   const [qResult, setQResult] = useState("none");
   const [charges, setCharges] = useState<{ id: string }[]>([{ id: "1" }]);
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell icon={Boxes} title="Inventory" description="Track sand stock levels, suppliers, and quality.">
@@ -81,7 +83,7 @@ const Inventory = () => {
         onChange={setTab}
         right={
           <>
-            <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
             {tab === "Sand Stock" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddStock(true)}><Plus className="h-4 w-4" /> Add Stock</Button>}
             {tab === "Set Alert" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setSetAlertOpen(true)}><Plus className="h-4 w-4" /> Set Alert</Button>}
           </>
@@ -461,6 +463,27 @@ const Inventory = () => {
           </FormSection>
         )}
       </FormShell>
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Inventory"
+        columns={["Date & Time", "Stock ID", "Supplier", "Sand Type", "Quantity", "Quality Status", "Final Price", "Selling Price", "Vehicle"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
+            { value: "river-soft", label: "River Sand – Soft" },
+            { value: "river-coarse", label: "River Sand – Coarse" },
+            { value: "sea", label: "Sea Sand" },
+            { value: "quarry", label: "Quarry Dust" },
+            { value: "m-sand", label: "M-Sand" },
+          ]},
+          { key: "quality", label: "Quality Status", type: "select", placeholder: "All Statuses", options: [
+            { value: "checked", label: "Quality Checked" },
+            { value: "progress", label: "In Progress" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

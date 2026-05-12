@@ -5,9 +5,10 @@ import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, Edit, Trash2, Eye, ShieldCheck } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, ShieldCheck, Download } from "lucide-react";
 import { toast } from "sonner";
 import { UserFormDialog, type UserMode, type UserFormValue } from "@/components/dashboard/UserFormDialog";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Users", "Drafts"] as const;
 
@@ -23,6 +24,7 @@ const Users = () => {
   const [mode, setMode] = useState<UserMode | null>(null);
   const [target, setTarget] = useState<Partial<UserFormValue> | undefined>();
   const [delTarget, setDelTarget] = useState<typeof initialUsers[number] | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const open = (m: UserMode, u?: typeof initialUsers[number]) => {
     setMode(m);
@@ -35,7 +37,7 @@ const Users = () => {
         tabs={tabs}
         active={tab}
         onChange={setTab}
-        right={<Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => open("add")}><Plus className="h-4 w-4" /> Add User</Button>}
+        right={<div className="flex items-center gap-2"><Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button><Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => open("add")}><Plus className="h-4 w-4" /> Add User</Button></div>}
       />
 
       {tab === "Users" && (
@@ -112,6 +114,20 @@ const Users = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Users"
+        columns={["Name", "Email", "Role"]}
+        filters={[
+          { key: "role", label: "Role", type: "select", placeholder: "All Roles", options: [
+            { value: "super-admin", label: "Super Admin" },
+            { value: "manager", label: "Manager" },
+            { value: "cashier", label: "Cashier" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

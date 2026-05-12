@@ -3,6 +3,7 @@ import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell"
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,6 +53,7 @@ const Orders = () => {
   const [postAddPrompt, setPostAddPrompt] = useState(false);
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleAddOrder = () => setPostAddPrompt(true);
 
@@ -63,7 +65,7 @@ const Orders = () => {
         onChange={setTab}
         right={
           <>
-            {tab !== "Drafts" && <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.success("Export started")}><Download className="h-4 w-4" /> Export</Button>}
+            {tab !== "Drafts" && <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
             {tab === "Orders" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" /> Add Order</Button>}
             {tab === "Pre-Orders" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddPo(true)}><Plus className="h-4 w-4" /> Add Pre-Order</Button>}
           </>
@@ -332,6 +334,27 @@ const Orders = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName={tab === "Pre-Orders" ? "Pre-Orders" : "Orders"}
+        columns={["Order ID", "Date", "Type", "Customer", "Phone", "Address", "Vehicle", "Sand Type", "Quantity", "Total", "Payment", "Status"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "type", label: "Order Type", type: "select", placeholder: "All Types", options: [
+            { value: "retail", label: "Retail" },
+            { value: "corporate", label: "Corporate" },
+            { value: "wholesale", label: "Wholesale" },
+          ]},
+          { key: "payment", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
+            { value: "cash", label: "Cash" },
+            { value: "bank", label: "Bank Transfer" },
+            { value: "cheque", label: "Cheque" },
+            { value: "credit", label: "Credit" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

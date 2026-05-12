@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
 import { Plus, Search, Eye, Edit, Download, Upload, Trash2, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Paperclip, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Bill Payments", "Transport", "Petty Cash", "Drafts"] as const;
 
@@ -44,6 +45,22 @@ const Expenses = () => {
   const [edit, setEdit] = useState<any>(null);
   const [del, setDel] = useState<any>(null);
   const [expType, setExpType] = useState<ExpType>("bill");
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const exportConfig = (() => {
+    if (tab === "Transport") return {
+      name: "Expenses - Transport",
+      cols: ["Date", "Order/Stock", "Vehicle/Driver", "Cost", "Comments"],
+    };
+    if (tab === "Petty Cash") return {
+      name: "Expenses - Petty Cash",
+      cols: ["Date", "Expense ID", "Description", "Cost"],
+    };
+    return {
+      name: "Expenses - Bill Payments",
+      cols: ["Date", "Expense ID", "Bill Type", "Bill Amount", "Reference", "Paid Amount", "Comments"],
+    };
+  })();
 
   const renderTable = () => {
     if (tab === "Bill Payments") {
@@ -130,7 +147,7 @@ const Expenses = () => {
         onChange={(t) => { setTab(t); setExpType(t === "Transport" ? "transport" : t === "Petty Cash" ? "petty" : "bill"); }}
         right={
           <>
-            <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
             <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" /> Add Expense</Button>
           </>
         }
@@ -397,6 +414,23 @@ const Expenses = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName={exportConfig.name}
+        columns={exportConfig.cols}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "type", label: "Bill Type", type: "select", placeholder: "All Types", options: [
+            { value: "electricity", label: "Electricity" },
+            { value: "fuel", label: "Fuel" },
+            { value: "maintenance", label: "Maintenance" },
+            { value: "other", label: "Other" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

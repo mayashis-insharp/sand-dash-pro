@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
-import { Plus, Search, Eye, X, Truck, Building2, ClipboardList } from "lucide-react";
+import { Plus, Search, Eye, X, Truck, Building2, ClipboardList, Download } from "lucide-react";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Suppliers", "Drafts"] as const;
 
@@ -24,6 +25,7 @@ const Suppliers = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [viewSupplier, setViewSupplier] = useState<typeof suppliers[number] | null>(null);
   const [sandList, setSandList] = useState<{ id: string; type: string; price: string }[]>([{ id: "1", type: "", price: "" }]);
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell icon={Truck} breadcrumb={["Operations", "Suppliers"]} title="Suppliers" description="Manage your sand supplier network.">
@@ -32,9 +34,12 @@ const Suppliers = () => {
         active={tab}
         onChange={setTab}
         right={
-          <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}>
-            <Plus className="h-4 w-4" /> Add Supplier
-          </Button>
+          <>
+            {tab === "Suppliers" && <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
+            <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}>
+              <Plus className="h-4 w-4" /> Add Supplier
+            </Button>
+          </>
         }
       />
 
@@ -201,6 +206,20 @@ const Suppliers = () => {
         )}
       </FormShell>
 
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Suppliers"
+        columns={["Supplier ID", "Name", "Address", "Contact", "Sand Type", "Unit Price"]}
+        filters={[
+          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
+            { value: "river-soft", label: "River Sand – Soft" },
+            { value: "sea", label: "Sea Sand" },
+            { value: "quarry", label: "Quarry Dust" },
+            { value: "m-sand", label: "M-Sand" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

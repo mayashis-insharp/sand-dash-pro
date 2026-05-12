@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Search, Eye, Edit, Download, Trash2, Receipt as ReceiptIcon, UsersRound, Briefcase, Wallet, Calendar as CalendarIcon, FileText, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Employees", "Job Role", "Salary Payment", "Drafts"] as const;
 const salarySubs = ["Fixed Salary", "Trip-Based", "ETF/EPF"] as const;
@@ -90,6 +91,17 @@ const Employees = () => {
   const [paymentType, setPaymentType] = useState("monthly");
   const [salaryType, setSalaryType] = useState("basic");
   const [epf, setEpf] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const exportConfig = (() => {
+    if (tab === "Job Role") return { name: "Employees - Job Roles", cols: ["Job Role", "Salary Per", "Basic Salary"] };
+    if (tab === "Salary Payment") {
+      if (salSub === "Trip-Based") return { name: "Salary - Trip-Based", cols: ["Date", "Employee", "Trips", "Total Trip", "Paid", "Outstanding", "Method", "Comments"] };
+      if (salSub === "ETF/EPF") return { name: "Salary - ETF/EPF", cols: ["ETF/EPF No", "Employee", "Basic", "EPF 8%", "EPF 12%", "ETF 3%", "Comments"] };
+      return { name: "Salary - Fixed", cols: ["Date", "Employee", "ETF/EPF", "Basic", "Advance", "Total Earned", "Method", "Comments"] };
+    }
+    return { name: "Employees", cols: ["ID", "Full Name", "Contact", "NIC", "Job Role", "Salary Type", "Salary"] };
+  })();
 
   const renderEmpTable = (status: "working" | "not-working") => {
     const list = employees.filter(e => e.status === status);
@@ -155,7 +167,7 @@ const Employees = () => {
         onChange={setTab}
         right={
           <>
-            <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
             {tab === "Employees" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddEmp(true)}><Plus className="h-4 w-4" /> Add Employee</Button>}
             {tab === "Job Role" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddRole(true)}><Plus className="h-4 w-4" /> Add Job Role</Button>}
             {tab === "Salary Payment" && salSub !== "ETF/EPF" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddPayment(true)}><Plus className="h-4 w-4" /> Add Salary Payment</Button>}
@@ -585,6 +597,23 @@ const Employees = () => {
           </>
         )}
       </FormShell>
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName={exportConfig.name}
+        columns={exportConfig.cols}
+        filters={[
+          { key: "role", label: "Job Role", type: "select", placeholder: "All Roles", options: [
+            { value: "driver", label: "Driver" },
+            { value: "loader", label: "Loader" },
+            { value: "manager", label: "Site Manager" },
+          ]},
+          { key: "salaryType", label: "Salary Type", type: "select", placeholder: "All Types", options: [
+            { value: "basic", label: "Basic Salary" },
+            { value: "trip", label: "Trip-Based" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

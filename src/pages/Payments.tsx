@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Download, FileText, Receipt as ReceiptIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["All Payments", "Cash", "Bank Transfer", "Cheque", "Credits", "Other"] as const;
 
@@ -42,6 +43,7 @@ const fmt = (n: number) => "LKR " + n.toLocaleString();
 const Payments = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("All Payments");
   const [view, setView] = useState<ViewMode>("table");
+  const [exportOpen, setExportOpen] = useState(false);
 
   const filtered = tab === "All Payments" ? payments : payments.filter(p => p.method === tab);
   const showOutstanding = tab === "Credits" || tab === "Other";
@@ -55,7 +57,7 @@ const Payments = () => {
         tabs={tabs}
         active={tab}
         onChange={setTab}
-        right={<Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>}
+        right={<Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
       />
 
       {showOutstanding && (
@@ -142,6 +144,23 @@ const Payments = () => {
         />
       )}
       <Pagination from={1} to={filtered.length} total={482} />
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Payments"
+        columns={["Date", "Order ID", "Customer", "Amount", "Method", "Reference", "Comments"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "method", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
+            { value: "cash", label: "Cash" },
+            { value: "bank", label: "Bank Transfer" },
+            { value: "cheque", label: "Cheque" },
+            { value: "credits", label: "Credits" },
+            { value: "other", label: "Other" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };

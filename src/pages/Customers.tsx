@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Download, Phone, Truck, Award, Sparkles, Building2, User, Crown, TrendingUp, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ViewToggle, ViewMode } from "@/components/dashboard/ViewToggle";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 type Badge =
   | "Top Retail"
@@ -68,6 +69,7 @@ const badgeStyles: Record<Badge, { cls: string; ring: string; Icon: any }> = {
 
 const Customers = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("card");
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell
@@ -76,7 +78,7 @@ const Customers = () => {
       title="Customers"
       description="A modern view of every customer relationship."
       actions={
-        <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
       }
     >
       <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-5">
@@ -198,6 +200,25 @@ const Customers = () => {
           </div>
         </div>
       )}
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Customers"
+        columns={["ID", "Name", "Type", "Phone", "Vehicles", "Orders", "Total", "Outstanding"]}
+        filters={[
+          { key: "type", label: "Customer Type", type: "select", placeholder: "All Types", options: [
+            { value: "retail", label: "Retail" },
+            { value: "corporate", label: "Corporate" },
+            { value: "top-retail", label: "Top Retail" },
+            { value: "top-corporate", label: "Top Corporate" },
+          ]},
+          { key: "outstanding", label: "Outstanding", type: "select", placeholder: "All", options: [
+            { value: "any", label: "Any" },
+            { value: "with", label: "With Outstanding" },
+            { value: "settled", label: "Settled" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
