@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { Mountain } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "./DashboardLayout";
+import { getAccentForRoute } from "@/lib/theme";
 
 interface PageShellProps {
   breadcrumb?: string[];
@@ -11,9 +13,9 @@ interface PageShellProps {
   icon?: React.ComponentType<{ className?: string }>;
 }
 
-const BRAND = "#E48444";
-
 export function PageShell({ breadcrumb: _b = [], title, description, actions, icon: Icon, children }: PageShellProps) {
+  const location = useLocation();
+  const accent = getAccentForRoute(location.pathname);
   const IconComp = Icon || Mountain;
   return (
     <DashboardLayout>
