@@ -167,7 +167,7 @@ const Employees = () => {
         onChange={setTab}
         right={
           <>
-            <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
             {tab === "Employees" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddEmp(true)}><Plus className="h-4 w-4" /> Add Employee</Button>}
             {tab === "Job Role" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddRole(true)}><Plus className="h-4 w-4" /> Add Job Role</Button>}
             {tab === "Salary Payment" && salSub !== "ETF/EPF" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddPayment(true)}><Plus className="h-4 w-4" /> Add Salary Payment</Button>}
