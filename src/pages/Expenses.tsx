@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
 import { Plus, Search, Eye, Edit, Download, Upload, Trash2, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Paperclip, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Bill Payments", "Transport", "Petty Cash", "Drafts"] as const;
 
