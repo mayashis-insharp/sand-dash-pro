@@ -148,7 +148,7 @@ const Employees = () => {
   };
 
   return (
-    <PageShell title="Employees" description="Manage your team, roles, and salary payments.">
+    <PageShell icon={UsersRound} title="Employees" description="Manage your team, roles, and salary payments.">
       <TabBar
         tabs={tabs}
         active={tab}

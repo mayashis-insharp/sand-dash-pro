@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Search, Download, Plus, Calendar, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X } from "lucide-react";
+import { Search, Download, Plus, Calendar, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 const orders: Order[] = [
@@ -56,7 +56,7 @@ const Orders = () => {
   const handleAddOrder = () => setPostAddPrompt(true);
 
   return (
-    <PageShell title="Orders" description="Manage and track all customer sand orders.">
+    <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">
       <TabBar
         tabs={tabs}
         active={tab}

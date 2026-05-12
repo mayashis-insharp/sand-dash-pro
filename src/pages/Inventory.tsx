@@ -74,7 +74,7 @@ const Inventory = () => {
   const [charges, setCharges] = useState<{ id: string }[]>([{ id: "1" }]);
 
   return (
-    <PageShell title="Inventory" description="Track sand stock levels, suppliers, and quality.">
+    <PageShell icon={Boxes} title="Inventory" description="Track sand stock levels, suppliers, and quality.">
       <TabBar
         tabs={tabs}
         active={tab}

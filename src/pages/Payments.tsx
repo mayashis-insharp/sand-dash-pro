@@ -4,7 +4,7 @@ import { ViewToggle, type ViewMode } from "@/components/dashboard/ViewToggle";
 import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Download, FileText, Receipt as ReceiptIcon } from "lucide-react";
+import { Search, Download, FileText, Receipt as ReceiptIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = ["All Payments", "Cash", "Bank Transfer", "Cheque", "Credits", "Other"] as const;
@@ -50,7 +50,7 @@ const Payments = () => {
   const outstanding = totalAmount - paid;
 
   return (
-    <PageShell breadcrumb={["Finance", "Payments"]} title="Payments" description="Track all incoming payments across methods.">
+    <PageShell icon={Wallet} breadcrumb={["Finance", "Payments"]} title="Payments" description="Track all incoming payments across methods.">
       <TabBar
         tabs={tabs}
         active={tab}
