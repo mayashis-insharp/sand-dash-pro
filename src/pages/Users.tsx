@@ -114,6 +114,20 @@ const Users = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Users"
+        columns={["Name", "Email", "Role"]}
+        filters={[
+          { key: "role", label: "Role", type: "select", placeholder: "All Roles", options: [
+            { value: "super-admin", label: "Super Admin" },
+            { value: "manager", label: "Manager" },
+            { value: "cashier", label: "Cashier" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
