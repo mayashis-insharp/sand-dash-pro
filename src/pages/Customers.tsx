@@ -200,6 +200,25 @@ const Customers = () => {
           </div>
         </div>
       )}
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Customers"
+        columns={["ID", "Name", "Type", "Phone", "Vehicles", "Orders", "Total", "Outstanding"]}
+        filters={[
+          { key: "type", label: "Customer Type", type: "select", placeholder: "All Types", options: [
+            { value: "retail", label: "Retail" },
+            { value: "corporate", label: "Corporate" },
+            { value: "top-retail", label: "Top Retail" },
+            { value: "top-corporate", label: "Top Corporate" },
+          ]},
+          { key: "outstanding", label: "Outstanding", type: "select", placeholder: "All", options: [
+            { value: "any", label: "Any" },
+            { value: "with", label: "With Outstanding" },
+            { value: "settled", label: "Settled" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
