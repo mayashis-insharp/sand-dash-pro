@@ -8,11 +8,13 @@ interface PageShellProps {
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 const BRAND = "#E48444";
 
-export function PageShell({ breadcrumb: _b = [], title, description, actions, children }: PageShellProps) {
+export function PageShell({ breadcrumb: _b = [], title, description, actions, icon: Icon, children }: PageShellProps) {
+  const IconComp = Icon || Mountain;
   return (
     <DashboardLayout>
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
