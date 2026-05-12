@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Mountain } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
 
 interface PageShellProps {
@@ -9,13 +10,24 @@ interface PageShellProps {
   children: ReactNode;
 }
 
+const BRAND = "#E48444";
+
 export function PageShell({ breadcrumb: _b = [], title, description, actions, children }: PageShellProps) {
   return (
     <DashboardLayout>
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-display font-bold tracking-tight">{title}</h1>
-          {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-soft"
+            style={{ background: BRAND }}
+            aria-hidden
+          >
+            <Mountain className="h-5 w-5 text-white" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-2xl md:text-3xl font-display font-bold tracking-tight truncate">{title}</h1>
+            {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+          </div>
         </div>
         {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
       </div>
