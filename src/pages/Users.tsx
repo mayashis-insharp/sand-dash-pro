@@ -37,7 +37,7 @@ const Users = () => {
         tabs={tabs}
         active={tab}
         onChange={setTab}
-        right={<Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => open("add")}><Plus className="h-4 w-4" /> Add User</Button>}
+        right={<div className="flex items-center gap-2"><Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button><Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => open("add")}><Plus className="h-4 w-4" /> Add User</Button></div>}
       />
 
       {tab === "Users" && (
