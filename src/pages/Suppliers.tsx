@@ -206,6 +206,20 @@ const Suppliers = () => {
         )}
       </FormShell>
 
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Suppliers"
+        columns={["Supplier ID", "Name", "Address", "Contact", "Sand Type", "Unit Price"]}
+        filters={[
+          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
+            { value: "river-soft", label: "River Sand – Soft" },
+            { value: "sea", label: "Sea Sand" },
+            { value: "quarry", label: "Quarry Dust" },
+            { value: "m-sand", label: "M-Sand" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
