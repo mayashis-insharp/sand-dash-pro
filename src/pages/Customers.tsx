@@ -76,10 +76,7 @@ const Customers = () => {
       title="Customers"
       description="A modern view of every customer relationship."
       actions={
-        <>
-          <ViewToggle value={viewMode} onChange={setViewMode} />
-          <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
-        </>
+        <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
       }
     >
       <div className="flex flex-col lg:flex-row gap-3 mb-5">
