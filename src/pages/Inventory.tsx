@@ -73,6 +73,7 @@ const Inventory = () => {
   const [qStatus, setQStatus] = useState("ip");
   const [qResult, setQResult] = useState("none");
   const [charges, setCharges] = useState<{ id: string }[]>([{ id: "1" }]);
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell icon={Boxes} title="Inventory" description="Track sand stock levels, suppliers, and quality.">
