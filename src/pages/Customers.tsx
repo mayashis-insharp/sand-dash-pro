@@ -69,6 +69,7 @@ const badgeStyles: Record<Badge, { cls: string; ring: string; Icon: any }> = {
 
 const Customers = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("card");
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell
@@ -77,7 +78,7 @@ const Customers = () => {
       title="Customers"
       description="A modern view of every customer relationship."
       actions={
-        <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
       }
     >
       <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-5">
