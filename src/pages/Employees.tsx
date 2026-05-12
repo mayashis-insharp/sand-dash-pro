@@ -91,6 +91,17 @@ const Employees = () => {
   const [paymentType, setPaymentType] = useState("monthly");
   const [salaryType, setSalaryType] = useState("basic");
   const [epf, setEpf] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const exportConfig = (() => {
+    if (tab === "Job Role") return { name: "Employees - Job Roles", cols: ["Job Role", "Salary Per", "Basic Salary"] };
+    if (tab === "Salary Payment") {
+      if (salSub === "Trip-Based") return { name: "Salary - Trip-Based", cols: ["Date", "Employee", "Trips", "Total Trip", "Paid", "Outstanding", "Method", "Comments"] };
+      if (salSub === "ETF/EPF") return { name: "Salary - ETF/EPF", cols: ["ETF/EPF No", "Employee", "Basic", "EPF 8%", "EPF 12%", "ETF 3%", "Comments"] };
+      return { name: "Salary - Fixed", cols: ["Date", "Employee", "ETF/EPF", "Basic", "Advance", "Total Earned", "Method", "Comments"] };
+    }
+    return { name: "Employees", cols: ["ID", "Full Name", "Contact", "NIC", "Job Role", "Salary Type", "Salary"] };
+  })();
 
   const renderEmpTable = (status: "working" | "not-working") => {
     const list = employees.filter(e => e.status === status);
