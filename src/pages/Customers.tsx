@@ -76,18 +76,15 @@ const Customers = () => {
       title="Customers"
       description="A modern view of every customer relationship."
       actions={
-        <>
-          <ViewToggle value={viewMode} onChange={setViewMode} />
-          <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
-        </>
+        <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
       }
     >
-      <div className="flex flex-col lg:flex-row gap-3 mb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-5">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search customers…" className="pl-9 h-10 bg-card" />
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <Select>
             <SelectTrigger className="w-[180px] h-10 bg-card"><SelectValue placeholder="Customer Type" /></SelectTrigger>
             <SelectContent>
@@ -106,6 +103,7 @@ const Customers = () => {
               <SelectItem value="overdue">With Overdue</SelectItem>
             </SelectContent>
           </Select>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
         </div>
       </div>
 
