@@ -6,7 +6,6 @@ import { FormShell, FormSection } from "@/components/dashboard/FormShell";
 import { Palette, RotateCcw, ChevronRight, Settings as SettingsIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Palette, RotateCcw, ChevronRight } from "lucide-react";
 import {
   DEFAULT_MODULE_COLORS,
   loadColors,
