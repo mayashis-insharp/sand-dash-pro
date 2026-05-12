@@ -30,7 +30,7 @@ const Users = () => {
   };
 
   return (
-    <PageShell breadcrumb={["Settings", "Users"]} title="Users" description="Manage staff access and module permissions.">
+    <PageShell icon={ShieldCheck} breadcrumb={["Settings", "Users"]} title="Users" description="Manage staff access and module permissions.">
       <TabBar
         tabs={tabs}
         active={tab}
