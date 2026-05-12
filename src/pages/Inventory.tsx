@@ -463,6 +463,27 @@ const Inventory = () => {
           </FormSection>
         )}
       </FormShell>
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Inventory"
+        columns={["Date & Time", "Stock ID", "Supplier", "Sand Type", "Quantity", "Quality Status", "Final Price", "Selling Price", "Vehicle"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
+            { value: "river-soft", label: "River Sand – Soft" },
+            { value: "river-coarse", label: "River Sand – Coarse" },
+            { value: "sea", label: "Sea Sand" },
+            { value: "quarry", label: "Quarry Dust" },
+            { value: "m-sand", label: "M-Sand" },
+          ]},
+          { key: "quality", label: "Quality Status", type: "select", placeholder: "All Statuses", options: [
+            { value: "checked", label: "Quality Checked" },
+            { value: "progress", label: "In Progress" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
