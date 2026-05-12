@@ -24,6 +24,7 @@ const Users = () => {
   const [mode, setMode] = useState<UserMode | null>(null);
   const [target, setTarget] = useState<Partial<UserFormValue> | undefined>();
   const [delTarget, setDelTarget] = useState<typeof initialUsers[number] | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const open = (m: UserMode, u?: typeof initialUsers[number]) => {
     setMode(m);
