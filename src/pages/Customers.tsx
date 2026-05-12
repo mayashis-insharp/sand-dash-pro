@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Download, Phone, Truck, Award, Sparkles, Building2, User, Crown, TrendingUp, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ViewToggle, ViewMode } from "@/components/dashboard/ViewToggle";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 type Badge =
   | "Top Retail"
