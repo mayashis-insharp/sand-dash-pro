@@ -53,6 +53,7 @@ const Orders = () => {
   const [postAddPrompt, setPostAddPrompt] = useState(false);
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleAddOrder = () => setPostAddPrompt(true);
 
