@@ -23,7 +23,7 @@ export function PageShell({ breadcrumb: _b = [], title, description, actions, ic
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-soft"
-            style={{ background: BRAND }}
+            style={{ background: accent }}
             aria-hidden
           >
             <IconComp className="h-[18px] w-[18px] text-white" />
