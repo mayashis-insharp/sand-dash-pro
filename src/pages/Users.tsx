@@ -5,9 +5,10 @@ import { DataCards } from "@/components/dashboard/DataCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, Edit, Trash2, Eye, ShieldCheck } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, ShieldCheck, Download } from "lucide-react";
 import { toast } from "sonner";
 import { UserFormDialog, type UserMode, type UserFormValue } from "@/components/dashboard/UserFormDialog";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Users", "Drafts"] as const;
 
