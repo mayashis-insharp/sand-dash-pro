@@ -1,6 +1,7 @@
 import { PageShell } from "@/components/dashboard/PageShell";
 import { Button } from "@/components/ui/button";
 import {
+  LayoutDashboard,
   ShoppingCart,
   DollarSign,
   Tag,
