@@ -57,7 +57,7 @@ const Payments = () => {
         tabs={tabs}
         active={tab}
         onChange={setTab}
-        right={<Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>}
+        right={<Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
       />
 
       {showOutstanding && (
