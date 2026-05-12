@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Search, Eye, Edit, Download, Trash2, Receipt as ReceiptIcon, UsersRound, Briefcase, Wallet, Calendar as CalendarIcon, FileText, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Employees", "Job Role", "Salary Payment", "Drafts"] as const;
 const salarySubs = ["Fixed Salary", "Trip-Based", "ETF/EPF"] as const;
