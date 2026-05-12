@@ -3,6 +3,7 @@ import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell"
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
