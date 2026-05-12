@@ -20,11 +20,11 @@ export function PageShell({ breadcrumb: _b = [], title, description, actions, ic
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-soft"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-soft"
             style={{ background: BRAND }}
             aria-hidden
           >
-            <Mountain className="h-5 w-5 text-white" />
+            <IconComp className="h-[18px] w-[18px] text-white" />
           </div>
           <div className="min-w-0">
             <h1 className="text-2xl md:text-3xl font-display font-bold tracking-tight truncate">{title}</h1>
