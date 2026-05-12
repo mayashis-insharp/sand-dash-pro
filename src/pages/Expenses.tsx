@@ -414,6 +414,23 @@ const Expenses = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName={exportConfig.name}
+        columns={exportConfig.cols}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "type", label: "Bill Type", type: "select", placeholder: "All Types", options: [
+            { value: "electricity", label: "Electricity" },
+            { value: "fuel", label: "Fuel" },
+            { value: "maintenance", label: "Maintenance" },
+            { value: "other", label: "Other" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
