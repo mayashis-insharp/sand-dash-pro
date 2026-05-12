@@ -25,6 +25,7 @@ const Suppliers = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [viewSupplier, setViewSupplier] = useState<typeof suppliers[number] | null>(null);
   const [sandList, setSandList] = useState<{ id: string; type: string; price: string }[]>([{ id: "1", type: "", price: "" }]);
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
     <PageShell icon={Truck} breadcrumb={["Operations", "Suppliers"]} title="Suppliers" description="Manage your sand supplier network.">
@@ -33,9 +34,12 @@ const Suppliers = () => {
         active={tab}
         onChange={setTab}
         right={
-          <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}>
-            <Plus className="h-4 w-4" /> Add Supplier
-          </Button>
+          <>
+            {tab === "Suppliers" && <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
+            <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}>
+              <Plus className="h-4 w-4" /> Add Supplier
+            </Button>
+          </>
         }
       />
 
