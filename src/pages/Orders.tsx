@@ -65,7 +65,7 @@ const Orders = () => {
         onChange={setTab}
         right={
           <>
-            {tab !== "Drafts" && <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.success("Export started")}><Download className="h-4 w-4" /> Export</Button>}
+            {tab !== "Drafts" && <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>}
             {tab === "Orders" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" /> Add Order</Button>}
             {tab === "Pre-Orders" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddPo(true)}><Plus className="h-4 w-4" /> Add Pre-Order</Button>}
           </>
