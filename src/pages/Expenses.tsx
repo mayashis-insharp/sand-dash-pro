@@ -45,6 +45,22 @@ const Expenses = () => {
   const [edit, setEdit] = useState<any>(null);
   const [del, setDel] = useState<any>(null);
   const [expType, setExpType] = useState<ExpType>("bill");
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const exportConfig = (() => {
+    if (tab === "Transport") return {
+      name: "Expenses - Transport",
+      cols: ["Date", "Order/Stock", "Vehicle/Driver", "Cost", "Comments"],
+    };
+    if (tab === "Petty Cash") return {
+      name: "Expenses - Petty Cash",
+      cols: ["Date", "Expense ID", "Description", "Cost"],
+    };
+    return {
+      name: "Expenses - Bill Payments",
+      cols: ["Date", "Expense ID", "Bill Type", "Bill Amount", "Reference", "Paid Amount", "Comments"],
+    };
+  })();
 
   const renderTable = () => {
     if (tab === "Bill Payments") {
