@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
