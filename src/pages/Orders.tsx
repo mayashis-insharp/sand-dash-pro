@@ -334,6 +334,27 @@ const Orders = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName={tab === "Pre-Orders" ? "Pre-Orders" : "Orders"}
+        columns={["Order ID", "Date", "Type", "Customer", "Phone", "Address", "Vehicle", "Sand Type", "Quantity", "Total", "Payment", "Status"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "type", label: "Order Type", type: "select", placeholder: "All Types", options: [
+            { value: "retail", label: "Retail" },
+            { value: "corporate", label: "Corporate" },
+            { value: "wholesale", label: "Wholesale" },
+          ]},
+          { key: "payment", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
+            { value: "cash", label: "Cash" },
+            { value: "bank", label: "Bank Transfer" },
+            { value: "cheque", label: "Cheque" },
+            { value: "credit", label: "Credit" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
