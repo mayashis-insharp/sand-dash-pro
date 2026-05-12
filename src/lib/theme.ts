@@ -100,3 +100,12 @@ export function applyAccentForRoute(pathname: string) {
   );
   root.style.setProperty("--shadow-glow", `0 8px 24px -8px hsl(${triplet} / 0.32)`);
 }
+
+export function getAccentForRoute(pathname: string): string {
+  const colors = loadColors();
+  const moduleName =
+    Object.entries(MODULE_ROUTES).find(([, p]) =>
+      p === "/" ? pathname === "/" : pathname.startsWith(p)
+    )?.[0] ?? "Dashboard";
+  return colors[moduleName] ?? DEFAULT_MODULE_COLORS[moduleName];
+}
