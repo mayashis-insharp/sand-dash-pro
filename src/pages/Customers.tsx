@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { PageShell } from "@/components/dashboard/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Download, Phone, Truck, Award, Sparkles, Building2, User, Crown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ViewToggle, ViewMode } from "@/components/dashboard/ViewToggle";
 
 type Badge =
   | "Top Retail"
@@ -65,12 +67,19 @@ const badgeStyles: Record<Badge, { cls: string; ring: string; Icon: any }> = {
 };
 
 const Customers = () => {
+  const [viewMode, setViewMode] = useState<ViewMode>("card");
+
   return (
     <PageShell
       breadcrumb={["People", "Customers"]}
       title="Customers"
       description="A modern view of every customer relationship."
-      actions={<Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>}
+      actions={
+        <>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+          <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+        </>
+      }
     >
       <div className="flex flex-col lg:flex-row gap-3 mb-5">
         <div className="relative flex-1 max-w-sm">
@@ -99,44 +108,97 @@ const Customers = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {customers.map(c => {
-          const style = badgeStyles[c.badge];
-          const Icon = style.Icon;
-          return (
-            <div key={c.id} className="group relative rounded-2xl border border-border bg-card p-5 shadow-soft hover:shadow-elevated transition-smooth overflow-hidden">
-              <div className={cn("absolute -right-8 -top-8 h-28 w-28 rounded-full transition-smooth", style.ring)} />
-              <div className="relative">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-display font-bold text-foreground truncate">{c.name}</p>
-                    <p className="text-xs text-muted-foreground font-mono mt-0.5">{c.id}</p>
-                  </div>
-                  <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium whitespace-nowrap", style.cls)}>
-                    <Icon className="h-3 w-3" />{c.badge}
-                  </span>
-                </div>
-
-                <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"><Phone className="h-3 w-3" /> {c.phone}</p>
-
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {c.vehicles.map(v => (
-                    <span key={v} className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] font-mono">
-                      <Truck className="h-3 w-3 text-muted-foreground" /> {v}
+      {viewMode === "card" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {customers.map(c => {
+            const style = badgeStyles[c.badge];
+            const Icon = style.Icon;
+            return (
+              <div key={c.id} className="group relative rounded-2xl border border-border bg-card p-5 shadow-soft hover:shadow-elevated transition-smooth overflow-hidden">
+                <div className={cn("absolute -right-8 -top-8 h-28 w-28 rounded-full transition-smooth", style.ring)} />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-display font-bold text-foreground truncate">{c.name}</p>
+                      <p className="text-xs text-muted-foreground font-mono mt-0.5">{c.id}</p>
+                    </div>
+                    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium whitespace-nowrap", style.cls)}>
+                      <Icon className="h-3 w-3" />{c.badge}
                     </span>
-                  ))}
-                </div>
+                  </div>
 
-                <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-muted/30 p-3">
-                  <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Orders</p><p className="font-display font-bold">{c.orders}</p></div>
-                  <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Spent</p><p className="font-display font-bold">{(c.total / 1000000).toFixed(1)}M</p></div>
-                  <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Outstanding</p><p className={cn("font-display font-bold", c.outstanding > 0 ? "text-destructive" : "text-success")}>{c.outstanding > 0 ? (c.outstanding / 1000).toFixed(0) + "K" : "0"}</p></div>
+                  <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"><Phone className="h-3 w-3" /> {c.phone}</p>
+
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {c.vehicles.map(v => (
+                      <span key={v} className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] font-mono">
+                        <Truck className="h-3 w-3 text-muted-foreground" /> {v}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-muted/30 p-3">
+                    <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Orders</p><p className="font-display font-bold">{c.orders}</p></div>
+                    <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Spent</p><p className="font-display font-bold">{(c.total / 1000000).toFixed(1)}M</p></div>
+                    <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Outstanding</p><p className={cn("font-display font-bold", c.outstanding > 0 ? "text-destructive" : "text-success")}>{c.outstanding > 0 ? (c.outstanding / 1000).toFixed(0) + "K" : "0"}</p></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wider">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium">ID</th>
+                  <th className="text-left px-4 py-3 font-medium">Name</th>
+                  <th className="text-left px-4 py-3 font-medium">Badge</th>
+                  <th className="text-left px-4 py-3 font-medium">Phone</th>
+                  <th className="text-left px-4 py-3 font-medium">Vehicles</th>
+                  <th className="text-right px-4 py-3 font-medium">Orders</th>
+                  <th className="text-right px-4 py-3 font-medium">Spent</th>
+                  <th className="text-right px-4 py-3 font-medium">Outstanding</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {customers.map(c => {
+                  const style = badgeStyles[c.badge];
+                  const Icon = style.Icon;
+                  return (
+                    <tr key={c.id} className="hover:bg-muted/30 transition-smooth">
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{c.id}</td>
+                      <td className="px-4 py-3 font-medium">{c.name}</td>
+                      <td className="px-4 py-3">
+                        <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium whitespace-nowrap", style.cls)}>
+                          <Icon className="h-3 w-3" />{c.badge}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">{c.phone}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {c.vehicles.map(v => (
+                            <span key={v} className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-mono">
+                              <Truck className="h-2.5 w-2.5 text-muted-foreground" /> {v}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-display font-bold">{c.orders}</td>
+                      <td className="px-4 py-3 text-right font-display font-bold">{(c.total / 1000000).toFixed(1)}M</td>
+                      <td className={cn("px-4 py-3 text-right font-display font-bold", c.outstanding > 0 ? "text-destructive" : "text-success")}>
+                        {c.outstanding > 0 ? (c.outstanding / 1000).toFixed(0) + "K" : "0"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 };
