@@ -9,17 +9,20 @@ const Login = () => {
     <div className="min-h-screen flex flex-col bg-gradient-sand">
       <main className="flex-1 grid place-items-center p-6">
         <div className="w-full max-w-md">
-          {/* Brand */}
+          {/* Client Brand */}
           <div className="flex flex-col items-center mb-8">
             <div className="h-16 w-16 rounded-2xl gradient-primary grid place-items-center shadow-glow mb-4">
               <Mountain className="h-8 w-8 text-primary-foreground" />
             </div>
             <h1 className="font-display font-bold text-3xl tracking-tight text-foreground">
-              Cita ERP
+              {CLIENT_NAME}
             </h1>
             <p className="text-sm text-muted-foreground mt-1.5">
               Sign in to manage your business operations
             </p>
+            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-[11px] text-muted-foreground">
+              Powered by <span className="font-semibold text-foreground">Cita ERP</span>
+            </span>
           </div>
 
           {/* Card */}
