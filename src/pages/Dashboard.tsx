@@ -1,6 +1,7 @@
 import { PageShell } from "@/components/dashboard/PageShell";
 import { Button } from "@/components/ui/button";
 import {
+  LayoutDashboard,
   ShoppingCart,
   DollarSign,
   Tag,
@@ -49,7 +50,7 @@ const toneAccent: Record<string, string> = {
 const Dashboard = () => {
   const nav = useNavigate();
   return (
-    <PageShell title="Dashboard" description={today}>
+    <PageShell icon={LayoutDashboard} title="Dashboard" description={today}>
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
         {topStats.map((s) => {

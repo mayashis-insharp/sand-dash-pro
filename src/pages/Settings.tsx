@@ -3,9 +3,9 @@ import { PageShell } from "@/components/dashboard/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
+import { Palette, RotateCcw, ChevronRight, Settings as SettingsIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Palette, RotateCcw, ChevronRight } from "lucide-react";
 import {
   DEFAULT_MODULE_COLORS,
   loadColors,
@@ -59,6 +59,7 @@ const Settings = () => {
 
   return (
     <PageShell
+      icon={SettingsIcon}
       title="Page Color Themes"
       description="Customize the accent color used by each module across the app."
       actions={

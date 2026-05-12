@@ -123,7 +123,7 @@ const Expenses = () => {
   };
 
   return (
-    <PageShell title="Expenses" description="Track bills, transport, and petty cash spend.">
+    <PageShell icon={ReceiptIcon} title="Expenses" description="Track bills, transport, and petty cash spend.">
       <TabBar
         tabs={tabs}
         active={tab}

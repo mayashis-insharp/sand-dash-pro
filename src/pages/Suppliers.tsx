@@ -26,7 +26,7 @@ const Suppliers = () => {
   const [sandList, setSandList] = useState<{ id: string; type: string; price: string }[]>([{ id: "1", type: "", price: "" }]);
 
   return (
-    <PageShell breadcrumb={["Operations", "Suppliers"]} title="Suppliers" description="Manage your sand supplier network.">
+    <PageShell icon={Truck} breadcrumb={["Operations", "Suppliers"]} title="Suppliers" description="Manage your sand supplier network.">
       <TabBar
         tabs={tabs}
         active={tab}
