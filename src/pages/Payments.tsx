@@ -144,6 +144,23 @@ const Payments = () => {
         />
       )}
       <Pagination from={1} to={filtered.length} total={482} />
+      <ExportReportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        moduleName="Payments"
+        columns={["Date", "Order ID", "Customer", "Amount", "Method", "Reference", "Comments"]}
+        filters={[
+          { key: "from", label: "From Date", type: "date" },
+          { key: "to", label: "To Date", type: "date" },
+          { key: "method", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
+            { value: "cash", label: "Cash" },
+            { value: "bank", label: "Bank Transfer" },
+            { value: "cheque", label: "Cheque" },
+            { value: "credits", label: "Credits" },
+            { value: "other", label: "Other" },
+          ]},
+        ]}
+      />
     </PageShell>
   );
 };
