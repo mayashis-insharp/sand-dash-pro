@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormShell, FormSection } from "@/components/dashboard/FormShell";
-import { Plus, Search, Eye, X, Truck, Building2, ClipboardList } from "lucide-react";
+import { Plus, Search, Eye, X, Truck, Building2, ClipboardList, Download } from "lucide-react";
 import { toast } from "sonner";
+import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 
 const tabs = ["Suppliers", "Drafts"] as const;
 
