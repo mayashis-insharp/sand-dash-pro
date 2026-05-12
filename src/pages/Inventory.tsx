@@ -83,7 +83,7 @@ const Inventory = () => {
         onChange={setTab}
         right={
           <>
-            <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}><Download className="h-4 w-4" /> Export</Button>
             {tab === "Sand Stock" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setAddStock(true)}><Plus className="h-4 w-4" /> Add Stock</Button>}
             {tab === "Set Alert" && <Button size="sm" className="gap-2 gradient-primary border-0 shadow-glow" onClick={() => setSetAlertOpen(true)}><Plus className="h-4 w-4" /> Set Alert</Button>}
           </>
