@@ -209,15 +209,14 @@ const Suppliers = () => {
       <ExportReportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        moduleName="Suppliers"
-        columns={["Supplier ID", "Name", "Address", "Contact", "Sand Type", "Unit Price"]}
-        filters={[
-          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
-            { value: "river-soft", label: "River Sand – Soft" },
-            { value: "sea", label: "Sea Sand" },
-            { value: "quarry", label: "Quarry Dust" },
-            { value: "m-sand", label: "M-Sand" },
-          ]},
+        moduleName="Supplier"
+        columns={[
+          { name: "Supplier ID", filter: { kind: "text" } },
+          { name: "Supplier Name", filter: { kind: "text" } },
+          { name: "Supplier Contact", filter: { kind: "text" } },
+          { name: "Sand Type", filter: { kind: "multiSelect", options: ["River Sand – Soft", "River Sand – Coarse", "Sea Sand", "Quarry Dust", "M-Sand"], allLabel: "All Sand Types" } },
+          { name: "Vehicle", filter: { kind: "multiSelect", options: ["GH-5423", "MD-0214", "WP-7891", "CAB-3344", "KP-9920"], allLabel: "All Vehicles" } },
+          { name: "Payment Method", filter: { kind: "multiSelect", options: ["Cash", "Bank Transfer", "Cheque", "Credit", "Other"], allLabel: "All Payment Methods" } },
         ]}
       />
     </PageShell>
