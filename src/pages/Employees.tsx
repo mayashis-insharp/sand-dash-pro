@@ -632,17 +632,6 @@ const Employees = () => {
         onOpenChange={setExportOpen}
         moduleName={exportConfig.name}
         columns={exportConfig.cols}
-        filters={[
-          { key: "role", label: "Job Role", type: "select", placeholder: "All Roles", options: [
-            { value: "driver", label: "Driver" },
-            { value: "loader", label: "Loader" },
-            { value: "manager", label: "Site Manager" },
-          ]},
-          { key: "salaryType", label: "Salary Type", type: "select", placeholder: "All Types", options: [
-            { value: "basic", label: "Basic Salary" },
-            { value: "trip", label: "Trip-Based" },
-          ]},
-        ]}
       />
     </PageShell>
   );
