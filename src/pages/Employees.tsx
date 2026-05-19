@@ -94,13 +94,43 @@ const Employees = () => {
   const [exportOpen, setExportOpen] = useState(false);
 
   const exportConfig = (() => {
-    if (tab === "Job Role") return { name: "Employees - Job Roles", cols: ["Job Role", "Salary Per", "Basic Salary"] };
+    if (tab === "Job Role") return {
+      name: "Employees - Job Role",
+      cols: [
+        { name: "Job Role", filter: { kind: "multiSelect" as const, options: ["Driver", "Loader", "Site Manager", "Cashier"], allLabel: "All Roles" } },
+        { name: "Salary Per", filter: { kind: "multiSelect" as const, options: ["Month", "Day", "Trip"], allLabel: "All" } },
+        { name: "Basic Salary", filter: { kind: "numberRange" as const, unit: "LKR" } },
+      ],
+    };
     if (tab === "Salary Payment") {
-      if (salSub === "Trip-Based") return { name: "Salary - Trip-Based", cols: ["Date", "Employee", "Trips", "Total Trip", "Paid", "Outstanding", "Method", "Comments"] };
-      if (salSub === "ETF/EPF") return { name: "Salary - ETF/EPF", cols: ["ETF/EPF No", "Employee", "Basic", "EPF 8%", "EPF 12%", "ETF 3%", "Comments"] };
-      return { name: "Salary - Fixed", cols: ["Date", "Employee", "ETF/EPF", "Basic", "Advance", "Total Earned", "Method", "Comments"] };
+      return {
+        name: "Employees - Salary Payment",
+        cols: [
+          { name: "Date Range", filter: { kind: "dateRange" as const } },
+          { name: "Employee", filter: { kind: "multiSelect" as const, options: ["Nimal", "Sunil", "Kamal", "Ranjith"], allLabel: "All Employees" } },
+          { name: "Salary Type", filter: { kind: "multiSelect" as const, options: ["Basic Salary", "Trip-Based"], allLabel: "All Salary Types" } },
+          { name: "Payment Type", filter: { kind: "multiSelect" as const, options: ["Monthly", "Weekly", "Advance"], allLabel: "All Payment Types" } },
+          { name: "Payment Method", filter: { kind: "multiSelect" as const, options: ["Cash", "Bank Transfer", "Cheque"], allLabel: "All Payment Methods" } },
+          { name: "Payment Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+          { name: "Outstanding Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        ],
+      };
     }
-    return { name: "Employees", cols: ["ID", "Full Name", "Contact", "NIC", "Job Role", "Salary Type", "Salary"] };
+    return {
+      name: "Employees - Register",
+      cols: [
+        { name: "Employee Name", filter: { kind: "text" as const } },
+        { name: "Contact No", filter: { kind: "text" as const } },
+        { name: "NIC No", filter: { kind: "text" as const } },
+        { name: "Address", filter: { kind: "text" as const } },
+        { name: "Joined Date", filter: { kind: "dateRange" as const } },
+        { name: "Job Role", filter: { kind: "multiSelect" as const, options: ["Driver", "Loader", "Site Manager", "Cashier"], allLabel: "All Roles" } },
+        { name: "Salary Type", filter: { kind: "multiSelect" as const, options: ["Basic Salary", "Trip-Based"], allLabel: "All Salary Types" } },
+        { name: "Basic Salary", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        { name: "EPF/ETF Number", filter: { kind: "text" as const } },
+        { name: "Status", filter: { kind: "multiSelect" as const, options: ["Working", "Not Working"], allLabel: "All Statuses" } },
+      ],
+    };
   })();
 
   const renderEmpTable = (status: "working" | "not-working") => {
@@ -602,17 +632,6 @@ const Employees = () => {
         onOpenChange={setExportOpen}
         moduleName={exportConfig.name}
         columns={exportConfig.cols}
-        filters={[
-          { key: "role", label: "Job Role", type: "select", placeholder: "All Roles", options: [
-            { value: "driver", label: "Driver" },
-            { value: "loader", label: "Loader" },
-            { value: "manager", label: "Site Manager" },
-          ]},
-          { key: "salaryType", label: "Salary Type", type: "select", placeholder: "All Types", options: [
-            { value: "basic", label: "Basic Salary" },
-            { value: "trip", label: "Trip-Based" },
-          ]},
-        ]}
       />
     </PageShell>
   );

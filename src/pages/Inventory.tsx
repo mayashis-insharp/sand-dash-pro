@@ -466,23 +466,28 @@ const Inventory = () => {
       <ExportReportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        moduleName="Inventory"
-        columns={["Date & Time", "Stock ID", "Supplier", "Sand Type", "Quantity", "Quality Status", "Final Price", "Selling Price", "Vehicle"]}
-        filters={[
-          { key: "from", label: "From Date", type: "date" },
-          { key: "to", label: "To Date", type: "date" },
-          { key: "sand", label: "Sand Type", type: "select", placeholder: "All Types", options: [
-            { value: "river-soft", label: "River Sand – Soft" },
-            { value: "river-coarse", label: "River Sand – Coarse" },
-            { value: "sea", label: "Sea Sand" },
-            { value: "quarry", label: "Quarry Dust" },
-            { value: "m-sand", label: "M-Sand" },
-          ]},
-          { key: "quality", label: "Quality Status", type: "select", placeholder: "All Statuses", options: [
-            { value: "checked", label: "Quality Checked" },
-            { value: "progress", label: "In Progress" },
-          ]},
-        ]}
+        moduleName={tab === "Set Alert" ? "Inventory - Set Alert" : "Inventory - Sand Stock"}
+        columns={
+          tab === "Set Alert"
+            ? [
+                { name: "Sand Type", filter: { kind: "multiSelect", options: ["River Sand – Soft", "River Sand – Coarse", "Sea Sand", "Quarry Dust", "M-Sand"], allLabel: "All Sand Types" } },
+                { name: "Unit", filter: { kind: "multiSelect", options: ["sqft", "cube", "tonne"], allLabel: "All Units" } },
+                { name: "Quantity Level", filter: { kind: "numberRange" } },
+              ]
+            : [
+                { name: "Date Range", filter: { kind: "dateRange" } },
+                { name: "Supplier", filter: { kind: "multiSelect", options: ["Riverside Mining", "Coastal Mines", "Quarry Co"], allLabel: "All Suppliers" } },
+                { name: "Sand Type", filter: { kind: "multiSelect", options: ["River Sand – Soft", "River Sand – Coarse", "Sea Sand", "Quarry Dust", "M-Sand"], allLabel: "All Sand Types" } },
+                { name: "Quantity", filter: { kind: "numberRange", unit: "sqft" } },
+                { name: "Quality Status", filter: { kind: "multiSelect", options: ["Quality Checked", "In Progress"], allLabel: "All Statuses" } },
+                { name: "Vehicle", filter: { kind: "multiSelect", options: ["GH-5423", "MD-0214", "WP-7891", "CAB-3344", "KP-9920"], allLabel: "All Vehicles" } },
+                { name: "Driver", filter: { kind: "multiSelect", options: ["Driver A", "Driver B", "Driver C"], allLabel: "All Drivers" } },
+                { name: "Payment Method", filter: { kind: "multiSelect", options: ["Cash", "Bank Transfer", "Cheque", "Credit", "Other"], allLabel: "All Payment Methods" } },
+                { name: "Final Unit Price", filter: { kind: "numberRange", unit: "LKR" } },
+                { name: "Selling Unit Price", filter: { kind: "numberRange", unit: "LKR" } },
+                { name: "Additional Charges", filter: { kind: "numberRange", unit: "LKR" } },
+              ]
+        }
       />
     </PageShell>
   );

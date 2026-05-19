@@ -147,18 +147,14 @@ const Payments = () => {
       <ExportReportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        moduleName="Payments"
-        columns={["Date", "Order ID", "Customer", "Amount", "Method", "Reference", "Comments"]}
-        filters={[
-          { key: "from", label: "From Date", type: "date" },
-          { key: "to", label: "To Date", type: "date" },
-          { key: "method", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
-            { value: "cash", label: "Cash" },
-            { value: "bank", label: "Bank Transfer" },
-            { value: "cheque", label: "Cheque" },
-            { value: "credits", label: "Credits" },
-            { value: "other", label: "Other" },
-          ]},
+        moduleName="Payment"
+        columns={[
+          { name: "Date Range", filter: { kind: "dateRange" } },
+          { name: "Customer", filter: { kind: "multiSelect", options: ["Gamage", "Dias", "Perera Constructions", "Fernando", "Lanka Build", "Silva Cons."], allLabel: "All Customers" } },
+          { name: "Payment Method", filter: { kind: "multiSelect", options: ["Cash", "Bank Transfer", "Cheque", "Credits", "Other"], allLabel: "All Payment Methods" } },
+          { name: "Payment Amount", filter: { kind: "numberRange", unit: "LKR" } },
+          { name: "Reference No", filter: { kind: "text" } },
+          { name: "Comments", filter: { kind: "text" } },
         ]}
       />
     </PageShell>

@@ -118,14 +118,12 @@ const Users = () => {
       <ExportReportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        moduleName="Users"
-        columns={["Name", "Email", "Role"]}
-        filters={[
-          { key: "role", label: "Role", type: "select", placeholder: "All Roles", options: [
-            { value: "super-admin", label: "Super Admin" },
-            { value: "manager", label: "Manager" },
-            { value: "cashier", label: "Cashier" },
-          ]},
+        moduleName="User"
+        columns={[
+          { name: "Name", filter: { kind: "text" } },
+          { name: "Email", filter: { kind: "text" } },
+          { name: "User Role", filter: { kind: "multiSelect", options: ["Super Admin", "Manager", "Cashier"], allLabel: "All Roles" } },
+          { name: "Permissions", filter: { kind: "multiSelect", options: ["Read", "Write", "Delete", "Admin"], allLabel: "All Permissions" } },
         ]}
       />
     </PageShell>

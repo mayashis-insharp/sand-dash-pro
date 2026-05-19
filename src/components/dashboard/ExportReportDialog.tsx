@@ -4,24 +4,155 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, FileSpreadsheet, ListChecks, Filter, Download } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  FileText,
+  FileSpreadsheet,
+  Filter,
+  Download,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export interface ExportFilterDef {
-  key: string;
-  label: string;
-  type: "date" | "select";
-  options?: { value: string; label: string }[];
-  placeholder?: string;
+export type ExportFilter =
+  | { kind: "dateRange" }
+  | { kind: "multiSelect"; options: string[]; allLabel?: string }
+  | { kind: "numberRange"; unit?: string }
+  | { kind: "text"; placeholder?: string };
+
+export interface ExportColumn {
+  name: string;
+  filter?: ExportFilter;
 }
 
 interface ExportReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   moduleName: string;
-  columns: string[];
-  filters?: ExportFilterDef[];
+  columns: ExportColumn[];
+}
+
+/* --- Multi-select dropdown with All option --- */
+function MultiSelect({
+  options,
+  allLabel = "All",
+  value,
+  onChange,
+}: {
+  options: string[];
+  allLabel?: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const allSelected = value.length === 0 || value.length === options.length;
+  const label = allSelected
+    ? allLabel
+    : value.length === 1
+      ? value[0]
+      : `${value.length} selected`;
+
+  const toggle = (opt: string) => {
+    if (value.includes(opt)) onChange(value.filter((v) => v !== opt));
+    else onChange([...value, opt]);
+  };
+
+  const toggleAll = () => {
+    if (allSelected) onChange([]);
+    else onChange([]);
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <span className={cn("truncate", allSelected && "text-muted-foreground")}>
+            {label}
+          </span>
+          <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]" align="start">
+        <div className="max-h-64 overflow-y-auto py-1">
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-muted/50 border-b border-border"
+          >
+            <span
+              className={cn(
+                "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                allSelected && "bg-primary text-primary-foreground",
+              )}
+            >
+              {allSelected && <Check className="h-3 w-3" />}
+            </span>
+            <span className="font-medium">{allLabel}</span>
+          </button>
+          {options.map((opt) => {
+            const checked = !allSelected && value.includes(opt);
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => toggle(opt)}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-muted/50"
+              >
+                <span
+                  className={cn(
+                    "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                    checked && "bg-primary text-primary-foreground",
+                  )}
+                >
+                  {checked && <Check className="h-3 w-3" />}
+                </span>
+                <span className="truncate text-foreground">{opt}</span>
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/* --- Per-column filter input --- */
+function ColumnFilter({ col }: { col: ExportColumn }) {
+  const [multi, setMulti] = useState<string[]>([]);
+  const f = col.filter;
+  if (!f) return null;
+
+  if (f.kind === "dateRange") {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        <Input type="date" className="h-10 bg-background" />
+        <Input type="date" className="h-10 bg-background" />
+      </div>
+    );
+  }
+  if (f.kind === "numberRange") {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        <Input type="number" placeholder={`Min${f.unit ? ` (${f.unit})` : ""}`} className="h-10 bg-background" />
+        <Input type="number" placeholder={`Max${f.unit ? ` (${f.unit})` : ""}`} className="h-10 bg-background" />
+      </div>
+    );
+  }
+  if (f.kind === "multiSelect") {
+    return (
+      <MultiSelect
+        options={f.options}
+        allLabel={f.allLabel ?? `All ${col.name}`}
+        value={multi}
+        onChange={setMulti}
+      />
+    );
+  }
+  return <Input placeholder={f.placeholder ?? `Filter by ${col.name}`} className="h-10 bg-background" />;
 }
 
 export function ExportReportDialog({
@@ -29,26 +160,25 @@ export function ExportReportDialog({
   onOpenChange,
   moduleName,
   columns,
-  filters = [],
 }: ExportReportDialogProps) {
   const [selected, setSelected] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (open) {
       const init: Record<string, boolean> = {};
-      columns.forEach((c) => (init[c] = true));
+      columns.forEach((c) => (init[c.name] = true));
       setSelected(init);
     }
   }, [open, columns]);
 
   const allChecked = useMemo(
-    () => columns.length > 0 && columns.every((c) => selected[c]),
+    () => columns.length > 0 && columns.every((c) => selected[c.name]),
     [columns, selected],
   );
 
   const toggleAll = (v: boolean) => {
     const next: Record<string, boolean> = {};
-    columns.forEach((c) => (next[c] = v));
+    columns.forEach((c) => (next[c.name] = v));
     setSelected(next);
   };
 
@@ -64,12 +194,14 @@ export function ExportReportDialog({
     onOpenChange(false);
   };
 
+  const activeColumns = columns.filter((c) => selected[c.name] && c.filter);
+
   return (
     <FormShell
       open={open}
       onOpenChange={onOpenChange}
       title={`Export Report - ${moduleName}`}
-      subtitle="Choose columns and filters, then export as PDF or Excel."
+      subtitle="Choose columns, refine filters, then export as PDF or Excel."
       icon={<Download className="h-5 w-5" />}
       size="lg"
       footer={
@@ -78,8 +210,7 @@ export function ExportReportDialog({
             Cancel
           </Button>
           <Button
-            variant="outline"
-            className="gap-2"
+            className="gap-2 gradient-primary border-0 shadow-glow text-primary-foreground"
             onClick={() => handleExport("PDF")}
           >
             <FileText className="h-4 w-4" /> Export as PDF
@@ -94,73 +225,58 @@ export function ExportReportDialog({
       }
     >
       <FormSection
-        icon={<ListChecks className="h-4 w-4" />}
-        title="Columns"
-        description="Select the columns to include in the report."
+        icon={<Filter className="h-4 w-4" />}
+        title="Filters"
+        description="Select the columns to include. Filters appear below each selected column."
       >
-        <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
+        {/* Columns header */}
+        <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer select-none">
             <Checkbox
               checked={allChecked}
               onCheckedChange={(v) => toggleAll(!!v)}
             />
-            Select all
+            Select all columns
           </label>
           <span className="text-xs text-muted-foreground">
             {Object.values(selected).filter(Boolean).length} of {columns.length} selected
           </span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+
+        {/* Columns checkboxes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-5">
           {columns.map((col) => (
             <label
-              key={col}
+              key={col.name}
               className="flex items-center gap-2 text-sm cursor-pointer select-none rounded-md hover:bg-muted/40 px-1.5 py-1 -mx-1.5"
             >
               <Checkbox
-                checked={!!selected[col]}
+                checked={!!selected[col.name]}
                 onCheckedChange={(v) =>
-                  setSelected((s) => ({ ...s, [col]: !!v }))
+                  setSelected((s) => ({ ...s, [col.name]: !!v }))
                 }
               />
-              <span className="text-foreground">{col}</span>
+              <span className="text-foreground">{col.name}</span>
             </label>
           ))}
         </div>
-      </FormSection>
 
-      {filters.length > 0 && (
-        <FormSection
-          icon={<Filter className="h-4 w-4" />}
-          title="Filters"
-          description="Narrow down the data to export."
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filters.map((f) => (
-              <div key={f.key} className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">
-                  {f.label}
-                </Label>
-                {f.type === "date" ? (
-                  <Input type="date" className="h-10 bg-background" />
-                ) : (
-                  <Select>
-                    <SelectTrigger className="h-10 bg-background">
-                      <SelectValue placeholder={f.placeholder ?? "All"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {f.options?.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-            ))}
+        {/* Per-column filter inputs */}
+        {activeColumns.length > 0 && (
+          <div className="border-t border-border pt-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {activeColumns.map((col) => (
+                <div key={col.name} className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    {col.name}
+                  </Label>
+                  <ColumnFilter col={col} />
+                </div>
+              ))}
+            </div>
           </div>
-        </FormSection>
-      )}
+        )}
+      </FormSection>
     </FormShell>
   );
 }
