@@ -337,23 +337,31 @@ const Orders = () => {
       <ExportReportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        moduleName={tab === "Pre-Orders" ? "Pre-Orders" : "Orders"}
-        columns={["Order ID", "Date", "Type", "Customer", "Phone", "Address", "Vehicle", "Sand Type", "Quantity", "Total", "Payment", "Status"]}
-        filters={[
-          { key: "from", label: "From Date", type: "date" },
-          { key: "to", label: "To Date", type: "date" },
-          { key: "type", label: "Order Type", type: "select", placeholder: "All Types", options: [
-            { value: "retail", label: "Retail" },
-            { value: "corporate", label: "Corporate" },
-            { value: "wholesale", label: "Wholesale" },
-          ]},
-          { key: "payment", label: "Payment Method", type: "select", placeholder: "All Methods", options: [
-            { value: "cash", label: "Cash" },
-            { value: "bank", label: "Bank Transfer" },
-            { value: "cheque", label: "Cheque" },
-            { value: "credit", label: "Credit" },
-          ]},
-        ]}
+        moduleName={tab === "Pre-Orders" ? `PreOrder - ${poSide === "customer" ? "Customer" : "Supplier"}` : "Order"}
+        columns={
+          tab === "Pre-Orders"
+            ? [
+                { name: "Date Range", filter: { kind: "dateRange" } },
+                { name: "Scheduled Date", filter: { kind: "dateRange" } },
+                { name: poSide === "customer" ? "Customer" : "Supplier", filter: { kind: "multiSelect", options: poSide === "customer" ? ["Gamage", "Dias", "Perera Constructions", "Fernando", "Lanka Build"] : ["Riverside Mining", "Coastal Mines", "Quarry Co"], allLabel: poSide === "customer" ? "All Customers" : "All Suppliers" } },
+                { name: "Sand Type", filter: { kind: "multiSelect", options: ["River Sand – Soft", "River Sand – Coarse", "Sea Sand", "Quarry Dust", "M-Sand"], allLabel: "All Sand Types" } },
+                { name: "Vehicle No", filter: { kind: "multiSelect", options: ["GH-5423", "MD-0214", "WP-7891", "CAB-3344", "KP-9920"], allLabel: "All Vehicles" } },
+                { name: "Quantity", filter: { kind: "numberRange", unit: "sqft" } },
+              ]
+            : [
+                { name: "Order ID", filter: { kind: "text" } },
+                { name: "Order Date", filter: { kind: "dateRange" } },
+                { name: "Sand Type", filter: { kind: "multiSelect", options: ["River Sand – Soft", "River Sand – Coarse", "Sea Sand", "Quarry Dust", "M-Sand"], allLabel: "All Sand Types" } },
+                { name: "Customer", filter: { kind: "multiSelect", options: ["Gamage", "Dias", "Perera Constructions", "Fernando", "Lanka Build"], allLabel: "All Customers" } },
+                { name: "Delivery Address", filter: { kind: "text" } },
+                { name: "Vehicle No", filter: { kind: "multiSelect", options: ["GH-5423", "MD-0214", "WP-7891", "CAB-3344", "KP-9920"], allLabel: "All Vehicles" } },
+                { name: "Driver", filter: { kind: "multiSelect", options: ["Driver A", "Driver B", "Driver C"], allLabel: "All Drivers" } },
+                { name: "Order Quantity", filter: { kind: "numberRange", unit: "sqft" } },
+                { name: "Unit Price", filter: { kind: "numberRange", unit: "LKR" } },
+                { name: "Payment Details", filter: { kind: "multiSelect", options: ["Cash", "Bank Transfer", "Cheque", "Credit", "Other"], allLabel: "All Payment Methods" } },
+                { name: "Additional Charges", filter: { kind: "numberRange", unit: "LKR" } },
+              ]
+        }
       />
     </PageShell>
   );
