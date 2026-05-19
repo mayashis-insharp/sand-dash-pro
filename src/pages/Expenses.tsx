@@ -50,15 +50,34 @@ const Expenses = () => {
   const exportConfig = (() => {
     if (tab === "Transport") return {
       name: "Expenses - Transport",
-      cols: ["Date", "Order/Stock", "Vehicle/Driver", "Cost", "Comments"],
+      cols: [
+        { name: "Date Range", filter: { kind: "dateRange" as const } },
+        { name: "Order/Stock ID", filter: { kind: "text" as const } },
+        { name: "Vehicle", filter: { kind: "multiSelect" as const, options: ["GH-5423", "MD-0214", "WP-7891", "CAB-3344", "KP-9920"], allLabel: "All Vehicles" } },
+        { name: "Driver", filter: { kind: "multiSelect" as const, options: ["Driver A", "Driver B", "Driver C"], allLabel: "All Drivers" } },
+        { name: "Cost Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        { name: "Comments", filter: { kind: "text" as const } },
+      ],
     };
     if (tab === "Petty Cash") return {
       name: "Expenses - Petty Cash",
-      cols: ["Date", "Expense ID", "Description", "Cost"],
+      cols: [
+        { name: "Date Range", filter: { kind: "dateRange" as const } },
+        { name: "Description/Expense Type", filter: { kind: "text" as const } },
+        { name: "Cost Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        { name: "Comments", filter: { kind: "text" as const } },
+      ],
     };
     return {
       name: "Expenses - Bill Payments",
-      cols: ["Date", "Expense ID", "Bill Type", "Bill Amount", "Reference", "Paid Amount", "Comments"],
+      cols: [
+        { name: "Date Range", filter: { kind: "dateRange" as const } },
+        { name: "Bill Type", filter: { kind: "multiSelect" as const, options: ["Electricity", "Fuel", "Maintenance", "Other"], allLabel: "All Bill Types" } },
+        { name: "Bill Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        { name: "Paid Amount", filter: { kind: "numberRange" as const, unit: "LKR" } },
+        { name: "Bill Reference No", filter: { kind: "text" as const } },
+        { name: "Comments", filter: { kind: "text" as const } },
+      ],
     };
   })();
 
