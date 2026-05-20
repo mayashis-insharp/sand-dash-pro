@@ -78,6 +78,27 @@ const Inventory = () => {
     { id: "1", type: "", amount: "", comment: "", addToInvoice: false },
   ]);
   const [exportOpen, setExportOpen] = useState(false);
+  const [docsStock, setDocsStock] = useState<any>(null);
+
+  const buildStockDoc = (s: any): DocData => ({
+    source: "stock",
+    refNo: s.id,
+    date: s.date?.split(" ")[0] || s.date,
+    time: s.date?.split(" ")[1],
+    party: { label: "Supplier", name: s.supplier, phone: "—" },
+    product: s.sand,
+    qty: s.qty,
+    unitPrice: s.finalPrice,
+    subtotal: s.finalPrice * (parseInt(s.qty) || 1),
+    charges: charges
+      .filter((c) => c.amount)
+      .map((c) => ({ description: c.type || c.comment || "Charge", amount: parseFloat(c.amount) || 0, addToInvoice: c.addToInvoice })),
+    vehicle: s.vehicle,
+    driver: { name: "Driver", phone: "—" },
+    paymentMethod: "Cash",
+    paymentStatus: "Pending",
+    deliveryDate: s.date?.split(" ")[0] || s.date,
+  });
 
   return (
     <PageShell icon={Boxes} title="Inventory" description="Track sand stock levels, suppliers, and quality.">
