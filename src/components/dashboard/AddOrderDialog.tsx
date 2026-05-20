@@ -234,6 +234,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
             <div className="flex items-center gap-2"><span className="text-muted-foreground">Subtotal</span><span className="font-mono font-semibold">{fmt(subtotal)}</span></div>
             {discountVal > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Discount</span><span className="font-mono text-destructive">−{fmt(discountVal)}</span></div>}
             {totalCharges > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Charges</span><span className="font-mono">+{fmt(totalCharges)}</span></div>}
+            {totalCharges > 0 && invoiceCharges !== totalCharges && <div className="flex items-center gap-2"><span className="text-muted-foreground">Invoice Total</span><span className="font-mono">{fmt(invoiceTotal)}</span></div>}
             <div className="ml-auto flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
               <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
