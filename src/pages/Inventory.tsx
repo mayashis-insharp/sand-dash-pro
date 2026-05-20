@@ -234,8 +234,6 @@ const Inventory = () => {
             saveIcon={<Plus className="h-4 w-4" />}
           />
         }
-          />
-        }
       >
         <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Details" description="Supplier and material information.">
           <div className="grid grid-cols-2 gap-4">
