@@ -42,6 +42,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AddOrderDialogProps {
   open: boolean;
@@ -73,7 +74,7 @@ const sandTypes = [
 
 const expenseTypes = ["Fuel", "Toll", "Loading", "Driver Allowance", "Maintenance", "Other"];
 
-type Charge = { id: string; type: string; amount: string; comment: string };
+type Charge = { id: string; type: string; amount: string; comment: string; addToInvoice: boolean };
 
 const Field = ({
   label,
@@ -164,12 +165,17 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     () => charges.reduce((sum, c) => sum + parseFloat(c.amount || "0"), 0),
     [charges]
   );
+  const invoiceCharges = useMemo(
+    () => charges.filter((c) => c.addToInvoice).reduce((sum, c) => sum + parseFloat(c.amount || "0"), 0),
+    [charges]
+  );
   const grandTotal = Math.max(0, subtotal - discountVal) + totalCharges;
+  const invoiceTotal = Math.max(0, subtotal - discountVal) + invoiceCharges;
   const paid = parseFloat(paymentAmount || "0");
   const balance = grandTotal - paid;
 
   const addCharge = () =>
-    setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "" }]);
+    setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "", addToInvoice: false }]);
   const updateCharge = (id: string, patch: Partial<Charge>) =>
     setCharges((c) => c.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeCharge = (id: string) =>
@@ -228,6 +234,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
             <div className="flex items-center gap-2"><span className="text-muted-foreground">Subtotal</span><span className="font-mono font-semibold">{fmt(subtotal)}</span></div>
             {discountVal > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Discount</span><span className="font-mono text-destructive">−{fmt(discountVal)}</span></div>}
             {totalCharges > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Charges</span><span className="font-mono">+{fmt(totalCharges)}</span></div>}
+            {totalCharges > 0 && invoiceCharges !== totalCharges && <div className="flex items-center gap-2"><span className="text-muted-foreground">Invoice Total</span><span className="font-mono">{fmt(invoiceTotal)}</span></div>}
             <div className="ml-auto flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
               <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
@@ -503,6 +510,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
                       </div>
                     </div>
                     <Input placeholder="Optional note..." value={c.comment} onChange={(e) => updateCharge(c.id, { comment: e.target.value })} className="h-10 bg-card mt-3" />
+                    <label className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
+                      <Checkbox checked={c.addToInvoice} onCheckedChange={(v) => updateCharge(c.id, { addToInvoice: !!v })} />
+                      <span>Add to Invoice</span>
+                      <span className="text-muted-foreground font-normal">— include this charge in the customer invoice</span>
+                    </label>
                   </div>
                 ))}
                 <button type="button" onClick={addCharge} className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-4 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
