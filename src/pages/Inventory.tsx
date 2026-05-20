@@ -229,9 +229,11 @@ const Inventory = () => {
           <FooterBtns
             onCancel={() => setAddStock(false)}
             onDraft={() => { toast.success("Saved as draft"); setAddStock(false); }}
-            onSave={() => { toast.success("Stock added"); setAddStock(false); }}
+            onSave={() => { toast.success("Stock added"); setAddStock(false); setDocsStock(stocks[0]); }}
             saveLabel="Add Stock"
             saveIcon={<Plus className="h-4 w-4" />}
+          />
+        }
           />
         }
       >
