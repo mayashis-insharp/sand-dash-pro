@@ -112,8 +112,8 @@ const Orders = () => {
             </div>
           </div>
           {view === "table"
-            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setInvoiceOrder} />
-            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setInvoiceOrder} />}
+            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />
+            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />}
           <Pagination from={1} to={5} total={1284} />
         </>
       )}
