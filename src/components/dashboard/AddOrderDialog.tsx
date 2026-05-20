@@ -174,7 +174,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   const balance = grandTotal - paid;
 
   const addCharge = () =>
-    setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "" }]);
+    setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "", addToInvoice: false }]);
   const updateCharge = (id: string, patch: Partial<Charge>) =>
     setCharges((c) => c.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeCharge = (id: string) =>
