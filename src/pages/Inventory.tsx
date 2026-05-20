@@ -524,6 +524,11 @@ const Inventory = () => {
               ]
         }
       />
+      <DocumentsDialog
+        open={!!docsStock}
+        onOpenChange={(o) => !o && setDocsStock(null)}
+        data={docsStock ? buildStockDoc(docsStock) : null}
+      />
     </PageShell>
   );
 };
