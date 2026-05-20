@@ -300,16 +300,13 @@ const Orders = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Post-Add: invoice prompt */}
-      <AlertDialog open={postAddPrompt} onOpenChange={setPostAddPrompt}>
-        <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>Generate invoice?</AlertDialogTitle><AlertDialogDescription>Order added successfully. Would you like to generate an invoice now?</AlertDialogDescription></AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>No, Skip</AlertDialogCancel>
-            <AlertDialogAction className="gradient-primary border-0" onClick={() => { setPostAddPrompt(false); setInvoiceOrder(orders[0]); }}>Yes, Generate</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Post-Add: Document selection */}
+      <DocumentsDialog
+        open={!!docsOrder}
+        onOpenChange={(o) => !o && setDocsOrder(null)}
+        data={docsOrder ? toDocData(docsOrder) : null}
+      />
+
 
       {/* Inform */}
       <AlertDialog open={!!informConfirm} onOpenChange={(o) => !o && setInformConfirm(null)}>
