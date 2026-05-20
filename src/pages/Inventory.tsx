@@ -15,6 +15,7 @@ import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, Bad
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
+import { DocumentsDialog, type DocData } from "@/components/dashboard/DocumentsDialog";
 
 const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
