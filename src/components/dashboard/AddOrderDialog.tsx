@@ -73,7 +73,7 @@ const sandTypes = [
 
 const expenseTypes = ["Fuel", "Toll", "Loading", "Driver Allowance", "Maintenance", "Other"];
 
-type Charge = { id: string; type: string; amount: string; comment: string };
+type Charge = { id: string; type: string; amount: string; comment: string; addToInvoice: boolean };
 
 const Field = ({
   label,
