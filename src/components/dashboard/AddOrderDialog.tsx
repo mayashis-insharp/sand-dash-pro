@@ -164,7 +164,12 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     () => charges.reduce((sum, c) => sum + parseFloat(c.amount || "0"), 0),
     [charges]
   );
+  const invoiceCharges = useMemo(
+    () => charges.filter((c) => c.addToInvoice).reduce((sum, c) => sum + parseFloat(c.amount || "0"), 0),
+    [charges]
+  );
   const grandTotal = Math.max(0, subtotal - discountVal) + totalCharges;
+  const invoiceTotal = Math.max(0, subtotal - discountVal) + invoiceCharges;
   const paid = parseFloat(paymentAmount || "0");
   const balance = grandTotal - paid;
 
