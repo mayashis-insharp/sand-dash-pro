@@ -51,12 +51,36 @@ const Orders = () => {
   const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const [downloadInv, setDownloadInv] = useState<Order | null>(null);
   const [cancelInv, setCancelInv] = useState<Order | null>(null);
-  const [postAddPrompt, setPostAddPrompt] = useState(false);
+  const [docsOrder, setDocsOrder] = useState<Order | null>(null);
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
   const [exportOpen, setExportOpen] = useState(false);
 
-  const handleAddOrder = () => setPostAddPrompt(true);
+  const toDocData = (o: Order): DocData => {
+    const qNum = parseInt(o.qty) || 1;
+    const unit = Math.round(o.total / qNum);
+    return {
+      source: "order",
+      refNo: o.id,
+      date: o.date,
+      party: { label: "Bill To", name: o.customer.name, phone: o.customer.phone, address: o.address },
+      product: o.sandType,
+      qty: o.qty,
+      unitPrice: unit,
+      subtotal: o.total,
+      charges: [
+        { description: "Loading & handling", amount: 4500, addToInvoice: true },
+        { description: "Driver allowance (internal)", amount: 2000, addToInvoice: false },
+      ],
+      vehicle: o.vehicle,
+      driver: { name: "Sunil Bandara", phone: "+94770001111" },
+      paymentMethod: o.payment,
+      paymentStatus: o.due || o.balance ? "Pending" : "Paid",
+      deliveryDate: o.date,
+    };
+  };
+
+  const handleAddOrder = () => setDocsOrder(orders[0]);
 
   return (
     <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">
