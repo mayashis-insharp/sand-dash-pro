@@ -510,6 +510,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
                       </div>
                     </div>
                     <Input placeholder="Optional note..." value={c.comment} onChange={(e) => updateCharge(c.id, { comment: e.target.value })} className="h-10 bg-card mt-3" />
+                    <label className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
+                      <Checkbox checked={c.addToInvoice} onCheckedChange={(v) => updateCharge(c.id, { addToInvoice: !!v })} />
+                      <span>Add to Invoice</span>
+                      <span className="text-muted-foreground font-normal">— include this charge in the customer invoice</span>
+                    </label>
                   </div>
                 ))}
                 <button type="button" onClick={addCharge} className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-4 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
