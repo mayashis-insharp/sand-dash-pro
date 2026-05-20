@@ -72,7 +72,9 @@ const Inventory = () => {
   const [viewPay, setViewPay] = useState<any>(null);
   const [qStatus, setQStatus] = useState("ip");
   const [qResult, setQResult] = useState("none");
-  const [charges, setCharges] = useState<{ id: string }[]>([{ id: "1" }]);
+  const [charges, setCharges] = useState<{ id: string; type: string; amount: string; comment: string; addToInvoice: boolean }[]>([
+    { id: "1", type: "", amount: "", comment: "", addToInvoice: false },
+  ]);
   const [exportOpen, setExportOpen] = useState(false);
 
   return (
