@@ -4,6 +4,7 @@ import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
+import { DocumentsDialog, type DocData } from "@/components/dashboard/DocumentsDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,12 +51,36 @@ const Orders = () => {
   const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const [downloadInv, setDownloadInv] = useState<Order | null>(null);
   const [cancelInv, setCancelInv] = useState<Order | null>(null);
-  const [postAddPrompt, setPostAddPrompt] = useState(false);
+  const [docsOrder, setDocsOrder] = useState<Order | null>(null);
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
   const [exportOpen, setExportOpen] = useState(false);
 
-  const handleAddOrder = () => setPostAddPrompt(true);
+  const toDocData = (o: Order): DocData => {
+    const qNum = parseInt(o.qty) || 1;
+    const unit = Math.round(o.total / qNum);
+    return {
+      source: "order",
+      refNo: o.id,
+      date: o.date,
+      party: { label: "Bill To", name: o.customer.name, phone: o.customer.phone, address: o.address },
+      product: o.sandType,
+      qty: o.qty,
+      unitPrice: unit,
+      subtotal: o.total,
+      charges: [
+        { description: "Loading & handling", amount: 4500, addToInvoice: true },
+        { description: "Driver allowance (internal)", amount: 2000, addToInvoice: false },
+      ],
+      vehicle: o.vehicle,
+      driver: { name: "Sunil Bandara", phone: "+94770001111" },
+      paymentMethod: o.payment,
+      paymentStatus: o.due || o.balance ? "Pending" : "Paid",
+      deliveryDate: o.date,
+    };
+  };
+
+  const handleAddOrder = () => setDocsOrder(orders[0]);
 
   return (
     <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">
@@ -87,8 +112,8 @@ const Orders = () => {
             </div>
           </div>
           {view === "table"
-            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setInvoiceOrder} />
-            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setInvoiceOrder} />}
+            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />
+            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />}
           <Pagination from={1} to={5} total={1284} />
         </>
       )}
@@ -275,16 +300,13 @@ const Orders = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Post-Add: invoice prompt */}
-      <AlertDialog open={postAddPrompt} onOpenChange={setPostAddPrompt}>
-        <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>Generate invoice?</AlertDialogTitle><AlertDialogDescription>Order added successfully. Would you like to generate an invoice now?</AlertDialogDescription></AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>No, Skip</AlertDialogCancel>
-            <AlertDialogAction className="gradient-primary border-0" onClick={() => { setPostAddPrompt(false); setInvoiceOrder(orders[0]); }}>Yes, Generate</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Post-Add: Document selection */}
+      <DocumentsDialog
+        open={!!docsOrder}
+        onOpenChange={(o) => !o && setDocsOrder(null)}
+        data={docsOrder ? toDocData(docsOrder) : null}
+      />
+
 
       {/* Inform */}
       <AlertDialog open={!!informConfirm} onOpenChange={(o) => !o && setInformConfirm(null)}>
