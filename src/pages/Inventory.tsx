@@ -260,16 +260,26 @@ const Inventory = () => {
         </FormSection>
 
         <FormSection icon={<Wallet className="h-4 w-4" />} title="Additional Charges" description="Loading, transport, or other costs.">
-          <div className="space-y-2">
-            {charges.map(c => (
-              <div key={c.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
-                <Input placeholder="Type / Description" className="h-11 bg-background" />
-                <Input placeholder="Amount" className="h-11 bg-background" />
-                <Input placeholder="Comments" className="h-11 bg-background" />
-                <Button size="icon" variant="ghost" className="h-11 w-11" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
+          <div className="space-y-3">
+            {charges.map((c, idx) => (
+              <div key={c.id} className="rounded-xl border border-border bg-background p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Charge #{idx + 1}</span>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <Input placeholder="Type / Description" className="h-11 bg-card" value={c.type} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, type: e.target.value } : x))} />
+                  <Input placeholder="Amount" type="number" className="h-11 bg-card" value={c.amount} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, amount: e.target.value } : x))} />
+                  <Input placeholder="Comments" className="h-11 bg-card" value={c.comment} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, comment: e.target.value } : x))} />
+                </div>
+                <label className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
+                  <Checkbox checked={c.addToInvoice} onCheckedChange={(v) => setCharges(s => s.map(x => x.id === c.id ? { ...x, addToInvoice: !!v } : x))} />
+                  <span>Add to Invoice</span>
+                  <span className="text-muted-foreground font-normal">— include this charge in the stock/supplier invoice</span>
+                </label>
               </div>
             ))}
-            <Button size="sm" variant="outline" className="gap-1 mt-2" onClick={() => setCharges(s => [...s, { id: Date.now() + "" }])}><Plus className="h-3.5 w-3.5" /> Add Charge</Button>
+            <Button size="sm" variant="outline" className="gap-1 mt-2" onClick={() => setCharges(s => [...s, { id: Date.now() + "", type: "", amount: "", comment: "", addToInvoice: false }])}><Plus className="h-3.5 w-3.5" /> Add Charge</Button>
           </div>
         </FormSection>
 
