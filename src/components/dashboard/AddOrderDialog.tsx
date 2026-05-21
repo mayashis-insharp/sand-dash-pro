@@ -72,7 +72,7 @@ const sandTypes = [
   { value: "m-sand", label: "M-Sand", price: 2200 },
 ];
 
-const expenseTypes = ["Fuel", "Toll", "Loading", "Driver Allowance", "Maintenance", "Other"];
+const expenseTypes = ["Transport", "Other"];
 
 type Charge = { id: string; type: string; amount: string; comment: string; addToInvoice: boolean };
 export type VehicleRow = { id: string; vehicleNo: string; capacity: string; driverName: string; driverPhone: string };
