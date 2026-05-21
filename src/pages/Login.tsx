@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Mountain, Mail, Lock } from "lucide-react";
 
 // TODO: Replace with the client's actual business name
-const CLIENT_NAME = "Your Business Name";
+const CLIENT_NAME = "Madu Enterprises";
 
 const Login = () => {
   return (
