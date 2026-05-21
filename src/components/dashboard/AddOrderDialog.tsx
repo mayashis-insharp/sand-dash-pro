@@ -344,7 +344,6 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
                     <SelectContent>
                       <SelectItem value="retail">Retail</SelectItem>
                       <SelectItem value="corporate">Corporate</SelectItem>
-                      <SelectItem value="wholesale">Wholesale</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
