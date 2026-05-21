@@ -46,7 +46,7 @@ interface Props {
   data: DocData | null;
 }
 
-const COMPANY = { name: "Cita ERP", addr: "No. 25, Colombo Rd, Kaduwela", phone: "+94 11 234 5678" };
+const COMPANY = { name: "Madu Enterprises", addr: "No. 25, Colombo Rd, Kaduwela", phone: "+94 11 234 5678" };
 const fmt = (n: number) => "LKR " + Math.round(n).toLocaleString();
 const mockUser = "Nuwan P. (Cashier)";
 const mockSecUser = "S. Bandara (Security)";
