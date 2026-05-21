@@ -188,11 +188,15 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     setCustomerOpen(false);
   };
 
-  const handleSelectDriver = (id: string) => {
-    setDriverId(id);
-    const d = drivers.find((x) => x.id === id);
-    if (d) setDriverPhone(d.phone);
-  };
+  const addVehicle = () =>
+    setVehicles((v) => [...v, { id: crypto.randomUUID(), vehicleNo: "", capacity: "", driverName: "", driverPhone: "" }]);
+  const updateVehicle = (id: string, patch: Partial<VehicleRow>) =>
+    setVehicles((v) => v.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeVehicle = (id: string) =>
+    setVehicles((v) => (v.length > 1 ? v.filter((x) => x.id !== id) : v));
+  const totalCapacity = vehicles.reduce((s, v) => s + (parseFloat(v.capacity) || 0), 0);
+  const qtyNum = parseFloat(qty || "0");
+  const capacityShort = qtyNum > 0 && totalCapacity > 0 && qtyNum > totalCapacity;
 
   const fmt = (n: number) =>
     new Intl.NumberFormat("en-LK", {
