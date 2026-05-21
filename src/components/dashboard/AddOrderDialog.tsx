@@ -47,7 +47,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface AddOrderDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmitted?: () => void;
+  onSubmitted?: (payload?: { vehicles?: VehicleRow[]; qty?: string; qtyUnit?: string; capacityUnit?: string }) => void;
 }
 
 const customers = [
