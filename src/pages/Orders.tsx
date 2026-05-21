@@ -203,45 +203,50 @@ const Orders = () => {
 
       <AddOrderDialog open={addOpen} onOpenChange={setAddOpen} onSubmitted={handleAddOrder} />
 
-      {/* View Order */}
-      <Dialog open={!!viewOrder} onOpenChange={(o) => !o && setViewOrder(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Order Details</DialogTitle></DialogHeader>
-          {viewOrder && (
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-xs text-muted-foreground">Order ID</p><p className="font-mono font-semibold">{viewOrder.id}</p></div>
-                <div><p className="text-xs text-muted-foreground">Date</p><p>{viewOrder.date}</p></div>
-                <div><p className="text-xs text-muted-foreground">Type</p><p>{viewOrder.type}</p></div>
-                <div><p className="text-xs text-muted-foreground">Sand Type</p><p>{viewOrder.sandType}</p></div>
-                <div><p className="text-xs text-muted-foreground">Customer</p><p>{viewOrder.customer.name}</p></div>
-                <div><p className="text-xs text-muted-foreground">Phone</p><p className="font-mono">{viewOrder.customer.phone}</p></div>
-                <div><p className="text-xs text-muted-foreground">Address</p><p>{viewOrder.address}</p></div>
-                <div><p className="text-xs text-muted-foreground">Vehicle</p><p className="font-mono">{viewOrder.vehicle}</p></div>
-                <div><p className="text-xs text-muted-foreground">Quantity</p><p>{viewOrder.qty}</p></div>
-                <div><p className="text-xs text-muted-foreground">Method</p><p>{viewOrder.payment}</p></div>
-                <div><p className="text-xs text-muted-foreground">Total</p><p className="font-semibold">{fmt(viewOrder.total)}</p></div>
-                {viewOrder.due !== undefined && <div><p className="text-xs text-muted-foreground">Due</p><p className="font-semibold text-destructive">{fmt(viewOrder.due)}</p></div>}
-              </div>
+      {/* View Order — same layout as Add Order, read-only */}
+      <FormShell
+        open={!!viewOrder}
+        onOpenChange={(o) => !o && setViewOrder(null)}
+        title="Order Details"
+        subtitle={viewOrder?.id}
+        icon={<ShoppingCart className="h-5 w-5" />}
+        size="xl"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => { setDelOrder(viewOrder); setViewOrder(null); }}>
+              <Trash2 className="h-4 w-4 mr-1" /> Delete
+            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" className="text-muted-foreground" onClick={() => setViewOrder(null)}>Close</Button>
+              <Button className="gap-2 gradient-primary border-0 shadow-glow px-6" onClick={() => { setEditOrder(viewOrder); setViewOrder(null); }}>
+                <Edit className="h-4 w-4" /> Edit
+              </Button>
             </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" className="text-destructive border-destructive/30" onClick={() => { setDelOrder(viewOrder); setViewOrder(null); }}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
-            <Button className="gradient-primary border-0" onClick={() => { setEditOrder(viewOrder); setViewOrder(null); }}>Edit Order</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        }
+      >
+        {viewOrder && <OrderFormSections order={viewOrder} readOnly />}
+      </FormShell>
 
-      <Dialog open={!!editOrder} onOpenChange={(o) => !o && setEditOrder(null)}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Order form prefilled with existing values.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOrder(null)}>Cancel</Button>
-            <Button className="gradient-primary border-0" onClick={() => { toast.success("Changes saved"); setEditOrder(null); }}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Order — same layout as Add Order, editable */}
+      <FormShell
+        open={!!editOrder}
+        onOpenChange={(o) => !o && setEditOrder(null)}
+        title="Edit Order"
+        subtitle={editOrder?.id}
+        icon={<Edit className="h-5 w-5" />}
+        size="xl"
+        footer={
+          <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
+            <Button variant="ghost" className="text-muted-foreground" onClick={() => setEditOrder(null)}>Cancel</Button>
+            <Button className="gap-2 gradient-primary border-0 shadow-glow px-6" onClick={() => { toast.success("Changes saved"); setEditOrder(null); }}>
+              Save Changes
+            </Button>
+          </div>
+        }
+      >
+        {editOrder && <OrderFormSections order={editOrder} />}
+      </FormShell>
 
       <AlertDialog open={!!delOrder} onOpenChange={(o) => !o && setDelOrder(null)}>
         <AlertDialogContent>
