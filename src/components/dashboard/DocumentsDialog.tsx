@@ -12,6 +12,14 @@ import { cn } from "@/lib/utils";
 
 export type DocCharge = { description: string; amount: number; addToInvoice: boolean };
 
+export type DocVehicle = {
+  vehicleNo: string;
+  capacity?: string;
+  driverName?: string;
+  driverPhone?: string;
+  assignedQty?: string;
+};
+
 export type DocData = {
   source: "order" | "stock";
   refNo: string;            // OD_xxxx or ST_xxxx
@@ -24,8 +32,9 @@ export type DocData = {
   subtotal: number;
   discount?: number;
   charges: DocCharge[];
-  vehicle?: string;
+  vehicle?: string;         // legacy single vehicle (fallback)
   driver?: { name: string; phone?: string };
+  vehicles?: DocVehicle[];  // multi-vehicle (preferred)
   paymentMethod?: string;
   paymentStatus?: string;
   deliveryDate?: string;
