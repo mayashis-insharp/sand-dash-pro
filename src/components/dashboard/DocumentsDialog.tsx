@@ -446,7 +446,16 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
                     {sel.delivery && DeliveryBlock}
                   </>
                 )}
-                {sel.gatepass && GatePassBlock}
+                {sel.gatepass && (
+                  <div className="space-y-5">
+                    {vehicleList.length > 1 && (
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1 print:hidden">
+                        {vehicleList.length} Gate Passes — one per vehicle
+                      </p>
+                    )}
+                    {vehicleList.map((v, i) => renderGatePass(v, i))}
+                  </div>
+                )}
               </div>
 
               <DialogFooter className="gap-2 print:hidden">
