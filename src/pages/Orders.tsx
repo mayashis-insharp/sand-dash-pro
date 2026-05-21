@@ -52,6 +52,7 @@ const Orders = () => {
   const [downloadInv, setDownloadInv] = useState<Order | null>(null);
   const [cancelInv, setCancelInv] = useState<Order | null>(null);
   const [docsOrder, setDocsOrder] = useState<Order | null>(null);
+  const [submittedVehicles, setSubmittedVehicles] = useState<any[] | null>(null);
   const [informConfirm, setInformConfirm] = useState<any>(null);
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
   const [exportOpen, setExportOpen] = useState(false);
@@ -59,6 +60,17 @@ const Orders = () => {
   const toDocData = (o: Order): DocData => {
     const qNum = parseInt(o.qty) || 1;
     const unit = Math.round(o.total / qNum);
+    const vehicles = submittedVehicles && submittedVehicles.length > 0
+      ? submittedVehicles
+          .filter((v) => v.vehicleNo)
+          .map((v) => ({
+            vehicleNo: v.vehicleNo,
+            capacity: v.capacity,
+            driverName: v.driverName,
+            driverPhone: v.driverPhone,
+            assignedQty: v.capacity ? `${v.capacity}` : undefined,
+          }))
+      : undefined;
     return {
       source: "order",
       refNo: o.id,
@@ -74,13 +86,17 @@ const Orders = () => {
       ],
       vehicle: o.vehicle,
       driver: { name: "Sunil Bandara", phone: "+94770001111" },
+      vehicles: vehicles && vehicles.length > 0 ? vehicles : undefined,
       paymentMethod: o.payment,
       paymentStatus: o.due || o.balance ? "Pending" : "Paid",
       deliveryDate: o.date,
     };
   };
 
-  const handleAddOrder = () => setDocsOrder(orders[0]);
+  const handleAddOrder = (payload?: { vehicles?: any[] }) => {
+    setSubmittedVehicles(payload?.vehicles || null);
+    setDocsOrder(orders[0]);
+  };
 
   return (
     <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">

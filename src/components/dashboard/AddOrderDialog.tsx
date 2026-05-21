@@ -47,7 +47,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface AddOrderDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmitted?: () => void;
+  onSubmitted?: (payload?: { vehicles?: VehicleRow[]; qty?: string; qtyUnit?: string; capacityUnit?: string }) => void;
 }
 
 const customers = [
@@ -75,6 +75,7 @@ const sandTypes = [
 const expenseTypes = ["Fuel", "Toll", "Loading", "Driver Allowance", "Maintenance", "Other"];
 
 type Charge = { id: string; type: string; amount: string; comment: string; addToInvoice: boolean };
+export type VehicleRow = { id: string; vehicleNo: string; capacity: string; driverName: string; driverPhone: string };
 
 const Field = ({
   label,
@@ -135,12 +136,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   const [orderType, setOrderType] = useState("");
   const [sandType, setSandType] = useState("");
   const [vehicleOwner, setVehicleOwner] = useState<"own" | "customer">("own");
-  const [vehicle, setVehicle] = useState("");
-  const [capacity, setCapacity] = useState("");
+  const [vehicles, setVehicles] = useState<VehicleRow[]>([
+    { id: crypto.randomUUID(), vehicleNo: "", capacity: "", driverName: "", driverPhone: "" },
+  ]);
   const [capacityUnit, setCapacityUnit] = useState("sqft");
   const [address, setAddress] = useState("");
-  const [driverId, setDriverId] = useState("");
-  const [driverPhone, setDriverPhone] = useState("");
   const [qty, setQty] = useState("");
   const [qtyUnit, setQtyUnit] = useState("sqft");
   const [discount, setDiscount] = useState("");
@@ -188,11 +188,15 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     setCustomerOpen(false);
   };
 
-  const handleSelectDriver = (id: string) => {
-    setDriverId(id);
-    const d = drivers.find((x) => x.id === id);
-    if (d) setDriverPhone(d.phone);
-  };
+  const addVehicle = () =>
+    setVehicles((v) => [...v, { id: crypto.randomUUID(), vehicleNo: "", capacity: "", driverName: "", driverPhone: "" }]);
+  const updateVehicle = (id: string, patch: Partial<VehicleRow>) =>
+    setVehicles((v) => v.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeVehicle = (id: string) =>
+    setVehicles((v) => (v.length > 1 ? v.filter((x) => x.id !== id) : v));
+  const totalCapacity = vehicles.reduce((s, v) => s + (parseFloat(v.capacity) || 0), 0);
+  const qtyNum = parseFloat(qty || "0");
+  const capacityShort = qtyNum > 0 && totalCapacity > 0 && qtyNum > totalCapacity;
 
   const fmt = (n: number) =>
     new Intl.NumberFormat("en-LK", {
@@ -207,7 +211,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
       return;
     }
     onOpenChange(false);
-    onSubmitted?.();
+    onSubmitted?.({ vehicles, qty, qtyUnit, capacityUnit });
   };
 
   const saveDraft = () => {
@@ -399,48 +403,63 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
                   </button>
                 ))}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Vehicle Number">
-                  <div className="relative">
-                    <Truck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="e.g. GH-5423" value={vehicle} onChange={(e) => setVehicle(e.target.value)} className="pl-9 h-11 bg-background" />
+              <div className="space-y-3">
+                {vehicles.map((v, idx) => (
+                  <div key={v.id} className="rounded-xl border border-border bg-background p-4 group hover:border-primary/30 transition-smooth">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Vehicle #{idx + 1}</span>
+                      <button type="button" onClick={() => removeVehicle(v.id)} disabled={vehicles.length === 1} className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Field label="Vehicle No">
+                        <div className="relative">
+                          <Truck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="e.g. GH-5423" value={v.vehicleNo} onChange={(e) => updateVehicle(v.id, { vehicleNo: e.target.value })} className="pl-9 h-10 bg-card" />
+                        </div>
+                      </Field>
+                      <Field label="Vehicle Capacity">
+                        <div className="flex gap-2">
+                          <Input type="number" placeholder="0" value={v.capacity} onChange={(e) => updateVehicle(v.id, { capacity: e.target.value })} className="h-10 bg-card" />
+                          <Select value={capacityUnit} onValueChange={setCapacityUnit}>
+                            <SelectTrigger className="w-24 h-10 bg-card"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="sqft">sqft</SelectItem>
+                              <SelectItem value="cube">cube</SelectItem>
+                              <SelectItem value="ton">ton</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </Field>
+                      <Field label="Driver Name">
+                        <Input placeholder="Driver name" value={v.driverName} onChange={(e) => updateVehicle(v.id, { driverName: e.target.value })} className="h-10 bg-card" />
+                      </Field>
+                      <Field label="Driver Contact">
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="+94 77 000 0000" value={v.driverPhone} onChange={(e) => updateVehicle(v.id, { driverPhone: e.target.value })} className="pl-9 h-10 bg-card" />
+                        </div>
+                      </Field>
+                    </div>
                   </div>
-                </Field>
-                <Field label="Capacity">
-                  <div className="flex gap-2">
-                    <Input type="number" placeholder="0" value={capacity} onChange={(e) => setCapacity(e.target.value)} className="h-11 bg-background" />
-                    <Select value={capacityUnit} onValueChange={setCapacityUnit}>
-                      <SelectTrigger className="w-24 h-11 bg-background"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sqft">sqft</SelectItem>
-                        <SelectItem value="cube">cube</SelectItem>
-                        <SelectItem value="ton">ton</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </Field>
+                ))}
+                <button type="button" onClick={addVehicle} className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-3 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
+                  <Plus className="h-4 w-4" /> Add Vehicle
+                </button>
+                <div className={cn("rounded-lg border px-3 py-2 text-xs flex items-center justify-between", capacityShort ? "border-warning/40 bg-warning/10 text-warning" : "border-border bg-muted/30 text-muted-foreground")}>
+                  <span>Total vehicle capacity</span>
+                  <span className="font-mono font-semibold">{totalCapacity} {capacityUnit}{qtyNum > 0 ? ` / ${qtyNum} ${qtyUnit} required` : ""}</span>
+                </div>
+                {capacityShort && (
+                  <p className="text-xs text-warning font-medium">⚠ Total vehicle capacity is less than required quantity.</p>
+                )}
               </div>
               <div className="mt-4">
                 <Field label="Delivery Address" required>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Textarea placeholder="Building, street, city..." value={address} onChange={(e) => setAddress(e.target.value)} className="pl-9 min-h-[80px] bg-background resize-none" />
-                  </div>
-                </Field>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <Field label="Driver">
-                  <Select value={driverId} onValueChange={handleSelectDriver}>
-                    <SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select driver" /></SelectTrigger>
-                    <SelectContent>
-                      {drivers.map((d) => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field label="Driver Contact">
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="+94 77 000 0000" value={driverPhone} onChange={(e) => setDriverPhone(e.target.value)} className="pl-9 h-11 bg-background" />
                   </div>
                 </Field>
               </div>

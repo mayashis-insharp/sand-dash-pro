@@ -77,28 +77,47 @@ const Inventory = () => {
   const [charges, setCharges] = useState<{ id: string; type: string; amount: string; comment: string; addToInvoice: boolean }[]>([
     { id: "1", type: "", amount: "", comment: "", addToInvoice: false },
   ]);
+  const [stockVehicles, setStockVehicles] = useState<{ id: string; vehicleNo: string; capacity: string; driverName: string; driverPhone: string }[]>([
+    { id: "v1", vehicleNo: "", capacity: "", driverName: "", driverPhone: "" },
+  ]);
+  const [stockQty, setStockQty] = useState("");
+  const stockTotalCap = stockVehicles.reduce((s, v) => s + (parseFloat(v.capacity) || 0), 0);
+  const stockQtyNum = parseFloat(stockQty || "0");
+  const stockCapShort = stockQtyNum > 0 && stockTotalCap > 0 && stockQtyNum > stockTotalCap;
   const [exportOpen, setExportOpen] = useState(false);
   const [docsStock, setDocsStock] = useState<any>(null);
 
-  const buildStockDoc = (s: any): DocData => ({
-    source: "stock",
-    refNo: s.id,
-    date: s.date?.split(" ")[0] || s.date,
-    time: s.date?.split(" ")[1],
-    party: { label: "Supplier", name: s.supplier, phone: "—" },
-    product: s.sand,
-    qty: s.qty,
-    unitPrice: s.finalPrice,
-    subtotal: s.finalPrice * (parseInt(s.qty) || 1),
-    charges: charges
-      .filter((c) => c.amount)
-      .map((c) => ({ description: c.type || c.comment || "Charge", amount: parseFloat(c.amount) || 0, addToInvoice: c.addToInvoice })),
-    vehicle: s.vehicle,
-    driver: { name: "Driver", phone: "—" },
-    paymentMethod: "Cash",
-    paymentStatus: "Pending",
-    deliveryDate: s.date?.split(" ")[0] || s.date,
-  });
+  const buildStockDoc = (s: any): DocData => {
+    const vList = stockVehicles
+      .filter((v) => v.vehicleNo)
+      .map((v) => ({
+        vehicleNo: v.vehicleNo,
+        capacity: v.capacity,
+        driverName: v.driverName,
+        driverPhone: v.driverPhone,
+        assignedQty: v.capacity ? `${v.capacity}` : undefined,
+      }));
+    return {
+      source: "stock",
+      refNo: s.id,
+      date: s.date?.split(" ")[0] || s.date,
+      time: s.date?.split(" ")[1],
+      party: { label: "Supplier", name: s.supplier, phone: "—" },
+      product: s.sand,
+      qty: s.qty,
+      unitPrice: s.finalPrice,
+      subtotal: s.finalPrice * (parseInt(s.qty) || 1),
+      charges: charges
+        .filter((c) => c.amount)
+        .map((c) => ({ description: c.type || c.comment || "Charge", amount: parseFloat(c.amount) || 0, addToInvoice: c.addToInvoice })),
+      vehicle: s.vehicle,
+      driver: { name: "Driver", phone: "—" },
+      vehicles: vList.length > 0 ? vList : undefined,
+      paymentMethod: "Cash",
+      paymentStatus: "Pending",
+      deliveryDate: s.date?.split(" ")[0] || s.date,
+    };
+  };
 
   return (
     <PageShell icon={Boxes} title="Inventory" description="Track sand stock levels, suppliers, and quality.">
@@ -241,7 +260,7 @@ const Inventory = () => {
             <Fld label="Time"><Input type="time" className="h-11 bg-background" /></Fld>
             <Fld label="Supplier"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select supplier" /></SelectTrigger><SelectContent><SelectItem value="r">Riverside Mining</SelectItem></SelectContent></Select></Fld>
             <Fld label="Sand Type"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select sand type" /></SelectTrigger><SelectContent><SelectItem value="rs">River Sand – Soft</SelectItem></SelectContent></Select></Fld>
-            <Fld label="Quantity"><Input className="h-11 bg-background" placeholder="200" /></Fld>
+            <Fld label="Quantity"><Input className="h-11 bg-background" placeholder="200" value={stockQty} onChange={(e) => setStockQty(e.target.value)} /></Fld>
             <Fld label="Supplier Unit Price"><Input className="h-11 bg-background" placeholder="1800" /></Fld>
             <Fld label="Total Price" full hint="Auto-calculated"><Input className="h-11 bg-muted/40" disabled value="360,000" /></Fld>
             <Fld label="Supplier Invoice" full>
@@ -250,13 +269,29 @@ const Inventory = () => {
           </div>
         </FormSection>
 
-        <FormSection icon={<Truck className="h-4 w-4" />} title="Delivery Details" description="Vehicle and driver information.">
-          <div className="grid grid-cols-2 gap-4">
+        <FormSection icon={<Truck className="h-4 w-4" />} title="Vehicles" description="Add one or more vehicles for this stock arrival.">
+          <div className="space-y-3">
             <Fld label="Vehicle Type"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="own">Own</SelectItem><SelectItem value="sup">Supplier</SelectItem></SelectContent></Select></Fld>
-            <Fld label="Vehicle No"><Input className="h-11 bg-background" /></Fld>
-            <Fld label="Vehicle Capacity"><Input className="h-11 bg-background" /></Fld>
-            <Fld label="Driver Name"><Input className="h-11 bg-background" /></Fld>
-            <Fld label="Driver Contact" full><Input className="h-11 bg-background" /></Fld>
+            {stockVehicles.map((v, idx) => (
+              <div key={v.id} className="rounded-xl border border-border bg-background p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Vehicle #{idx + 1}</span>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={stockVehicles.length === 1} onClick={() => setStockVehicles(s => s.filter(x => x.id !== v.id))}><X className="h-4 w-4" /></Button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Fld label="Vehicle No"><Input className="h-11 bg-card" value={v.vehicleNo} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, vehicleNo: e.target.value } : x))} /></Fld>
+                  <Fld label="Vehicle Capacity"><Input type="number" className="h-11 bg-card" value={v.capacity} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, capacity: e.target.value } : x))} /></Fld>
+                  <Fld label="Driver Name"><Input className="h-11 bg-card" value={v.driverName} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverName: e.target.value } : x))} /></Fld>
+                  <Fld label="Driver Contact"><Input className="h-11 bg-card" value={v.driverPhone} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverPhone: e.target.value } : x))} /></Fld>
+                </div>
+              </div>
+            ))}
+            <Button size="sm" variant="outline" className="gap-1" onClick={() => setStockVehicles(s => [...s, { id: Date.now() + "", vehicleNo: "", capacity: "", driverName: "", driverPhone: "" }])}><Plus className="h-3.5 w-3.5" /> Add Vehicle</Button>
+            <div className={cn("rounded-lg border px-3 py-2 text-xs flex items-center justify-between", stockCapShort ? "border-warning/40 bg-warning/10 text-warning" : "border-border bg-muted/30 text-muted-foreground")}>
+              <span>Total vehicle capacity</span>
+              <span className="font-mono font-semibold">{stockTotalCap}{stockQtyNum > 0 ? ` / ${stockQtyNum} required` : ""}</span>
+            </div>
+            {stockCapShort && <p className="text-xs text-warning font-medium">⚠ Total vehicle capacity is less than required quantity.</p>}
           </div>
         </FormSection>
 
