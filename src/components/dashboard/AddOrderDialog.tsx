@@ -136,12 +136,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   const [orderType, setOrderType] = useState("");
   const [sandType, setSandType] = useState("");
   const [vehicleOwner, setVehicleOwner] = useState<"own" | "customer">("own");
-  const [vehicle, setVehicle] = useState("");
-  const [capacity, setCapacity] = useState("");
+  const [vehicles, setVehicles] = useState<VehicleRow[]>([
+    { id: crypto.randomUUID(), vehicleNo: "", capacity: "", driverName: "", driverPhone: "" },
+  ]);
   const [capacityUnit, setCapacityUnit] = useState("sqft");
   const [address, setAddress] = useState("");
-  const [driverId, setDriverId] = useState("");
-  const [driverPhone, setDriverPhone] = useState("");
   const [qty, setQty] = useState("");
   const [qtyUnit, setQtyUnit] = useState("sqft");
   const [discount, setDiscount] = useState("");
