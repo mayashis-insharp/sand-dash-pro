@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
 import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 import { DocumentsDialog, type DocData } from "@/components/dashboard/DocumentsDialog";
+import { FormShell, FormSection } from "@/components/dashboard/FormShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Search, Download, Plus, Calendar, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X, ShoppingCart } from "lucide-react";
+import { Search, Download, Plus, Calendar as CalendarIcon, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X, ShoppingCart, User, Package, Truck, Wallet, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 const orders: Order[] = [
