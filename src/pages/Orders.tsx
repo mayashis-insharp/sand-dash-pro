@@ -39,6 +39,72 @@ const drafts = [
 const tabs = ["Orders", "Pre-Orders", "Drafts"] as const;
 const fmt = (n: number) => "LKR " + n.toLocaleString();
 
+const Fld = ({ label, children, full }: { label: string; children: ReactNode; full?: boolean }) => (
+  <div className={full ? "md:col-span-2" : ""}>
+    <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</Label>
+    <div className="mt-1.5">{children}</div>
+  </div>
+);
+
+const ReadOnlyField = ({ value }: { value: ReactNode }) => (
+  <div className="h-11 px-3 rounded-md border border-border bg-muted/40 flex items-center text-sm text-foreground">{value}</div>
+);
+
+function OrderFormSections({ order, readOnly }: { order: Order; readOnly?: boolean }) {
+  const renderInput = (val: string | number, opts?: { mono?: boolean }) =>
+    readOnly ? <ReadOnlyField value={<span className={opts?.mono ? "font-mono" : ""}>{val}</span>} /> : <Input className={`h-11 bg-background ${opts?.mono ? "font-mono" : ""}`} defaultValue={String(val)} />;
+  return (
+    <>
+      <FormSection icon={<CalendarIcon className="h-4 w-4" />} title="Schedule" description="When should this order be fulfilled?">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Order Date">{renderInput(order.date)}</Fld>
+          <Fld label="Order ID">{renderInput(order.id, { mono: true })}</Fld>
+        </div>
+      </FormSection>
+      <FormSection icon={<User className="h-4 w-4" />} title="Customer" description="Who is placing this order?">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Customer">{renderInput(order.customer.name)}</Fld>
+          <Fld label="Contact Number">{renderInput(order.customer.phone, { mono: true })}</Fld>
+        </div>
+      </FormSection>
+      <FormSection icon={<Package className="h-4 w-4" />} title="Order" description="Type, material, and quantity.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Order Type">
+            {readOnly ? <ReadOnlyField value={order.type} /> : (
+              <Select defaultValue={order.type.toLowerCase()}>
+                <SelectTrigger className="h-11 bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="retail">Retail</SelectItem>
+                  <SelectItem value="corporate">Corporate</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </Fld>
+          <Fld label="Sand Type">{renderInput(order.sandType)}</Fld>
+          <Fld label="Quantity">{renderInput(order.qty)}</Fld>
+          <Fld label="Subtotal"><ReadOnlyField value={<span className="font-display font-semibold">{fmt(order.total)}</span>} /></Fld>
+        </div>
+      </FormSection>
+      <FormSection icon={<Truck className="h-4 w-4" />} title="Logistics" description="Vehicle, driver, and delivery.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Vehicle No">{renderInput(order.vehicle, { mono: true })}</Fld>
+          <Fld label="Delivery Address" full>
+            {readOnly ? <ReadOnlyField value={order.address} /> : <Textarea defaultValue={order.address} className="bg-background min-h-[80px] resize-none" />}
+          </Fld>
+        </div>
+      </FormSection>
+      <FormSection icon={<Wallet className="h-4 w-4" />} title="Payment" description="Method, amount, and balance.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Payment Method">{renderInput(order.payment)}</Fld>
+          <Fld label="Total">{renderInput(fmt(order.total), { mono: true })}</Fld>
+          {order.due !== undefined && <Fld label="Due"><ReadOnlyField value={<span className="font-mono text-destructive">{fmt(order.due)}</span>} /></Fld>}
+          {order.balance !== undefined && <Fld label="Balance"><ReadOnlyField value={<span className="font-mono text-success">{fmt(order.balance)}</span>} /></Fld>}
+        </div>
+      </FormSection>
+    </>
+  );
+}
+
 const Orders = () => {
   const [tab, setTab] = useState<typeof tabs[number]>("Orders");
   const [view, setView] = useState<"table" | "card">("table");
