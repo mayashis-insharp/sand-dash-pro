@@ -65,10 +65,9 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
   // Stage 1: selection. Stage 2: preview.
   const [stage, setStage] = useState<"select" | "preview">("select");
   const [sel, setSel] = useState({ invoice: true, delivery: false, gatepass: false });
-  const [gpStatus, setGpStatus] = useState<GpStatus>("Pending");
-  const [securityOpen, setSecurityOpen] = useState(false);
-  const [secConfirmed, setSecConfirmed] = useState(false);
-  const [secVerifyTime, setSecVerifyTime] = useState<string | null>(null);
+  const [gpStatusMap, setGpStatusMap] = useState<Record<string, GpStatus>>({});
+  const [securityOpen, setSecurityOpen] = useState<string | null>(null);
+  const [secMap, setSecMap] = useState<Record<string, { user: string; time: string }>>({});
 
   // approval state
   const [approvedBy, setApprovedBy] = useState("");
