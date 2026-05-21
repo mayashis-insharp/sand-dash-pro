@@ -94,9 +94,8 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
   const reset = () => {
     setStage("select");
     setSel({ invoice: true, delivery: false, gatepass: false });
-    setGpStatus("Pending");
-    setSecConfirmed(false);
-    setSecVerifyTime(null);
+    setGpStatusMap({});
+    setSecMap({});
   };
 
   const close = () => { onOpenChange(false); setTimeout(reset, 200); };
