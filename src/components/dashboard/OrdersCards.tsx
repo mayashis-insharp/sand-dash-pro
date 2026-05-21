@@ -1,4 +1,4 @@
-import { Eye, FileText, MoreHorizontal, Phone, MapPin, Truck } from "lucide-react";
+import { Eye, FileText, Phone, MapPin, Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Order } from "./OrdersTable";
 
@@ -34,9 +34,6 @@ export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; on
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{o.date}</p>
             </div>
-            <button className="grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted transition-smooth">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
           </div>
 
           {/* Customer */}

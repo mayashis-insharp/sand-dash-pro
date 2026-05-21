@@ -13,7 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Search, Download, Plus, Calendar as CalendarIcon, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X, ShoppingCart, User, Package, Truck, Wallet, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, Download, Plus, Calendar as CalendarIcon, Clock, LayoutGrid, List, Edit, Bell, CheckCircle2, Eye, FileText, Trash2, X, ShoppingCart, User, Package, Truck, Wallet, MapPin, Receipt, StickyNote } from "lucide-react";
 import { toast } from "sonner";
 
 const orders: Order[] = [
@@ -53,20 +54,35 @@ const ReadOnlyField = ({ value }: { value: ReactNode }) => (
 function OrderFormSections({ order, readOnly }: { order: Order; readOnly?: boolean }) {
   const renderInput = (val: string | number, opts?: { mono?: boolean }) =>
     readOnly ? <ReadOnlyField value={<span className={opts?.mono ? "font-mono" : ""}>{val}</span>} /> : <Input className={`h-11 bg-background ${opts?.mono ? "font-mono" : ""}`} defaultValue={String(val)} />;
+
+  // Mock data so layout fully mirrors Add Order
+  const mockTime = "09:00";
+  const mockDiscount = "0";
+  const mockPaid = order.balance !== undefined ? order.total - (order.balance ?? 0) : (order.due !== undefined ? order.total - (order.due ?? 0) : order.total);
+  const mockVehicles = [
+    { id: "v1", vehicleNo: order.vehicle, capacity: order.qty.split(" ")[0] || "", driverName: "Sunil Bandara", driverPhone: "+94770001111" },
+  ];
+  const mockCharges = [
+    { id: "c1", type: "Transport", amount: "4500", comment: "Loading & handling", addToInvoice: true },
+  ];
+  const mockNotes = "—";
+
   return (
     <>
       <FormSection icon={<CalendarIcon className="h-4 w-4" />} title="Schedule" description="When should this order be fulfilled?">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Fld label="Order Date">{renderInput(order.date)}</Fld>
-          <Fld label="Order ID">{renderInput(order.id, { mono: true })}</Fld>
+          <Fld label="Order Time">{renderInput(mockTime)}</Fld>
         </div>
       </FormSection>
+
       <FormSection icon={<User className="h-4 w-4" />} title="Customer" description="Who is placing this order?">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Fld label="Customer">{renderInput(order.customer.name)}</Fld>
           <Fld label="Contact Number">{renderInput(order.customer.phone, { mono: true })}</Fld>
         </div>
       </FormSection>
+
       <FormSection icon={<Package className="h-4 w-4" />} title="Order" description="Type, material, and quantity.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Fld label="Order Type">
@@ -85,21 +101,85 @@ function OrderFormSections({ order, readOnly }: { order: Order; readOnly?: boole
           <Fld label="Subtotal"><ReadOnlyField value={<span className="font-display font-semibold">{fmt(order.total)}</span>} /></Fld>
         </div>
       </FormSection>
+
       <FormSection icon={<Truck className="h-4 w-4" />} title="Logistics" description="Vehicle, driver, and delivery.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Fld label="Vehicle No">{renderInput(order.vehicle, { mono: true })}</Fld>
+        <div className="space-y-3">
+          {mockVehicles.map((v, idx) => (
+            <div key={v.id} className="rounded-xl border border-border bg-background p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Vehicle #{idx + 1}</span>
+                {!readOnly && (
+                  <button type="button" disabled={mockVehicles.length === 1} className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-40">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Fld label="Vehicle No">{renderInput(v.vehicleNo, { mono: true })}</Fld>
+                <Fld label="Vehicle Capacity">{renderInput(v.capacity)}</Fld>
+                <Fld label="Driver Name">{renderInput(v.driverName)}</Fld>
+                <Fld label="Driver Contact">{renderInput(v.driverPhone, { mono: true })}</Fld>
+              </div>
+            </div>
+          ))}
+          {!readOnly && (
+            <button type="button" className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-3 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
+              <Plus className="h-4 w-4" /> Add Vehicle
+            </button>
+          )}
+        </div>
+        <div className="mt-4">
           <Fld label="Delivery Address" full>
             {readOnly ? <ReadOnlyField value={order.address} /> : <Textarea defaultValue={order.address} className="bg-background min-h-[80px] resize-none" />}
           </Fld>
         </div>
       </FormSection>
-      <FormSection icon={<Wallet className="h-4 w-4" />} title="Payment" description="Method, amount, and balance.">
+
+      <FormSection icon={<Wallet className="h-4 w-4" />} title="Payment" description="Discounts, method, and amount paid.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Fld label="Discount">{renderInput(mockDiscount, { mono: true })}</Fld>
           <Fld label="Payment Method">{renderInput(order.payment)}</Fld>
+          <Fld label="Amount Paid">{renderInput(String(mockPaid), { mono: true })}</Fld>
           <Fld label="Total">{renderInput(fmt(order.total), { mono: true })}</Fld>
           {order.due !== undefined && <Fld label="Due"><ReadOnlyField value={<span className="font-mono text-destructive">{fmt(order.due)}</span>} /></Fld>}
           {order.balance !== undefined && <Fld label="Balance"><ReadOnlyField value={<span className="font-mono text-success">{fmt(order.balance)}</span>} /></Fld>}
         </div>
+      </FormSection>
+
+      <FormSection icon={<Receipt className="h-4 w-4" />} title="Additional Charges" description="Fuel, tolls, loading or other expenses.">
+        <div className="space-y-3">
+          {mockCharges.map((c, idx) => (
+            <div key={c.id} className="rounded-xl border border-border bg-background p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Charge #{idx + 1}</span>
+                {!readOnly && (
+                  <button type="button" className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Fld label="Type">{renderInput(c.type)}</Fld>
+                <Fld label="Amount">{renderInput(c.amount, { mono: true })}</Fld>
+              </div>
+              <div className="mt-3"><Fld label="Note">{renderInput(c.comment)}</Fld></div>
+              <label className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground select-none">
+                <Checkbox checked={c.addToInvoice} disabled={readOnly} />
+                <span>Add to Invoice</span>
+                <span className="text-muted-foreground font-normal">— include this charge in the customer invoice</span>
+              </label>
+            </div>
+          ))}
+          {!readOnly && (
+            <button type="button" className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-4 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
+              <Plus className="h-4 w-4" /> Add Charge
+            </button>
+          )}
+        </div>
+      </FormSection>
+
+      <FormSection icon={<StickyNote className="h-4 w-4" />} title="Comments" description="Internal notes or special instructions.">
+        {readOnly ? <ReadOnlyField value={mockNotes} /> : <Textarea defaultValue="" placeholder="Anything the team should know..." className="bg-background min-h-[100px] resize-none" />}
       </FormSection>
     </>
   );

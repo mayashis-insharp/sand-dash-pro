@@ -269,24 +269,27 @@ const Inventory = () => {
           </div>
         </FormSection>
 
-        <FormSection icon={<Truck className="h-4 w-4" />} title="Vehicles" description="Add one or more vehicles for this stock arrival.">
+        <FormSection icon={<Truck className="h-4 w-4" />} title="Logistics" description="Vehicle, driver, and delivery.">
           <div className="space-y-3">
-            <Fld label="Vehicle Type"><Select><SelectTrigger className="h-11 bg-background"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent><SelectItem value="own">Own</SelectItem><SelectItem value="sup">Supplier</SelectItem></SelectContent></Select></Fld>
             {stockVehicles.map((v, idx) => (
-              <div key={v.id} className="rounded-xl border border-border bg-background p-4">
+              <div key={v.id} className="rounded-xl border border-border bg-background p-4 group hover:border-primary/30 transition-smooth">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Vehicle #{idx + 1}</span>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={stockVehicles.length === 1} onClick={() => setStockVehicles(s => s.filter(x => x.id !== v.id))}><X className="h-4 w-4" /></Button>
+                  <button type="button" onClick={() => setStockVehicles(s => s.length > 1 ? s.filter(x => x.id !== v.id) : s)} disabled={stockVehicles.length === 1} className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Fld label="Vehicle No"><Input className="h-11 bg-card" value={v.vehicleNo} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, vehicleNo: e.target.value } : x))} /></Fld>
-                  <Fld label="Vehicle Capacity"><Input type="number" className="h-11 bg-card" value={v.capacity} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, capacity: e.target.value } : x))} /></Fld>
-                  <Fld label="Driver Name"><Input className="h-11 bg-card" value={v.driverName} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverName: e.target.value } : x))} /></Fld>
-                  <Fld label="Driver Contact"><Input className="h-11 bg-card" value={v.driverPhone} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverPhone: e.target.value } : x))} /></Fld>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Fld label="Vehicle No"><Input className="h-10 bg-card" placeholder="e.g. GH-5423" value={v.vehicleNo} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, vehicleNo: e.target.value } : x))} /></Fld>
+                  <Fld label="Vehicle Capacity"><Input type="number" placeholder="0" className="h-10 bg-card" value={v.capacity} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, capacity: e.target.value } : x))} /></Fld>
+                  <Fld label="Driver Name"><Input className="h-10 bg-card" placeholder="Driver name" value={v.driverName} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverName: e.target.value } : x))} /></Fld>
+                  <Fld label="Driver Contact"><Input className="h-10 bg-card" placeholder="+94 77 000 0000" value={v.driverPhone} onChange={(e) => setStockVehicles(s => s.map(x => x.id === v.id ? { ...x, driverPhone: e.target.value } : x))} /></Fld>
                 </div>
               </div>
             ))}
-            <Button size="sm" variant="outline" className="gap-1" onClick={() => setStockVehicles(s => [...s, { id: Date.now() + "", vehicleNo: "", capacity: "", driverName: "", driverPhone: "" }])}><Plus className="h-3.5 w-3.5" /> Add Vehicle</Button>
+            <button type="button" onClick={() => setStockVehicles(s => [...s, { id: Date.now() + "", vehicleNo: "", capacity: "", driverName: "", driverPhone: "" }])} className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-3 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
+              <Plus className="h-4 w-4" /> Add Vehicle
+            </button>
             <div className={cn("rounded-lg border px-3 py-2 text-xs flex items-center justify-between", stockCapShort ? "border-warning/40 bg-warning/10 text-warning" : "border-border bg-muted/30 text-muted-foreground")}>
               <span>Total vehicle capacity</span>
               <span className="font-mono font-semibold">{stockTotalCap}{stockQtyNum > 0 ? ` / ${stockQtyNum} required` : ""}</span>
@@ -316,33 +319,40 @@ const Inventory = () => {
           )}
         </FormSection>
 
-        <FormSection icon={<Wallet className="h-4 w-4" />} title="Additional Charges" description="Loading, transport, or other costs.">
+        <FormSection icon={<ReceiptIcon className="h-4 w-4" />} title="Additional Charges" description="Fuel, tolls, loading or other expenses.">
           <div className="space-y-3">
             {charges.map((c, idx) => (
-              <div key={c.id} className="rounded-xl border border-border bg-background p-3">
-                <div className="flex items-center justify-between mb-2">
+              <div key={c.id} className="rounded-xl border border-border bg-background p-4 group hover:border-primary/30 transition-smooth">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Charge #{idx + 1}</span>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
+                  <button type="button" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))} className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <Select value={c.type} onValueChange={(v) => setCharges(s => s.map(x => x.id === c.id ? { ...x, type: v } : x))}>
-                    <SelectTrigger className="h-11 bg-card"><SelectValue placeholder="Expense type" /></SelectTrigger>
+                    <SelectTrigger className="h-10 bg-card"><SelectValue placeholder="Expense type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Transport">Transport</SelectItem>
                       <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Input placeholder="Amount" type="number" className="h-11 bg-card" value={c.amount} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, amount: e.target.value } : x))} />
-                  <Input placeholder="Comments" className="h-11 bg-card" value={c.comment} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, comment: e.target.value } : x))} />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">LKR</span>
+                    <Input type="number" placeholder="Amount" value={c.amount} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, amount: e.target.value } : x))} className="pl-12 h-10 bg-card" />
+                  </div>
                 </div>
+                <Input placeholder="Optional note..." value={c.comment} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, comment: e.target.value } : x))} className="h-10 bg-card mt-3" />
                 <label className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
                   <Checkbox checked={c.addToInvoice} onCheckedChange={(v) => setCharges(s => s.map(x => x.id === c.id ? { ...x, addToInvoice: !!v } : x))} />
                   <span>Add to Invoice</span>
-                  <span className="text-muted-foreground font-normal">— include this charge in the stock/supplier invoice</span>
+                  <span className="text-muted-foreground font-normal">— include this charge in the customer invoice</span>
                 </label>
               </div>
             ))}
-            <Button size="sm" variant="outline" className="gap-1 mt-2" onClick={() => setCharges(s => [...s, { id: Date.now() + "", type: "", amount: "", comment: "", addToInvoice: false }])}><Plus className="h-3.5 w-3.5" /> Add Charge</Button>
+            <button type="button" onClick={() => setCharges(s => [...s, { id: Date.now() + "", type: "", amount: "", comment: "", addToInvoice: false }])} className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary py-4 text-sm font-medium transition-smooth flex items-center justify-center gap-2">
+              <Plus className="h-4 w-4" /> Add Charge
+            </button>
           </div>
         </FormSection>
 
