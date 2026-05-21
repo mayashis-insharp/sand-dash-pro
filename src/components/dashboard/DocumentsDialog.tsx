@@ -469,7 +469,7 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
       </Dialog>
 
       {/* Security Verification */}
-      <Dialog open={securityOpen} onOpenChange={setSecurityOpen}>
+      <Dialog open={!!activeSecKey} onOpenChange={(o) => { if (!o) setSecurityOpen(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary" /> Security Verification</DialogTitle>
@@ -477,10 +477,10 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
           <p className="text-xs text-muted-foreground">Verify each item before allowing vehicle to exit.</p>
           <div className="space-y-2 mt-1">
             {[
-              `Verify Gate Pass Number — ${gpNo}`,
-              `Verify Vehicle Number — ${data.vehicle || "—"}`,
-              `Verify Driver Details — ${data.driver?.name || "—"}`,
-              `Verify Order Quantity — ${data.qty}`,
+              `Verify Gate Pass Number — ${activeSecGpNo}`,
+              `Verify Vehicle Number — ${activeSecVehicle?.vehicleNo || "—"}`,
+              `Verify Driver Details — ${activeSecVehicle?.driverName || "—"}`,
+              `Verify Assigned Quantity — ${activeSecVehicle?.assignedQty || data.qty}`,
               `Confirm dispatched products — ${data.product}`,
               "Confirm Gate Pass Validated",
               "Confirm Vehicle Exited",
@@ -492,13 +492,13 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
             ))}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="ghost" onClick={() => setSecurityOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setSecurityOpen(null)}>Cancel</Button>
             <Button className="gradient-primary border-0 gap-1.5" onClick={() => {
+              if (!activeSecKey) return;
               const t = new Date().toLocaleString();
-              setSecVerifyTime(t);
-              setSecConfirmed(true);
-              setGpStatus("Verified by Security");
-              setSecurityOpen(false);
+              setSecMap((m) => ({ ...m, [activeSecKey]: { user: mockSecUser, time: t } }));
+              setGpStatusMap((m) => ({ ...m, [activeSecKey]: "Verified by Security" }));
+              setSecurityOpen(null);
               toast.success("Gate Pass verified", { description: `Confirmed by ${mockSecUser} at ${t}` });
             }}>
               <ClipboardCheck className="h-4 w-4" /> Confirm Verification
