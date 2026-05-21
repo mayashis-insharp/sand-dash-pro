@@ -307,55 +307,71 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
     </div>
   );
 
-  const GatePassBlock = (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none">
-      <Header docTitle="Gate Pass" docNo={gpNo} />
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div className="grid grid-cols-2 gap-3 text-sm flex-1">
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Number</p><p className="font-mono font-semibold">{data.vehicle || "—"}</p></div>
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</p><p className="font-medium">{data.driver?.name || "—"}</p></div>
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Order Quantity</p><p className="font-medium">{data.qty}</p></div>
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product</p><p className="font-medium">{data.product}</p></div>
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
-          <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Status</p><Badge variant="outline" className={cn("text-[10px] mt-0.5", gpStatusClass(gpStatus))}>{gpStatus}</Badge></div>
-        </div>
-        <div className="flex flex-col items-center gap-1">
-          <div className="h-24 w-24 rounded-lg border-2 border-border bg-background flex items-center justify-center">
-            <QrCode className="h-16 w-16 text-foreground/80" />
-          </div>
-          <p className="text-[9px] text-muted-foreground font-mono">{gpNo}</p>
-        </div>
-      </div>
+  const vehicleList: DocVehicle[] = (data.vehicles && data.vehicles.length > 0)
+    ? data.vehicles
+    : [{ vehicleNo: data.vehicle || "—", driverName: data.driver?.name, driverPhone: data.driver?.phone, assignedQty: data.qty }];
 
-      {/* Workflow controls */}
-      <div className="rounded-lg border border-border bg-muted/20 p-4 print:hidden">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Workflow Status</Label>
-            <Select value={gpStatus} onValueChange={(v) => setGpStatus(v as GpStatus)}>
-              <SelectTrigger className="h-9 w-[200px] bg-background"><SelectValue /></SelectTrigger>
-              <SelectContent>{GP_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
+  const renderGatePass = (v: DocVehicle, idx: number) => {
+    const key = v.vehicleNo + ":" + idx;
+    const vGpNo = vehicleList.length > 1 ? `${gpNo}-${idx + 1}` : gpNo;
+    const status = gpStatusMap[key] || "Pending";
+    const sec = secMap[key];
+    return (
+      <div key={key} className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none print:break-inside-avoid">
+        <Header docTitle={`Gate Pass${vehicleList.length > 1 ? ` (${idx + 1} of ${vehicleList.length})` : ""}`} docNo={vGpNo} />
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="grid grid-cols-2 gap-3 text-sm flex-1">
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Number</p><p className="font-mono font-semibold">{v.vehicleNo || "—"}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Capacity</p><p className="font-medium">{v.capacity || "—"}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</p><p className="font-medium">{v.driverName || "—"}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Contact</p><p className="font-mono text-xs">{v.driverPhone || "—"}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Quantity</p><p className="font-medium">{v.assignedQty || v.capacity || data.qty}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product</p><p className="font-medium">{data.product}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Status</p><Badge variant="outline" className={cn("text-[10px] mt-0.5", gpStatusClass(status))}>{status}</Badge></div>
           </div>
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setSecurityOpen(true)}>
-            <ShieldCheck className="h-3.5 w-3.5" /> Security Verification
-          </Button>
+          <div className="flex flex-col items-center gap-1">
+            <div className="h-24 w-24 rounded-lg border-2 border-border bg-background flex items-center justify-center">
+              <QrCode className="h-16 w-16 text-foreground/80" />
+            </div>
+            <p className="text-[9px] text-muted-foreground font-mono">{vGpNo}</p>
+          </div>
         </div>
-        {secConfirmed && (
-          <div className="mt-3 rounded-md bg-success/10 border border-success/30 px-3 py-2 text-xs flex items-center gap-2">
-            <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-            <span><span className="font-semibold">Verified.</span> Confirmed by {mockSecUser} at <span className="font-mono">{secVerifyTime}</span></span>
+
+        <div className="rounded-lg border border-border bg-muted/20 p-4 print:hidden">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Workflow Status</Label>
+              <Select value={status} onValueChange={(val) => setGpStatusMap((m) => ({ ...m, [key]: val as GpStatus }))}>
+                <SelectTrigger className="h-9 w-[200px] bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>{GP_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setSecurityOpen(key)}>
+              <ShieldCheck className="h-3.5 w-3.5" /> Security Verification
+            </Button>
           </div>
-        )}
+          {sec && (
+            <div className="mt-3 rounded-md bg-success/10 border border-success/30 px-3 py-2 text-xs flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+              <span><span className="font-semibold">Verified.</span> Confirmed by {sec.user} at <span className="font-mono">{sec.time}</span></span>
+            </div>
+          )}
+        </div>
+        <AuditFooter extra={sec ? (
+          <>
+            <span>Dispatch confirmed: <span className="font-medium text-foreground">{mockUser}</span></span>
+            <span className="text-right">Security confirmed: <span className="font-medium text-foreground">{sec.user}</span></span>
+          </>
+        ) : undefined} />
       </div>
-      <AuditFooter extra={secConfirmed ? (
-        <>
-          <span>Dispatch confirmed: <span className="font-medium text-foreground">{mockUser}</span></span>
-          <span className="text-right">Security confirmed: <span className="font-medium text-foreground">{mockSecUser}</span></span>
-        </>
-      ) : undefined} />
-    </div>
-  );
+    );
+  };
+
+  const activeSecKey = securityOpen;
+  const activeSecVehicle = activeSecKey ? vehicleList.find((vv, i) => vv.vehicleNo + ":" + i === activeSecKey) : null;
+  const activeSecVehicleIdx = activeSecKey ? vehicleList.findIndex((vv, i) => vv.vehicleNo + ":" + i === activeSecKey) : -1;
+  const activeSecGpNo = activeSecVehicleIdx >= 0 ? (vehicleList.length > 1 ? `${gpNo}-${activeSecVehicleIdx + 1}` : gpNo) : gpNo;
 
   // ---------- Combined Layout ----------
   const combined = sel.invoice && sel.delivery;
