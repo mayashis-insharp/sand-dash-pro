@@ -75,6 +75,7 @@ const sandTypes = [
 const expenseTypes = ["Fuel", "Toll", "Loading", "Driver Allowance", "Maintenance", "Other"];
 
 type Charge = { id: string; type: string; amount: string; comment: string; addToInvoice: boolean };
+export type VehicleRow = { id: string; vehicleNo: string; capacity: string; driverName: string; driverPhone: string };
 
 const Field = ({
   label,
