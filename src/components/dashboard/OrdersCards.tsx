@@ -7,7 +7,6 @@ const fmt = (n: number) => n.toLocaleString();
 const typeStyles: Record<Order["type"], string> = {
   Retail: "bg-info/10 text-info border-info/20",
   Corporate: "bg-primary/10 text-primary border-primary/20",
-  Wholesale: "bg-warning/15 text-warning border-warning/30",
 };
 
 const payStyles: Record<Order["payment"], string> = {
