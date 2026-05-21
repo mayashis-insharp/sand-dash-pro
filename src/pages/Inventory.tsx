@@ -325,7 +325,13 @@ const Inventory = () => {
                   <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setCharges(s => s.filter(x => x.id !== c.id))}><X className="h-4 w-4" /></Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <Input placeholder="Type / Description" className="h-11 bg-card" value={c.type} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, type: e.target.value } : x))} />
+                  <Select value={c.type} onValueChange={(v) => setCharges(s => s.map(x => x.id === c.id ? { ...x, type: v } : x))}>
+                    <SelectTrigger className="h-11 bg-card"><SelectValue placeholder="Expense type" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Transport">Transport</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input placeholder="Amount" type="number" className="h-11 bg-card" value={c.amount} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, amount: e.target.value } : x))} />
                   <Input placeholder="Comments" className="h-11 bg-card" value={c.comment} onChange={(e) => setCharges(s => s.map(x => x.id === c.id ? { ...x, comment: e.target.value } : x))} />
                 </div>
