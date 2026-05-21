@@ -1,4 +1,4 @@
-import { Eye, FileText, MoreHorizontal } from "lucide-react";
+import { Eye, FileText, Edit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -79,9 +79,6 @@ export function OrdersTable({ orders, onView, onInvoice }: { orders: Order[]; on
                     </button>
                     <button onClick={() => onView?.(o)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted transition-smooth">
                       <Eye className="h-3.5 w-3.5" /> View
-                    </button>
-                    <button className="grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted transition-smooth">
-                      <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
