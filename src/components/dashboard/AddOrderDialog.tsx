@@ -211,7 +211,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
       return;
     }
     onOpenChange(false);
-    onSubmitted?.();
+    onSubmitted?.({ vehicles, qty, qtyUnit, capacityUnit });
   };
 
   const saveDraft = () => {
