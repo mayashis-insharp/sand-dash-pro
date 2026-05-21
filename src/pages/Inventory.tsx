@@ -77,6 +77,13 @@ const Inventory = () => {
   const [charges, setCharges] = useState<{ id: string; type: string; amount: string; comment: string; addToInvoice: boolean }[]>([
     { id: "1", type: "", amount: "", comment: "", addToInvoice: false },
   ]);
+  const [stockVehicles, setStockVehicles] = useState<{ id: string; vehicleNo: string; capacity: string; driverName: string; driverPhone: string }[]>([
+    { id: "v1", vehicleNo: "", capacity: "", driverName: "", driverPhone: "" },
+  ]);
+  const [stockQty, setStockQty] = useState("");
+  const stockTotalCap = stockVehicles.reduce((s, v) => s + (parseFloat(v.capacity) || 0), 0);
+  const stockQtyNum = parseFloat(stockQty || "0");
+  const stockCapShort = stockQtyNum > 0 && stockTotalCap > 0 && stockQtyNum > stockTotalCap;
   const [exportOpen, setExportOpen] = useState(false);
   const [docsStock, setDocsStock] = useState<any>(null);
 
