@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export interface Order {
   id: string;
   date: string;
-  type: "Retail" | "Corporate" | "Wholesale";
+  type: "Retail" | "Corporate";
   sandType: string;
   customer: { name: string; phone: string };
   address: string;
