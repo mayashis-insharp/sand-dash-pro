@@ -45,6 +45,8 @@ interface Props {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   data: DocData | null;
+  initialStage?: "select" | "preview";
+  initialSelection?: { invoice?: boolean; delivery?: boolean; gatepass?: boolean };
 }
 
 const COMPANY = { name: "Madu Enterprises", addr: "No. 25, Colombo Rd, Kaduwela", phone: "+94 11 234 5678" };
