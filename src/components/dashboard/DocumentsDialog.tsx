@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Truck, ShieldCheck, Printer, Download, X, CheckCircle2, QrCode, ClipboardCheck, Clock, Building2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Truck, ShieldCheck, Printer, Download, X, CheckCircle2, QrCode, ClipboardCheck, Clock, Building2, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,8 @@ interface Props {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   data: DocData | null;
+  initialStage?: "select" | "preview";
+  initialSelection?: { invoice?: boolean; delivery?: boolean; gatepass?: boolean };
 }
 
 const COMPANY = { name: "Madu Enterprises", addr: "No. 25, Colombo Rd, Kaduwela", phone: "+94 11 234 5678" };
@@ -61,13 +64,35 @@ const gpStatusClass = (s: GpStatus) =>
     : s === "Ready for Dispatch" ? "bg-warning/15 text-warning border-warning/30"
     : "bg-muted text-muted-foreground border-border";
 
-export function DocumentsDialog({ open, onOpenChange, data }: Props) {
+export function DocumentsDialog({ open, onOpenChange, data, initialStage = "select", initialSelection }: Props) {
   // Stage 1: selection. Stage 2: preview.
-  const [stage, setStage] = useState<"select" | "preview">("select");
-  const [sel, setSel] = useState({ invoice: true, delivery: false, gatepass: false });
+  const [stage, setStage] = useState<"select" | "preview">(initialStage);
+  const [sel, setSel] = useState({
+    invoice: initialSelection?.invoice ?? true,
+    delivery: initialSelection?.delivery ?? false,
+    gatepass: initialSelection?.gatepass ?? false,
+  });
   const [gpStatusMap, setGpStatusMap] = useState<Record<string, GpStatus>>({});
   const [securityOpen, setSecurityOpen] = useState<string | null>(null);
   const [secMap, setSecMap] = useState<Record<string, { user: string; time: string }>>({});
+  const [releaseMap, setReleaseMap] = useState<Record<string, { guard: string; time: string }>>({});
+  const [releaseForm, setReleaseForm] = useState<Record<string, { guard: string; time: string }>>({});
+  const [activeGpTab, setActiveGpTab] = useState<string>("0");
+
+  // Re-sync when dialog (re)opens with new initial props
+  useEffect(() => {
+    if (open) {
+      setStage(initialStage);
+      setSel({
+        invoice: initialSelection?.invoice ?? true,
+        delivery: initialSelection?.delivery ?? false,
+        gatepass: initialSelection?.gatepass ?? false,
+      });
+      setActiveGpTab("0");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
 
   // approval state
   const [approvedBy, setApprovedBy] = useState("");
@@ -92,10 +117,16 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
   const invoiceTotal = Math.max(0, data.subtotal - (data.discount || 0)) + invoiceChargesTotal;
 
   const reset = () => {
-    setStage("select");
-    setSel({ invoice: true, delivery: false, gatepass: false });
+    setStage(initialStage);
+    setSel({
+      invoice: initialSelection?.invoice ?? true,
+      delivery: initialSelection?.delivery ?? false,
+      gatepass: initialSelection?.gatepass ?? false,
+    });
     setGpStatusMap({});
     setSecMap({});
+    setReleaseMap({});
+    setReleaseForm({});
   };
 
   const close = () => { onOpenChange(false); setTimeout(reset, 200); };
@@ -359,6 +390,76 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
             </div>
           )}
         </div>
+
+        {/* Gate Security Manual Release */}
+        <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4 print:border-border print:bg-transparent">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+              <LogOut className="h-3.5 w-3.5" /> Gate Security — Manual Release
+            </p>
+            {releaseMap[key] && (
+              <Badge variant="outline" className="text-[10px] border-success/40 text-success bg-success/10">
+                <CheckCircle2 className="h-3 w-3 mr-1" /> Released
+              </Badge>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Security Guard Name</Label>
+              <Input
+                value={releaseMap[key]?.guard ?? releaseForm[key]?.guard ?? ""}
+                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), guard: e.target.value } }))}
+                disabled={!!releaseMap[key]}
+                placeholder="Guard name"
+                className="h-9 mt-1 bg-background"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Time at Gate</Label>
+              <Input
+                type="time"
+                value={releaseMap[key]?.time ?? releaseForm[key]?.time ?? ""}
+                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), time: e.target.value } }))}
+                disabled={!!releaseMap[key]}
+                className="h-9 mt-1 bg-background"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle No</Label>
+              <Input value={v.vehicleNo || "—"} disabled className="h-9 mt-1 bg-background font-mono" />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</Label>
+              <Input value={v.driverName || "—"} disabled className="h-9 mt-1 bg-background" />
+            </div>
+            <div className="col-span-2">
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Signature</Label>
+              <div className="h-12 mt-1 rounded-md border border-dashed border-border bg-background flex items-center justify-center text-[10px] text-muted-foreground italic">
+                {releaseMap[key] ? `Signed — ${releaseMap[key].guard}` : "Sign here"}
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 flex justify-end print:hidden">
+            <Button
+              size="sm"
+              className="gradient-primary border-0 gap-1.5"
+              disabled={!!releaseMap[key]}
+              onClick={() => {
+                const f = releaseForm[key];
+                if (!f?.guard || !f?.time) {
+                  toast.error("Enter guard name and time");
+                  return;
+                }
+                setReleaseMap((m) => ({ ...m, [key]: { guard: f.guard, time: f.time } }));
+                setGpStatusMap((m) => ({ ...m, [key]: "Completed" }));
+                toast.success("Vehicle released", { description: `${v.vehicleNo} at ${f.time} by ${f.guard}` });
+              }}
+            >
+              <LogOut className="h-3.5 w-3.5" /> {releaseMap[key] ? "Released" : "Release Vehicle"}
+            </Button>
+          </div>
+        </div>
+
         <AuditFooter extra={sec ? (
           <>
             <span>Dispatch confirmed: <span className="font-medium text-foreground">{mockUser}</span></span>
@@ -368,6 +469,7 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
       </div>
     );
   };
+
 
   const activeSecKey = securityOpen;
   const activeSecVehicle = activeSecKey ? vehicleList.find((vv, i) => vv.vehicleNo + ":" + i === activeSecKey) : null;
@@ -448,13 +550,36 @@ export function DocumentsDialog({ open, onOpenChange, data }: Props) {
                   </>
                 )}
                 {sel.gatepass && (
-                  <div className="space-y-5">
-                    {vehicleList.length > 1 && (
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1 print:hidden">
-                        {vehicleList.length} Gate Passes — one per vehicle
-                      </p>
+                  <div className="space-y-3">
+                    {vehicleList.length > 1 ? (
+                      <Tabs value={activeGpTab} onValueChange={setActiveGpTab} className="w-full print:hidden">
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                            {vehicleList.length} Gate Passes — one per vehicle
+                          </p>
+                          <TabsList>
+                            {vehicleList.map((v, i) => (
+                              <TabsTrigger key={i} value={String(i)} className="text-xs gap-1.5">
+                                <Truck className="h-3 w-3" /> {v.vehicleNo || `#${i + 1}`}
+                              </TabsTrigger>
+                            ))}
+                          </TabsList>
+                        </div>
+                        {vehicleList.map((v, i) => (
+                          <TabsContent key={i} value={String(i)} className="mt-3">
+                            {renderGatePass(v, i)}
+                          </TabsContent>
+                        ))}
+                      </Tabs>
+                    ) : (
+                      renderGatePass(vehicleList[0], 0)
                     )}
-                    {vehicleList.map((v, i) => renderGatePass(v, i))}
+                    {/* Print-only: show all gate passes stacked */}
+                    {vehicleList.length > 1 && (
+                      <div className="hidden print:block space-y-4">
+                        {vehicleList.map((v, i) => renderGatePass(v, i))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

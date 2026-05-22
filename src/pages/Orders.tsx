@@ -1,6 +1,6 @@
 import { useState, ReactNode } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
-import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
+import { OrdersTable, type Order, type DocKind } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
@@ -18,12 +18,28 @@ import { Search, Download, Plus, Calendar as CalendarIcon, Clock, LayoutGrid, Li
 import { toast } from "sonner";
 
 const orders: Order[] = [
-  { id: "OD_12457", date: "12/02/2026", type: "Retail", sandType: "River Sand – Soft", customer: { name: "Gamage", phone: "+94778542369" }, address: "Kaduwela", vehicle: "GH-5423", qty: "75 sqft", total: 180000, due: 100000, payment: "Credit" },
-  { id: "OD_12455", date: "01/02/2026", type: "Corporate", sandType: "Sea Sand", customer: { name: "Dias", phone: "+94778542369" }, address: "Kelaniya", vehicle: "MD-0214", qty: "100 sqft", total: 200000, balance: 20000, payment: "Cash" },
-  { id: "OD_12454", date: "28/01/2026", type: "Corporate", sandType: "River Sand – Coarse", customer: { name: "Perera Constructions", phone: "+94771234567" }, address: "Negombo", vehicle: "WP-7891", qty: "250 sqft", total: 525000, due: 125000, payment: "Credit" },
+  {
+    id: "OD_12457", date: "12/02/2026", type: "Retail", sandType: "River Sand – Soft",
+    customer: { name: "Gamage", phone: "+94778542369" }, address: "Kaduwela",
+    vehicle: "GH-5423", qty: "75 sqft", total: 180000, due: 100000, payment: "Credit",
+    vehicles: [
+      { vehicleNo: "GH-5423", capacity: "40", driverName: "Sunil Bandara", driverPhone: "+94770001111" },
+      { vehicleNo: "WP-2210", capacity: "35", driverName: "Kasun Perera", driverPhone: "+94770002222" },
+    ],
+    generated: { invoice: true, delivery: true, gatepass: true },
+  },
+  {
+    id: "OD_12455", date: "01/02/2026", type: "Corporate", sandType: "Sea Sand",
+    customer: { name: "Dias", phone: "+94778542369" }, address: "Kelaniya",
+    vehicle: "MD-0214", qty: "100 sqft", total: 200000, balance: 20000, payment: "Cash",
+    vehicles: [{ vehicleNo: "MD-0214", capacity: "100", driverName: "Ravi Silva", driverPhone: "+94770003333" }],
+    generated: {},
+  },
+  { id: "OD_12454", date: "28/01/2026", type: "Corporate", sandType: "River Sand – Coarse", customer: { name: "Perera Constructions", phone: "+94771234567" }, address: "Negombo", vehicle: "WP-7891", qty: "250 sqft", total: 525000, due: 125000, payment: "Credit", generated: { invoice: true } },
   { id: "OD_12453", date: "25/01/2026", type: "Retail", sandType: "Quarry Dust", customer: { name: "Fernando", phone: "+94776543210" }, address: "Moratuwa", vehicle: "CAB-3344", qty: "40 sqft", total: 72000, payment: "Cash" },
   { id: "OD_12452", date: "22/01/2026", type: "Corporate", sandType: "M-Sand", customer: { name: "Lanka Build (Pvt) Ltd", phone: "+94114567890" }, address: "Colombo 07", vehicle: "KP-9920", qty: "180 sqft", total: 396000, due: 196000, payment: "Pending" },
 ];
+
 
 const preOrders = [
   { id: "PR_881", date: "15/02/2026", who: "Gamage", phone: "+94778542369", sand: "River Sand – Soft", qty: "60 sqft", status: "upcoming", side: "customer" },
@@ -204,10 +220,19 @@ const Orders = () => {
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
   const [exportOpen, setExportOpen] = useState(false);
 
-  const toDocData = (o: Order): DocData => {
+  // Per-order document state for the 3-dot menu
+  const [docPreview, setDocPreview] = useState<{ order: Order; kind: DocKind } | null>(null);
+  const [docConfirm, setDocConfirm] = useState<{ order: Order; kind: DocKind } | null>(null);
+  const [genMap, setGenMap] = useState<Record<string, { invoice?: boolean; delivery?: boolean; gatepass?: boolean }>>(
+    () => Object.fromEntries(orders.map((o) => [o.id, { ...(o.generated || {}) }]))
+  );
+
+  const docLabel = (k: DocKind) => (k === "invoice" ? "Invoice" : k === "delivery" ? "Delivery Note" : "Gate Passes");
+
+  const toDocData = (o: Order, useSubmitted = false): DocData => {
     const qNum = parseInt(o.qty) || 1;
     const unit = Math.round(o.total / qNum);
-    const vehicles = submittedVehicles && submittedVehicles.length > 0
+    const fromSubmitted = useSubmitted && submittedVehicles && submittedVehicles.length > 0
       ? submittedVehicles
           .filter((v) => v.vehicleNo)
           .map((v) => ({
@@ -218,6 +243,16 @@ const Orders = () => {
             assignedQty: v.capacity ? `${v.capacity}` : undefined,
           }))
       : undefined;
+    const fromOrder = o.vehicles && o.vehicles.length > 0
+      ? o.vehicles.map((v) => ({
+          vehicleNo: v.vehicleNo,
+          capacity: v.capacity,
+          driverName: v.driverName,
+          driverPhone: v.driverPhone,
+          assignedQty: v.capacity ? `${v.capacity}` : undefined,
+        }))
+      : undefined;
+    const vehicles = fromSubmitted ?? fromOrder;
     return {
       source: "order",
       refNo: o.id,
@@ -244,6 +279,24 @@ const Orders = () => {
     setSubmittedVehicles(payload?.vehicles || null);
     setDocsOrder(orders[0]);
   };
+
+  const handleDocAction = (o: Order, kind: DocKind) => {
+    if (genMap[o.id]?.[kind]) {
+      setDocPreview({ order: o, kind });
+    } else {
+      setDocConfirm({ order: o, kind });
+    }
+  };
+
+  const confirmGenerate = () => {
+    if (!docConfirm) return;
+    const { order, kind } = docConfirm;
+    setGenMap((m) => ({ ...m, [order.id]: { ...(m[order.id] || {}), [kind]: true } }));
+    setDocConfirm(null);
+    setDocPreview({ order, kind });
+    toast.success(`${docLabel(kind)} generated`);
+  };
+
 
   return (
     <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">
@@ -274,9 +327,12 @@ const Orders = () => {
               </div>
             </div>
           </div>
-          {view === "table"
-            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />
-            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />}
+          {(() => {
+            const enriched = orders.map((o) => ({ ...o, generated: genMap[o.id] || o.generated || {} }));
+            return view === "table"
+              ? <OrdersTable orders={enriched} onView={setViewOrder} onEdit={setEditOrder} onDoc={handleDocAction} />
+              : <OrdersCards orders={enriched} onView={setViewOrder} onEdit={setEditOrder} onDoc={handleDocAction} />;
+          })()}
           <Pagination from={1} to={5} total={1284} />
         </>
       )}
@@ -473,8 +529,44 @@ const Orders = () => {
       <DocumentsDialog
         open={!!docsOrder}
         onOpenChange={(o) => !o && setDocsOrder(null)}
-        data={docsOrder ? toDocData(docsOrder) : null}
+        data={docsOrder ? toDocData(docsOrder, true) : null}
       />
+
+      {/* 3-dot menu: Confirm Generate */}
+      <AlertDialog open={!!docConfirm} onOpenChange={(o) => !o && setDocConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate {docConfirm ? docLabel(docConfirm.kind) : ""}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will generate the {docConfirm ? docLabel(docConfirm.kind) : ""} for order{" "}
+              <span className="font-mono font-semibold">{docConfirm?.order.id}</span>
+              {docConfirm?.kind === "gatepass" && docConfirm.order.vehicles && docConfirm.order.vehicles.length > 0
+                ? ` (${docConfirm.order.vehicles.length} gate pass${docConfirm.order.vehicles.length > 1 ? "es" : ""}, one per vehicle).`
+                : "."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="gradient-primary border-0" onClick={confirmGenerate}>
+              Generate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 3-dot menu: Document preview (single doc) */}
+      <DocumentsDialog
+        open={!!docPreview}
+        onOpenChange={(o) => !o && setDocPreview(null)}
+        data={docPreview ? toDocData(docPreview.order) : null}
+        initialStage="preview"
+        initialSelection={docPreview ? {
+          invoice: docPreview.kind === "invoice",
+          delivery: docPreview.kind === "delivery",
+          gatepass: docPreview.kind === "gatepass",
+        } : undefined}
+      />
+
 
 
       {/* Inform */}
