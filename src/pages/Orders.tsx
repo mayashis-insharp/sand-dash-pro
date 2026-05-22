@@ -1,6 +1,6 @@
 import { useState, ReactNode } from "react";
 import { PageShell, TabBar, Pagination } from "@/components/dashboard/PageShell";
-import { OrdersTable, type Order } from "@/components/dashboard/OrdersTable";
+import { OrdersTable, type Order, type DocKind } from "@/components/dashboard/OrdersTable";
 import { OrdersCards } from "@/components/dashboard/OrdersCards";
 import { AddOrderDialog } from "@/components/dashboard/AddOrderDialog";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
