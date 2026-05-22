@@ -394,7 +394,7 @@ const Orders = () => {
                     <td className="px-4 py-4 text-muted-foreground text-xs">{ct}</td>
                     <td className="px-4 py-4 text-muted-foreground text-xs">{ed}</td>
                     <td className="px-4 py-4 text-muted-foreground text-xs">{et}</td>
-                    <td className="px-4 py-4"><Button size="sm" variant="outline" className="gap-1" onClick={() => setAddOpen(true)}><Edit className="h-3.5 w-3.5" /> Edit</Button></td>
+                    <td className="px-4 py-4"><Button size="icon" variant="ghost" aria-label="Edit" title="Edit" onClick={() => setAddOpen(true)} className="h-7 w-7"><Edit className="h-3.5 w-3.5" /></Button></td>
                   </tr>
                 );
               })}
