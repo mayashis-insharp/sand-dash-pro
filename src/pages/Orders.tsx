@@ -529,8 +529,44 @@ const Orders = () => {
       <DocumentsDialog
         open={!!docsOrder}
         onOpenChange={(o) => !o && setDocsOrder(null)}
-        data={docsOrder ? toDocData(docsOrder) : null}
+        data={docsOrder ? toDocData(docsOrder, true) : null}
       />
+
+      {/* 3-dot menu: Confirm Generate */}
+      <AlertDialog open={!!docConfirm} onOpenChange={(o) => !o && setDocConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate {docConfirm ? docLabel(docConfirm.kind) : ""}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will generate the {docConfirm ? docLabel(docConfirm.kind) : ""} for order{" "}
+              <span className="font-mono font-semibold">{docConfirm?.order.id}</span>
+              {docConfirm?.kind === "gatepass" && docConfirm.order.vehicles && docConfirm.order.vehicles.length > 0
+                ? ` (${docConfirm.order.vehicles.length} gate pass${docConfirm.order.vehicles.length > 1 ? "es" : ""}, one per vehicle).`
+                : "."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="gradient-primary border-0" onClick={confirmGenerate}>
+              Generate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 3-dot menu: Document preview (single doc) */}
+      <DocumentsDialog
+        open={!!docPreview}
+        onOpenChange={(o) => !o && setDocPreview(null)}
+        data={docPreview ? toDocData(docPreview.order) : null}
+        initialStage="preview"
+        initialSelection={docPreview ? {
+          invoice: docPreview.kind === "invoice",
+          delivery: docPreview.kind === "delivery",
+          gatepass: docPreview.kind === "gatepass",
+        } : undefined}
+      />
+
 
 
       {/* Inform */}
