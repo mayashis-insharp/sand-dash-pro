@@ -370,26 +370,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-muted/20 p-4 print:hidden">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Workflow Status</Label>
-              <Select value={status} onValueChange={(val) => setGpStatusMap((m) => ({ ...m, [key]: val as GpStatus }))}>
-                <SelectTrigger className="h-9 w-[200px] bg-background"><SelectValue /></SelectTrigger>
-                <SelectContent>{GP_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setSecurityOpen(key)}>
-              <ShieldCheck className="h-3.5 w-3.5" /> Security Verification
-            </Button>
-          </div>
-          {sec && (
-            <div className="mt-3 rounded-md bg-success/10 border border-success/30 px-3 py-2 text-xs flex items-center gap-2">
-              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-              <span><span className="font-semibold">Verified.</span> Confirmed by {sec.user} at <span className="font-mono">{sec.time}</span></span>
-            </div>
-          )}
-        </div>
 
         {/* Gate Security Manual Release */}
         <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4 print:border-border print:bg-transparent">
