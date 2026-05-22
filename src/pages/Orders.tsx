@@ -18,12 +18,28 @@ import { Search, Download, Plus, Calendar as CalendarIcon, Clock, LayoutGrid, Li
 import { toast } from "sonner";
 
 const orders: Order[] = [
-  { id: "OD_12457", date: "12/02/2026", type: "Retail", sandType: "River Sand – Soft", customer: { name: "Gamage", phone: "+94778542369" }, address: "Kaduwela", vehicle: "GH-5423", qty: "75 sqft", total: 180000, due: 100000, payment: "Credit" },
-  { id: "OD_12455", date: "01/02/2026", type: "Corporate", sandType: "Sea Sand", customer: { name: "Dias", phone: "+94778542369" }, address: "Kelaniya", vehicle: "MD-0214", qty: "100 sqft", total: 200000, balance: 20000, payment: "Cash" },
-  { id: "OD_12454", date: "28/01/2026", type: "Corporate", sandType: "River Sand – Coarse", customer: { name: "Perera Constructions", phone: "+94771234567" }, address: "Negombo", vehicle: "WP-7891", qty: "250 sqft", total: 525000, due: 125000, payment: "Credit" },
+  {
+    id: "OD_12457", date: "12/02/2026", type: "Retail", sandType: "River Sand – Soft",
+    customer: { name: "Gamage", phone: "+94778542369" }, address: "Kaduwela",
+    vehicle: "GH-5423", qty: "75 sqft", total: 180000, due: 100000, payment: "Credit",
+    vehicles: [
+      { vehicleNo: "GH-5423", capacity: "40", driverName: "Sunil Bandara", driverPhone: "+94770001111" },
+      { vehicleNo: "WP-2210", capacity: "35", driverName: "Kasun Perera", driverPhone: "+94770002222" },
+    ],
+    generated: { invoice: true, delivery: true, gatepass: true },
+  },
+  {
+    id: "OD_12455", date: "01/02/2026", type: "Corporate", sandType: "Sea Sand",
+    customer: { name: "Dias", phone: "+94778542369" }, address: "Kelaniya",
+    vehicle: "MD-0214", qty: "100 sqft", total: 200000, balance: 20000, payment: "Cash",
+    vehicles: [{ vehicleNo: "MD-0214", capacity: "100", driverName: "Ravi Silva", driverPhone: "+94770003333" }],
+    generated: {},
+  },
+  { id: "OD_12454", date: "28/01/2026", type: "Corporate", sandType: "River Sand – Coarse", customer: { name: "Perera Constructions", phone: "+94771234567" }, address: "Negombo", vehicle: "WP-7891", qty: "250 sqft", total: 525000, due: 125000, payment: "Credit", generated: { invoice: true } },
   { id: "OD_12453", date: "25/01/2026", type: "Retail", sandType: "Quarry Dust", customer: { name: "Fernando", phone: "+94776543210" }, address: "Moratuwa", vehicle: "CAB-3344", qty: "40 sqft", total: 72000, payment: "Cash" },
   { id: "OD_12452", date: "22/01/2026", type: "Corporate", sandType: "M-Sand", customer: { name: "Lanka Build (Pvt) Ltd", phone: "+94114567890" }, address: "Colombo 07", vehicle: "KP-9920", qty: "180 sqft", total: 396000, due: 196000, payment: "Pending" },
 ];
+
 
 const preOrders = [
   { id: "PR_881", date: "15/02/2026", who: "Gamage", phone: "+94778542369", sand: "River Sand – Soft", qty: "60 sqft", status: "upcoming", side: "customer" },
