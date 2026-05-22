@@ -1,6 +1,14 @@
-import { Eye, FileText, Phone, MapPin, Truck } from "lucide-react";
+import { Eye, FileText, Phone, MapPin, Truck, Edit, MoreHorizontal, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Order } from "./OrdersTable";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Order, DocKind } from "./OrdersTable";
 
 const fmt = (n: number) => n.toLocaleString();
 
@@ -15,7 +23,15 @@ const payStyles: Record<Order["payment"], string> = {
   Pending: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
-export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; onView?: (o: Order) => void; onInvoice?: (o: Order) => void }) {
+interface Props {
+  orders: Order[];
+  onView?: (o: Order) => void;
+  onEdit?: (o: Order) => void;
+  onInvoice?: (o: Order) => void;
+  onDoc?: (o: Order, kind: DocKind) => void;
+}
+
+export function OrdersCards({ orders, onView, onEdit, onDoc }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {orders.map((o) => (
@@ -34,6 +50,28 @@ export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; on
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{o.date}</p>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth" aria-label="More actions">
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">Documents</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => onDoc?.(o, "invoice")} className="gap-2 text-xs">
+                  <FileText className="h-3.5 w-3.5 text-info" /> Invoice
+                  {o.generated?.invoice && <Badge variant="outline" className="ml-auto text-[9px] border-success/40 text-success">Ready</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onDoc?.(o, "delivery")} className="gap-2 text-xs">
+                  <Truck className="h-3.5 w-3.5 text-primary" /> Delivery Note
+                  {o.generated?.delivery && <Badge variant="outline" className="ml-auto text-[9px] border-success/40 text-success">Ready</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onDoc?.(o, "gatepass")} className="gap-2 text-xs">
+                  <ShieldCheck className="h-3.5 w-3.5 text-warning" /> Gate Passes
+                  {o.generated?.gatepass && <Badge variant="outline" className="ml-auto text-[9px] border-success/40 text-success">Ready</Badge>}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Customer */}
@@ -57,7 +95,8 @@ export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; on
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Vehicle</p>
               <p className="mt-0.5 flex items-center gap-1 font-mono text-foreground">
-                <Truck className="h-3 w-3 text-muted-foreground" /> {o.vehicle}
+                <Truck className="h-3 w-3 text-muted-foreground" />
+                {o.vehicles && o.vehicles.length > 1 ? `${o.vehicles.length} vehicles` : o.vehicle}
               </p>
             </div>
           </div>
@@ -90,8 +129,8 @@ export function OrdersCards({ orders, onView, onInvoice }: { orders: Order[]; on
             <button onClick={() => onView?.(o)} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-smooth">
               <Eye className="h-3.5 w-3.5" /> View
             </button>
-            <button onClick={() => onInvoice?.(o)} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-info hover:bg-info/10 transition-smooth">
-              <FileText className="h-3.5 w-3.5" /> Invoice
+            <button onClick={() => onEdit?.(o)} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-smooth">
+              <Edit className="h-3.5 w-3.5" /> Edit
             </button>
           </div>
         </div>
