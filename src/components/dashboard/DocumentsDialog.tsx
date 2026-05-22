@@ -419,25 +419,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
               </div>
             </div>
           </div>
-          <div className="mt-3 flex justify-end print:hidden">
-            <Button
-              size="sm"
-              className="gradient-primary border-0 gap-1.5"
-              disabled={!!releaseMap[key]}
-              onClick={() => {
-                const f = releaseForm[key];
-                if (!f?.guard || !f?.time) {
-                  toast.error("Enter guard name and time");
-                  return;
-                }
-                setReleaseMap((m) => ({ ...m, [key]: { guard: f.guard, time: f.time } }));
-                setGpStatusMap((m) => ({ ...m, [key]: "Completed" }));
-                toast.success("Vehicle released", { description: `${v.vehicleNo} at ${f.time} by ${f.guard}` });
-              }}
-            >
-              <LogOut className="h-3.5 w-3.5" /> {releaseMap[key] ? "Released" : "Release Vehicle"}
-            </Button>
-          </div>
         </div>
 
         <AuditFooter extra={sec ? (
