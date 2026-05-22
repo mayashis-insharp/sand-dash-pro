@@ -117,10 +117,16 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
   const invoiceTotal = Math.max(0, data.subtotal - (data.discount || 0)) + invoiceChargesTotal;
 
   const reset = () => {
-    setStage("select");
-    setSel({ invoice: true, delivery: false, gatepass: false });
+    setStage(initialStage);
+    setSel({
+      invoice: initialSelection?.invoice ?? true,
+      delivery: initialSelection?.delivery ?? false,
+      gatepass: initialSelection?.gatepass ?? false,
+    });
     setGpStatusMap({});
     setSecMap({});
+    setReleaseMap({});
+    setReleaseForm({});
   };
 
   const close = () => { onOpenChange(false); setTimeout(reset, 200); };
