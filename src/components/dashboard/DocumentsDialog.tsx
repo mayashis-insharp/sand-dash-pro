@@ -390,6 +390,76 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
             </div>
           )}
         </div>
+
+        {/* Gate Security Manual Release */}
+        <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4 print:border-border print:bg-transparent">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
+              <LogOut className="h-3.5 w-3.5" /> Gate Security — Manual Release
+            </p>
+            {releaseMap[key] && (
+              <Badge variant="outline" className="text-[10px] border-success/40 text-success bg-success/10">
+                <CheckCircle2 className="h-3 w-3 mr-1" /> Released
+              </Badge>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Security Guard Name</Label>
+              <Input
+                value={releaseMap[key]?.guard ?? releaseForm[key]?.guard ?? ""}
+                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), guard: e.target.value } }))}
+                disabled={!!releaseMap[key]}
+                placeholder="Guard name"
+                className="h-9 mt-1 bg-background"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Time at Gate</Label>
+              <Input
+                type="time"
+                value={releaseMap[key]?.time ?? releaseForm[key]?.time ?? ""}
+                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), time: e.target.value } }))}
+                disabled={!!releaseMap[key]}
+                className="h-9 mt-1 bg-background"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle No</Label>
+              <Input value={v.vehicleNo || "—"} disabled className="h-9 mt-1 bg-background font-mono" />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</Label>
+              <Input value={v.driverName || "—"} disabled className="h-9 mt-1 bg-background" />
+            </div>
+            <div className="col-span-2">
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Signature</Label>
+              <div className="h-12 mt-1 rounded-md border border-dashed border-border bg-background flex items-center justify-center text-[10px] text-muted-foreground italic">
+                {releaseMap[key] ? `Signed — ${releaseMap[key].guard}` : "Sign here"}
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 flex justify-end print:hidden">
+            <Button
+              size="sm"
+              className="gradient-primary border-0 gap-1.5"
+              disabled={!!releaseMap[key]}
+              onClick={() => {
+                const f = releaseForm[key];
+                if (!f?.guard || !f?.time) {
+                  toast.error("Enter guard name and time");
+                  return;
+                }
+                setReleaseMap((m) => ({ ...m, [key]: { guard: f.guard, time: f.time } }));
+                setGpStatusMap((m) => ({ ...m, [key]: "Completed" }));
+                toast.success("Vehicle released", { description: `${v.vehicleNo} at ${f.time} by ${f.guard}` });
+              }}
+            >
+              <LogOut className="h-3.5 w-3.5" /> {releaseMap[key] ? "Released" : "Release Vehicle"}
+            </Button>
+          </div>
+        </div>
+
         <AuditFooter extra={sec ? (
           <>
             <span>Dispatch confirmed: <span className="font-medium text-foreground">{mockUser}</span></span>
@@ -399,6 +469,7 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
       </div>
     );
   };
+
 
   const activeSecKey = securityOpen;
   const activeSecVehicle = activeSecKey ? vehicleList.find((vv, i) => vv.vehicleNo + ":" + i === activeSecKey) : null;
