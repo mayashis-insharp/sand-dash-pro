@@ -360,7 +360,7 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Quantity</p><p className="font-medium">{v.assignedQty || v.capacity || data.qty}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product</p><p className="font-medium">{data.product}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Status</p><Badge variant="outline" className={cn("text-[10px] mt-0.5", gpStatusClass(status))}>{status}</Badge></div>
+            
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="h-24 w-24 rounded-lg border-2 border-border bg-background flex items-center justify-center">
