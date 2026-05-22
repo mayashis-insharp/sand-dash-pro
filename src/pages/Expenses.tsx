@@ -150,7 +150,7 @@ const Expenses = () => {
               <td className="px-4 py-4">{d.type}</td>
               <td className="px-4 py-4 text-muted-foreground text-xs">{d.created}</td>
               <td className="px-4 py-4 text-muted-foreground text-xs">{d.edited}</td>
-              <td className="px-4 py-4"><Button size="sm" variant="outline" onClick={() => setEdit(d)} className="gap-1"><Edit className="h-3.5 w-3.5" /> Edit</Button></td>
+              <td className="px-4 py-4"><Button size="icon" variant="ghost" aria-label="Edit" title="Edit" onClick={() => setEdit(d)} className="h-7 w-7"><Edit className="h-3.5 w-3.5" /></Button></td>
             </tr>
           ))}
         </tbody>
