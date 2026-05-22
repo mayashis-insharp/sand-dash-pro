@@ -360,7 +360,7 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Quantity</p><p className="font-medium">{v.assignedQty || v.capacity || data.qty}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product</p><p className="font-medium">{data.product}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Status</p><Badge variant="outline" className={cn("text-[10px] mt-0.5", gpStatusClass(status))}>{status}</Badge></div>
+            
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="h-24 w-24 rounded-lg border-2 border-border bg-background flex items-center justify-center">
@@ -370,26 +370,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-muted/20 p-4 print:hidden">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Workflow Status</Label>
-              <Select value={status} onValueChange={(val) => setGpStatusMap((m) => ({ ...m, [key]: val as GpStatus }))}>
-                <SelectTrigger className="h-9 w-[200px] bg-background"><SelectValue /></SelectTrigger>
-                <SelectContent>{GP_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setSecurityOpen(key)}>
-              <ShieldCheck className="h-3.5 w-3.5" /> Security Verification
-            </Button>
-          </div>
-          {sec && (
-            <div className="mt-3 rounded-md bg-success/10 border border-success/30 px-3 py-2 text-xs flex items-center gap-2">
-              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-              <span><span className="font-semibold">Verified.</span> Confirmed by {sec.user} at <span className="font-mono">{sec.time}</span></span>
-            </div>
-          )}
-        </div>
 
         {/* Gate Security Manual Release */}
         <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4 print:border-border print:bg-transparent">
@@ -438,25 +418,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
                 {releaseMap[key] ? `Signed — ${releaseMap[key].guard}` : "Sign here"}
               </div>
             </div>
-          </div>
-          <div className="mt-3 flex justify-end print:hidden">
-            <Button
-              size="sm"
-              className="gradient-primary border-0 gap-1.5"
-              disabled={!!releaseMap[key]}
-              onClick={() => {
-                const f = releaseForm[key];
-                if (!f?.guard || !f?.time) {
-                  toast.error("Enter guard name and time");
-                  return;
-                }
-                setReleaseMap((m) => ({ ...m, [key]: { guard: f.guard, time: f.time } }));
-                setGpStatusMap((m) => ({ ...m, [key]: "Completed" }));
-                toast.success("Vehicle released", { description: `${v.vehicleNo} at ${f.time} by ${f.guard}` });
-              }}
-            >
-              <LogOut className="h-3.5 w-3.5" /> {releaseMap[key] ? "Released" : "Release Vehicle"}
-            </Button>
           </div>
         </div>
 

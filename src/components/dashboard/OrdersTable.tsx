@@ -102,11 +102,11 @@ export function OrdersTable({ orders, onView, onEdit, onDoc }: Props) {
                 <td className={cn("px-4 py-4 font-semibold", payStyles[o.payment])}>{o.payment}</td>
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-1">
-                    <button onClick={() => onView?.(o)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted transition-smooth">
-                      <Eye className="h-3.5 w-3.5" /> View
+                    <button onClick={() => onView?.(o)} aria-label="View" title="View" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted transition-smooth">
+                      <Eye className="h-3.5 w-3.5" />
                     </button>
-                    <button onClick={() => onEdit?.(o)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-foreground hover:bg-muted transition-smooth">
-                      <Edit className="h-3.5 w-3.5" /> Edit
+                    <button onClick={() => onEdit?.(o)} aria-label="Edit" title="Edit" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted transition-smooth">
+                      <Edit className="h-3.5 w-3.5" />
                     </button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
