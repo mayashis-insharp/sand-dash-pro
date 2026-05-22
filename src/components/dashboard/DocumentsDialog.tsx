@@ -64,13 +64,35 @@ const gpStatusClass = (s: GpStatus) =>
     : s === "Ready for Dispatch" ? "bg-warning/15 text-warning border-warning/30"
     : "bg-muted text-muted-foreground border-border";
 
-export function DocumentsDialog({ open, onOpenChange, data }: Props) {
+export function DocumentsDialog({ open, onOpenChange, data, initialStage = "select", initialSelection }: Props) {
   // Stage 1: selection. Stage 2: preview.
-  const [stage, setStage] = useState<"select" | "preview">("select");
-  const [sel, setSel] = useState({ invoice: true, delivery: false, gatepass: false });
+  const [stage, setStage] = useState<"select" | "preview">(initialStage);
+  const [sel, setSel] = useState({
+    invoice: initialSelection?.invoice ?? true,
+    delivery: initialSelection?.delivery ?? false,
+    gatepass: initialSelection?.gatepass ?? false,
+  });
   const [gpStatusMap, setGpStatusMap] = useState<Record<string, GpStatus>>({});
   const [securityOpen, setSecurityOpen] = useState<string | null>(null);
   const [secMap, setSecMap] = useState<Record<string, { user: string; time: string }>>({});
+  const [releaseMap, setReleaseMap] = useState<Record<string, { guard: string; time: string }>>({});
+  const [releaseForm, setReleaseForm] = useState<Record<string, { guard: string; time: string }>>({});
+  const [activeGpTab, setActiveGpTab] = useState<string>("0");
+
+  // Re-sync when dialog (re)opens with new initial props
+  useEffect(() => {
+    if (open) {
+      setStage(initialStage);
+      setSel({
+        invoice: initialSelection?.invoice ?? true,
+        delivery: initialSelection?.delivery ?? false,
+        gatepass: initialSelection?.gatepass ?? false,
+      });
+      setActiveGpTab("0");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
 
   // approval state
   const [approvedBy, setApprovedBy] = useState("");
