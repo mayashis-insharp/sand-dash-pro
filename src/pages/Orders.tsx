@@ -327,9 +327,12 @@ const Orders = () => {
               </div>
             </div>
           </div>
-          {view === "table"
-            ? <OrdersTable orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />
-            : <OrdersCards orders={orders} onView={setViewOrder} onInvoice={setDocsOrder} />}
+          {(() => {
+            const enriched = orders.map((o) => ({ ...o, generated: genMap[o.id] || o.generated || {} }));
+            return view === "table"
+              ? <OrdersTable orders={enriched} onView={setViewOrder} onEdit={setEditOrder} onDoc={handleDocAction} />
+              : <OrdersCards orders={enriched} onView={setViewOrder} onEdit={setEditOrder} onDoc={handleDocAction} />;
+          })()}
           <Pagination from={1} to={5} total={1284} />
         </>
       )}
