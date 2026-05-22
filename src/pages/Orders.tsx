@@ -220,10 +220,19 @@ const Orders = () => {
   const [receivedConfirm, setReceivedConfirm] = useState<any>(null);
   const [exportOpen, setExportOpen] = useState(false);
 
-  const toDocData = (o: Order): DocData => {
+  // Per-order document state for the 3-dot menu
+  const [docPreview, setDocPreview] = useState<{ order: Order; kind: DocKind } | null>(null);
+  const [docConfirm, setDocConfirm] = useState<{ order: Order; kind: DocKind } | null>(null);
+  const [genMap, setGenMap] = useState<Record<string, { invoice?: boolean; delivery?: boolean; gatepass?: boolean }>>(
+    () => Object.fromEntries(orders.map((o) => [o.id, { ...(o.generated || {}) }]))
+  );
+
+  const docLabel = (k: DocKind) => (k === "invoice" ? "Invoice" : k === "delivery" ? "Delivery Note" : "Gate Passes");
+
+  const toDocData = (o: Order, useSubmitted = false): DocData => {
     const qNum = parseInt(o.qty) || 1;
     const unit = Math.round(o.total / qNum);
-    const vehicles = submittedVehicles && submittedVehicles.length > 0
+    const fromSubmitted = useSubmitted && submittedVehicles && submittedVehicles.length > 0
       ? submittedVehicles
           .filter((v) => v.vehicleNo)
           .map((v) => ({
@@ -234,6 +243,16 @@ const Orders = () => {
             assignedQty: v.capacity ? `${v.capacity}` : undefined,
           }))
       : undefined;
+    const fromOrder = o.vehicles && o.vehicles.length > 0
+      ? o.vehicles.map((v) => ({
+          vehicleNo: v.vehicleNo,
+          capacity: v.capacity,
+          driverName: v.driverName,
+          driverPhone: v.driverPhone,
+          assignedQty: v.capacity ? `${v.capacity}` : undefined,
+        }))
+      : undefined;
+    const vehicles = fromSubmitted ?? fromOrder;
     return {
       source: "order",
       refNo: o.id,
@@ -260,6 +279,24 @@ const Orders = () => {
     setSubmittedVehicles(payload?.vehicles || null);
     setDocsOrder(orders[0]);
   };
+
+  const handleDocAction = (o: Order, kind: DocKind) => {
+    if (genMap[o.id]?.[kind]) {
+      setDocPreview({ order: o, kind });
+    } else {
+      setDocConfirm({ order: o, kind });
+    }
+  };
+
+  const confirmGenerate = () => {
+    if (!docConfirm) return;
+    const { order, kind } = docConfirm;
+    setGenMap((m) => ({ ...m, [order.id]: { ...(m[order.id] || {}), [kind]: true } }));
+    setDocConfirm(null);
+    setDocPreview({ order, kind });
+    toast.success(`${docLabel(kind)} generated`);
+  };
+
 
   return (
     <PageShell icon={ShoppingCart} title="Orders" description="Manage and track all customer sand orders.">
