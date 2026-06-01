@@ -310,7 +310,14 @@ const Inventory = () => {
           <FooterBtns
             onCancel={() => setAddStock(false)}
             onDraft={() => { toast.success("Saved as draft"); setAddStock(false); }}
-            onSave={() => { toast.success("Stock added"); setAddStock(false); }}
+            onSave={() => {
+              toast.success("Stock added");
+              setAddStock(false);
+              if (qStatus === "ck") {
+                const mockNew = { id: "ST_NEW", date: new Date().toLocaleDateString(), supplier: "Supplier", sand: "Sand", qty: stockQty + " sqft", status: "Quality Checked", finalPrice: 1800, sellPrice: 2400, vehicle: stockVehicles[0]?.vehicleNo || "—" };
+                setPostSaveGrn(mockNew);
+              }
+            }}
             saveLabel="Add Stock"
             saveIcon={<Plus className="h-4 w-4" />}
           />
