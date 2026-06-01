@@ -148,6 +148,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
+  const [useCredit, setUseCredit] = useState(false);
   const [charges, setCharges] = useState<Charge[]>([]);
   const [notes, setNotes] = useState("");
 
