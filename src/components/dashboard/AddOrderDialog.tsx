@@ -189,6 +189,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     setCustomerId(id);
     const c = customers.find((x) => x.id === id);
     if (c) setPhone(c.phone);
+    setUseCredit(false);
     setCustomerOpen(false);
   };
 
