@@ -494,36 +494,13 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
                   </>
                 )}
                 {sel.gatepass && (
-                  <div className="space-y-3">
-                    {vehicleList.length > 1 ? (
-                      <Tabs value={activeGpTab} onValueChange={setActiveGpTab} className="w-full print:hidden">
-                        <div className="flex items-center justify-between gap-3 flex-wrap">
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                            {vehicleList.length} Gate Passes — one per vehicle
-                          </p>
-                          <TabsList>
-                            {vehicleList.map((v, i) => (
-                              <TabsTrigger key={i} value={String(i)} className="text-xs gap-1.5">
-                                <Truck className="h-3 w-3" /> {v.vehicleNo || `#${i + 1}`}
-                              </TabsTrigger>
-                            ))}
-                          </TabsList>
-                        </div>
-                        {vehicleList.map((v, i) => (
-                          <TabsContent key={i} value={String(i)} className="mt-3">
-                            {renderGatePass(v, i)}
-                          </TabsContent>
-                        ))}
-                      </Tabs>
-                    ) : (
-                      renderGatePass(vehicleList[0], 0)
-                    )}
-                    {/* Print-only: show all gate passes stacked */}
+                  <div className="space-y-4">
                     {vehicleList.length > 1 && (
-                      <div className="hidden print:block space-y-4">
-                        {vehicleList.map((v, i) => renderGatePass(v, i))}
-                      </div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold print:hidden">
+                        {vehicleList.length} Gate Passes — one per vehicle
+                      </p>
                     )}
+                    {vehicleList.map((v, i) => renderGatePass(v, i))}
                   </div>
                 )}
               </div>
