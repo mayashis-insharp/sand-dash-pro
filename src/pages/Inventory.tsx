@@ -11,11 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet, MoreHorizontal, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 import { DocumentsDialog, type DocData } from "@/components/dashboard/DocumentsDialog";
+import { GRNDialog, type GRNData } from "@/components/dashboard/GRNDialog";
 
 const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
@@ -86,6 +89,46 @@ const Inventory = () => {
   const stockCapShort = stockQtyNum > 0 && stockTotalCap > 0 && stockQtyNum > stockTotalCap;
   const [exportOpen, setExportOpen] = useState(false);
   const [docsStock, setDocsStock] = useState<any>(null);
+
+  // GRN state
+  const [grnPreview, setGrnPreview] = useState<any>(null);
+  const [grnConfirm, setGrnConfirm] = useState<any>(null);
+  const [grnWarn, setGrnWarn] = useState<any>(null);
+  const [grnGenerated, setGrnGenerated] = useState<Record<string, boolean>>({
+    ST_4421: true, // mock: one is already generated
+  });
+  const [postSaveGrn, setPostSaveGrn] = useState<any>(null);
+
+  const buildGrnData = (s: any): GRNData => ({
+    stockId: s.id,
+    date: s.date?.split(" ")[0] || s.date,
+    supplier: s.supplier,
+    supplierPhone: "+94 77 850 0011",
+    sandType: s.sand,
+    orderedQty: s.qty,
+    actualQty: s.actualQty,
+    vehicles: (stockVehicles.filter(v => v.vehicleNo).length > 0
+      ? stockVehicles.filter(v => v.vehicleNo).map(v => ({ vehicleNo: v.vehicleNo, driverName: v.driverName, driverPhone: v.driverPhone }))
+      : [{ vehicleNo: s.vehicle, driverName: "Driver", driverPhone: "—" }]),
+    supplierUnitPrice: s.finalPrice,
+    finalUnitPrice: s.finalPrice,
+    totalAmount: s.finalPrice * (parseInt(s.qty) || 1),
+    qualityStatus: s.status,
+    qualityResult: s.status === "Quality Checked" ? "No Quality Difference" : undefined,
+    comments: s.comments || "",
+  });
+
+  const handleGrnAction = (s: any) => {
+    if (s.status !== "Quality Checked") {
+      setGrnWarn(s);
+      return;
+    }
+    if (grnGenerated[s.id]) {
+      setGrnPreview(s);
+    } else {
+      setGrnConfirm(s);
+    }
+  };
 
   const buildStockDoc = (s: any): DocData => {
     const vList = stockVehicles
@@ -162,7 +205,26 @@ const Inventory = () => {
                         <td className="px-4 py-4 font-mono">{s.finalPrice.toLocaleString()}</td>
                         <td className="px-4 py-4 font-mono">{s.sellPrice.toLocaleString()}</td>
                         <td className="px-4 py-4 font-mono text-xs">{s.vehicle}</td>
-                        <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => setViewStock(s)} aria-label="View" title="View" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button>
+                            <button onClick={() => setEditStock(s)} aria-label="Edit" title="Edit" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="More actions">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-44">
+                                <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">Documents</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleGrnAction(s)} className="gap-2 text-xs">
+                                  <FileText className="h-3.5 w-3.5 text-primary" /> GRN
+                                  {grnGenerated[s.id] && <Badge variant="outline" className="ml-auto text-[9px] border-success/40 text-success">Ready</Badge>}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -248,7 +310,14 @@ const Inventory = () => {
           <FooterBtns
             onCancel={() => setAddStock(false)}
             onDraft={() => { toast.success("Saved as draft"); setAddStock(false); }}
-            onSave={() => { toast.success("Stock added"); setAddStock(false); }}
+            onSave={() => {
+              toast.success("Stock added");
+              setAddStock(false);
+              if (qStatus === "ck") {
+                const mockNew = { id: "ST_NEW", date: new Date().toLocaleDateString(), supplier: "Supplier", sand: "Sand", qty: stockQty + " sqft", status: "Quality Checked", finalPrice: 1800, sellPrice: 2400, vehicle: stockVehicles[0]?.vehicleNo || "—" };
+                setPostSaveGrn(mockNew);
+              }
+            }}
             saveLabel="Add Stock"
             saveIcon={<Plus className="h-4 w-4" />}
           />
@@ -402,7 +471,12 @@ const Inventory = () => {
         title="Edit Stock"
         icon={<Edit className="h-5 w-5" />}
         size="lg"
-        footer={<FooterBtns onCancel={() => setEditStock(null)} onSave={() => { toast.success("Changes saved"); setEditStock(null); }} saveLabel="Save Changes" />}
+        footer={<FooterBtns onCancel={() => setEditStock(null)} onSave={() => {
+          toast.success("Changes saved");
+          const s = editStock;
+          setEditStock(null);
+          if (s && s.status === "Quality Checked") setPostSaveGrn(s);
+        }} saveLabel="Save Changes" />}
       >
         <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Details" description="Editing form prefilled with existing values.">
           <div className="grid grid-cols-2 gap-4">
@@ -580,6 +654,88 @@ const Inventory = () => {
         onOpenChange={(o) => !o && setDocsStock(null)}
         data={docsStock ? buildStockDoc(docsStock) : null}
       />
+
+      {/* GRN preview */}
+      <GRNDialog
+        open={!!grnPreview}
+        onOpenChange={(o) => !o && setGrnPreview(null)}
+        data={grnPreview ? buildGrnData(grnPreview) : null}
+      />
+
+      {/* GRN confirm from 3-dot menu */}
+      <AlertDialog open={!!grnConfirm} onOpenChange={(o) => !o && setGrnConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate GRN?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will generate the Goods Received Note for stock{" "}
+              <span className="font-mono font-semibold">{grnConfirm?.id}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Skip</AlertDialogCancel>
+            <AlertDialogAction
+              className="gradient-primary border-0"
+              onClick={() => {
+                if (!grnConfirm) return;
+                setGrnGenerated((m) => ({ ...m, [grnConfirm.id]: true }));
+                setGrnPreview(grnConfirm);
+                setGrnConfirm(null);
+                toast.success("GRN generated");
+              }}
+            >
+              Generate GRN
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* GRN warning if not quality checked */}
+      <AlertDialog open={!!grnWarn} onOpenChange={(o) => !o && setGrnWarn(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-warning" /> Quality check required
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              GRN can only be generated after quality is checked. Update the quality
+              status of <span className="font-mono font-semibold">{grnWarn?.id}</span> to{" "}
+              <span className="font-medium">Quality Checked</span> first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setGrnWarn(null)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Post-save GRN confirm */}
+      <AlertDialog open={!!postSaveGrn} onOpenChange={(o) => !o && setPostSaveGrn(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate GRN?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This stock is marked as Quality Checked. Would you like to generate the
+              Goods Received Note now?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Skip</AlertDialogCancel>
+            <AlertDialogAction
+              className="gradient-primary border-0"
+              onClick={() => {
+                if (!postSaveGrn) return;
+                setGrnGenerated((m) => ({ ...m, [postSaveGrn.id]: true }));
+                setGrnPreview(postSaveGrn);
+                setPostSaveGrn(null);
+                toast.success("GRN generated");
+              }}
+            >
+              Generate GRN
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 };

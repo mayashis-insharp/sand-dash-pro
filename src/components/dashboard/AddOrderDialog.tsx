@@ -51,11 +51,11 @@ interface AddOrderDialogProps {
 }
 
 const customers = [
-  { id: "1", name: "Gamage", phone: "+94778542369" },
-  { id: "2", name: "Dias", phone: "+94778542300" },
-  { id: "3", name: "Perera Constructions", phone: "+94771234567" },
-  { id: "4", name: "Fernando", phone: "+94776543210" },
-  { id: "5", name: "Lanka Build (Pvt) Ltd", phone: "+94114567890" },
+  { id: "1", name: "Gamage", phone: "+94778542369", credit: 15000 },
+  { id: "2", name: "Dias", phone: "+94778542300", credit: 0 },
+  { id: "3", name: "Perera Constructions", phone: "+94771234567", credit: 42500 },
+  { id: "4", name: "Fernando", phone: "+94776543210", credit: 0 },
+  { id: "5", name: "Lanka Build (Pvt) Ltd", phone: "+94114567890", credit: 8000 },
 ];
 
 const drivers = [
@@ -148,6 +148,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
+  const [useCredit, setUseCredit] = useState(false);
   const [charges, setCharges] = useState<Charge[]>([]);
   const [notes, setNotes] = useState("");
 
@@ -171,8 +172,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   );
   const grandTotal = Math.max(0, subtotal - discountVal) + totalCharges;
   const invoiceTotal = Math.max(0, subtotal - discountVal) + invoiceCharges;
+  const availableCredit = selectedCustomer?.credit ?? 0;
+  const creditApplied = useCredit ? Math.min(availableCredit, grandTotal) : 0;
+  const remainingCredit = Math.max(0, availableCredit - creditApplied);
   const paid = parseFloat(paymentAmount || "0");
-  const balance = grandTotal - paid;
+  const balance = Math.max(0, grandTotal - creditApplied) - paid;
 
   const addCharge = () =>
     setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "", addToInvoice: false }]);
@@ -185,6 +189,7 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
     setCustomerId(id);
     const c = customers.find((x) => x.id === id);
     if (c) setPhone(c.phone);
+    setUseCredit(false);
     setCustomerOpen(false);
   };
 
@@ -243,7 +248,8 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
               <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
             </div>
-            {paid > 0 && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
+            {creditApplied > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Credit Applied</span><span className="font-mono text-success">−{fmt(creditApplied)}</span></div>}
+            {(paid > 0 || creditApplied > 0) && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
           </div>
           <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
             <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground">Cancel</Button>
@@ -465,6 +471,35 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
             </Section>
 
             <Section icon={Wallet} title="Payment" description="Discounts, method, and amount paid.">
+              {availableCredit > 0 && (
+                <div className="mb-4 rounded-xl border border-success/40 bg-success/10 p-4">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="text-xs space-y-1">
+                      <p className="font-semibold text-success flex items-center gap-1.5">
+                        <Wallet className="h-3.5 w-3.5" /> Customer credit available
+                      </p>
+                      <p className="text-foreground">
+                        Available customer credit:{" "}
+                        <span className="font-mono font-semibold">{fmt(availableCredit)}</span>
+                      </p>
+                      <p className="text-foreground">
+                        Applied to this order:{" "}
+                        <span className="font-mono font-semibold">{fmt(creditApplied)}</span>
+                      </p>
+                      {useCredit && remainingCredit > 0 && (
+                        <p className="text-muted-foreground">
+                          Remaining customer balance after this order:{" "}
+                          <span className="font-mono">{fmt(remainingCredit)}</span>
+                        </p>
+                      )}
+                    </div>
+                    <label className="flex items-center gap-2 text-xs font-medium cursor-pointer select-none">
+                      <Checkbox checked={useCredit} onCheckedChange={(v) => setUseCredit(!!v)} />
+                      <span>Use available customer credit for this order</span>
+                    </label>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Discount">
                   <div className="flex gap-2">
