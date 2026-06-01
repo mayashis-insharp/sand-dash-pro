@@ -654,6 +654,88 @@ const Inventory = () => {
         onOpenChange={(o) => !o && setDocsStock(null)}
         data={docsStock ? buildStockDoc(docsStock) : null}
       />
+
+      {/* GRN preview */}
+      <GRNDialog
+        open={!!grnPreview}
+        onOpenChange={(o) => !o && setGrnPreview(null)}
+        data={grnPreview ? buildGrnData(grnPreview) : null}
+      />
+
+      {/* GRN confirm from 3-dot menu */}
+      <AlertDialog open={!!grnConfirm} onOpenChange={(o) => !o && setGrnConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate GRN?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will generate the Goods Received Note for stock{" "}
+              <span className="font-mono font-semibold">{grnConfirm?.id}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Skip</AlertDialogCancel>
+            <AlertDialogAction
+              className="gradient-primary border-0"
+              onClick={() => {
+                if (!grnConfirm) return;
+                setGrnGenerated((m) => ({ ...m, [grnConfirm.id]: true }));
+                setGrnPreview(grnConfirm);
+                setGrnConfirm(null);
+                toast.success("GRN generated");
+              }}
+            >
+              Generate GRN
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* GRN warning if not quality checked */}
+      <AlertDialog open={!!grnWarn} onOpenChange={(o) => !o && setGrnWarn(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-warning" /> Quality check required
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              GRN can only be generated after quality is checked. Update the quality
+              status of <span className="font-mono font-semibold">{grnWarn?.id}</span> to{" "}
+              <span className="font-medium">Quality Checked</span> first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setGrnWarn(null)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Post-save GRN confirm */}
+      <AlertDialog open={!!postSaveGrn} onOpenChange={(o) => !o && setPostSaveGrn(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate GRN?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This stock is marked as Quality Checked. Would you like to generate the
+              Goods Received Note now?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Skip</AlertDialogCancel>
+            <AlertDialogAction
+              className="gradient-primary border-0"
+              onClick={() => {
+                if (!postSaveGrn) return;
+                setGrnGenerated((m) => ({ ...m, [postSaveGrn.id]: true }));
+                setGrnPreview(postSaveGrn);
+                setPostSaveGrn(null);
+                toast.success("GRN generated");
+              }}
+            >
+              Generate GRN
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 };
