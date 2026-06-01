@@ -11,11 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Upload, Edit, Eye, Download, Trash2, X, Boxes, Truck, BadgeCheck, Bell, Receipt as ReceiptIcon, FileText, Calendar as CalendarIcon, Wallet, MoreHorizontal, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ExportReportDialog } from "@/components/dashboard/ExportReportDialog";
 import { DocumentsDialog, type DocData } from "@/components/dashboard/DocumentsDialog";
+import { GRNDialog, type GRNData } from "@/components/dashboard/GRNDialog";
 
 const tabs = ["Sand Stock", "Set Alert", "Drafts"] as const;
 
