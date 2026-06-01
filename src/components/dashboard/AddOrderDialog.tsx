@@ -51,11 +51,11 @@ interface AddOrderDialogProps {
 }
 
 const customers = [
-  { id: "1", name: "Gamage", phone: "+94778542369" },
-  { id: "2", name: "Dias", phone: "+94778542300" },
-  { id: "3", name: "Perera Constructions", phone: "+94771234567" },
-  { id: "4", name: "Fernando", phone: "+94776543210" },
-  { id: "5", name: "Lanka Build (Pvt) Ltd", phone: "+94114567890" },
+  { id: "1", name: "Gamage", phone: "+94778542369", credit: 15000 },
+  { id: "2", name: "Dias", phone: "+94778542300", credit: 0 },
+  { id: "3", name: "Perera Constructions", phone: "+94771234567", credit: 42500 },
+  { id: "4", name: "Fernando", phone: "+94776543210", credit: 0 },
+  { id: "5", name: "Lanka Build (Pvt) Ltd", phone: "+94114567890", credit: 8000 },
 ];
 
 const drivers = [
