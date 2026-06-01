@@ -346,21 +346,22 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
   const renderGatePass = (v: DocVehicle, idx: number) => {
     const key = v.vehicleNo + ":" + idx;
     const vGpNo = vehicleList.length > 1 ? `${gpNo}-${idx + 1}` : gpNo;
-    const status = gpStatusMap[key] || "Pending";
-    const sec = secMap[key];
+    const assigned = v.assignedQty || v.capacity || data.qty;
     return (
       <div key={key} className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none print:break-inside-avoid">
-        <Header docTitle={`Gate Pass${vehicleList.length > 1 ? ` (${idx + 1} of ${vehicleList.length})` : ""}`} docNo={vGpNo} />
+        <Header
+          docTitle={`Gate Pass${vehicleList.length > 1 ? ` (${idx + 1} of ${vehicleList.length})` : ""}`}
+          docNo={vGpNo}
+        />
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="grid grid-cols-2 gap-3 text-sm flex-1">
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Number</p><p className="font-mono font-semibold">{v.vehicleNo || "—"}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Capacity</p><p className="font-medium">{v.capacity || "—"}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</p><p className="font-medium">{v.driverName || "—"}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Contact</p><p className="font-mono text-xs">{v.driverPhone || "—"}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Quantity</p><p className="font-medium">{v.assignedQty || v.capacity || data.qty}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product</p><p className="font-medium">{data.product}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
-            
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Assigned Quantity</p><p className="font-medium">{assigned}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Product / Sand</p><p className="font-medium">{data.product}</p></div>
+            <div className="col-span-2"><p className="text-[10px] uppercase tracking-wider text-muted-foreground">Dispatch Date / Time</p><p className="font-mono text-xs">{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="h-24 w-24 rounded-lg border-2 border-border bg-background flex items-center justify-center">
@@ -370,63 +371,45 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           </div>
         </div>
 
+        <AuditFooter />
 
-        {/* Gate Security Manual Release */}
-        <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4 print:border-border print:bg-transparent">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] uppercase tracking-wider font-semibold text-primary flex items-center gap-1.5">
-              <LogOut className="h-3.5 w-3.5" /> Gate Security — Manual Release
-            </p>
-            {releaseMap[key] && (
-              <Badge variant="outline" className="text-[10px] border-success/40 text-success bg-success/10">
-                <CheckCircle2 className="h-3 w-3 mr-1" /> Released
-              </Badge>
-            )}
+        {/* Tear-off Security Guard Copy */}
+        <div className="my-4 flex items-center gap-3">
+          <div className="flex-1 border-t-2 border-dashed border-border" />
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Cut here — Guard Copy</span>
+          <div className="flex-1 border-t-2 border-dashed border-border" />
+        </div>
+
+        <div className="rounded-lg border border-border p-4 print:break-inside-avoid">
+          <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">
+            Gate Security — Guard Copy
+          </p>
+          <div className="grid grid-cols-2 gap-3 text-xs mb-4">
+            <div><p className="text-[10px] uppercase text-muted-foreground">Gate Pass No</p><p className="font-mono font-semibold">{vGpNo}</p></div>
+            <div><p className="text-[10px] uppercase text-muted-foreground">Date</p><p>{data.date}{data.time ? ` · ${data.time}` : ""}</p></div>
+            <div><p className="text-[10px] uppercase text-muted-foreground">Vehicle No</p><p className="font-mono font-semibold">{v.vehicleNo || "—"}</p></div>
+            <div><p className="text-[10px] uppercase text-muted-foreground">Driver</p><p>{v.driverName || "—"}</p></div>
+            <div className="col-span-2"><p className="text-[10px] uppercase text-muted-foreground">Quantity</p><p className="font-medium">{assigned}</p></div>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-xs">
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Security Guard Name</Label>
-              <Input
-                value={releaseMap[key]?.guard ?? releaseForm[key]?.guard ?? ""}
-                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), guard: e.target.value } }))}
-                disabled={!!releaseMap[key]}
-                placeholder="Guard name"
-                className="h-9 mt-1 bg-background"
-              />
+              <p className="text-[10px] uppercase text-muted-foreground mb-1">Security Guard Name</p>
+              <div className="h-7 border-b border-border" />
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Time at Gate</Label>
-              <Input
-                type="time"
-                value={releaseMap[key]?.time ?? releaseForm[key]?.time ?? ""}
-                onChange={(e) => setReleaseForm((m) => ({ ...m, [key]: { ...(m[key] || { guard: "", time: "" }), time: e.target.value } }))}
-                disabled={!!releaseMap[key]}
-                className="h-9 mt-1 bg-background"
-              />
+              <p className="text-[10px] uppercase text-muted-foreground mb-1">Time at Gate</p>
+              <div className="h-7 border-b border-border" />
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle No</Label>
-              <Input value={v.vehicleNo || "—"} disabled className="h-9 mt-1 bg-background font-mono" />
+              <p className="text-[10px] uppercase text-muted-foreground mb-1">Signature</p>
+              <div className="h-9 border-b border-dashed border-border" />
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver Name</Label>
-              <Input value={v.driverName || "—"} disabled className="h-9 mt-1 bg-background" />
-            </div>
-            <div className="col-span-2">
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Signature</Label>
-              <div className="h-12 mt-1 rounded-md border border-dashed border-border bg-background flex items-center justify-center text-[10px] text-muted-foreground italic">
-                {releaseMap[key] ? `Signed — ${releaseMap[key].guard}` : "Sign here"}
-              </div>
+              <p className="text-[10px] uppercase text-muted-foreground mb-1">Date</p>
+              <div className="h-7 border-b border-border" />
             </div>
           </div>
         </div>
-
-        <AuditFooter extra={sec ? (
-          <>
-            <span>Dispatch confirmed: <span className="font-medium text-foreground">{mockUser}</span></span>
-            <span className="text-right">Security confirmed: <span className="font-medium text-foreground">{sec.user}</span></span>
-          </>
-        ) : undefined} />
       </div>
     );
   };
