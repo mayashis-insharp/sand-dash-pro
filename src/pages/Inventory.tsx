@@ -471,7 +471,12 @@ const Inventory = () => {
         title="Edit Stock"
         icon={<Edit className="h-5 w-5" />}
         size="lg"
-        footer={<FooterBtns onCancel={() => setEditStock(null)} onSave={() => { toast.success("Changes saved"); setEditStock(null); }} saveLabel="Save Changes" />}
+        footer={<FooterBtns onCancel={() => setEditStock(null)} onSave={() => {
+          toast.success("Changes saved");
+          const s = editStock;
+          setEditStock(null);
+          if (s && s.status === "Quality Checked") setPostSaveGrn(s);
+        }} saveLabel="Save Changes" />}
       >
         <FormSection icon={<Boxes className="h-4 w-4" />} title="Stock Details" description="Editing form prefilled with existing values.">
           <div className="grid grid-cols-2 gap-4">
