@@ -205,7 +205,26 @@ const Inventory = () => {
                         <td className="px-4 py-4 font-mono">{s.finalPrice.toLocaleString()}</td>
                         <td className="px-4 py-4 font-mono">{s.sellPrice.toLocaleString()}</td>
                         <td className="px-4 py-4 font-mono text-xs">{s.vehicle}</td>
-                        <td className="px-4 py-4"><div className="flex gap-1"><button onClick={() => setViewStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button><button onClick={() => setEditStock(s)} className="rounded-md px-2 py-1 hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button></div></td>
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => setViewStock(s)} aria-label="View" title="View" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted"><Eye className="h-3.5 w-3.5" /></button>
+                            <button onClick={() => setEditStock(s)} aria-label="Edit" title="Edit" className="inline-flex items-center justify-center h-7 w-7 rounded-md text-foreground hover:bg-muted"><Edit className="h-3.5 w-3.5" /></button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="More actions">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-44">
+                                <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">Documents</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleGrnAction(s)} className="gap-2 text-xs">
+                                  <FileText className="h-3.5 w-3.5 text-primary" /> GRN
+                                  {grnGenerated[s.id] && <Badge variant="outline" className="ml-auto text-[9px] border-success/40 text-success">Ready</Badge>}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
