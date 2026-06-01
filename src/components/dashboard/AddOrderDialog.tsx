@@ -248,7 +248,8 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Grand Total</span>
               <span className="font-display font-bold text-lg text-primary">{fmt(grandTotal)}</span>
             </div>
-            {paid > 0 && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
+            {creditApplied > 0 && <div className="flex items-center gap-2"><span className="text-muted-foreground">Credit Applied</span><span className="font-mono text-success">−{fmt(creditApplied)}</span></div>}
+            {(paid > 0 || creditApplied > 0) && <div className="w-full md:w-auto flex items-center gap-2"><span className="text-muted-foreground">Balance Due</span><span className={cn("font-mono font-semibold", balance > 0 ? "text-warning" : "text-success")}>{fmt(Math.max(0, balance))}</span></div>}
           </div>
           <div className="px-5 md:px-8 py-3 flex items-center justify-between gap-3">
             <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground">Cancel</Button>
