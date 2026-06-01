@@ -90,6 +90,46 @@ const Inventory = () => {
   const [exportOpen, setExportOpen] = useState(false);
   const [docsStock, setDocsStock] = useState<any>(null);
 
+  // GRN state
+  const [grnPreview, setGrnPreview] = useState<any>(null);
+  const [grnConfirm, setGrnConfirm] = useState<any>(null);
+  const [grnWarn, setGrnWarn] = useState<any>(null);
+  const [grnGenerated, setGrnGenerated] = useState<Record<string, boolean>>({
+    ST_4421: true, // mock: one is already generated
+  });
+  const [postSaveGrn, setPostSaveGrn] = useState<any>(null);
+
+  const buildGrnData = (s: any): GRNData => ({
+    stockId: s.id,
+    date: s.date?.split(" ")[0] || s.date,
+    supplier: s.supplier,
+    supplierPhone: "+94 77 850 0011",
+    sandType: s.sand,
+    orderedQty: s.qty,
+    actualQty: s.actualQty,
+    vehicles: (stockVehicles.filter(v => v.vehicleNo).length > 0
+      ? stockVehicles.filter(v => v.vehicleNo).map(v => ({ vehicleNo: v.vehicleNo, driverName: v.driverName, driverPhone: v.driverPhone }))
+      : [{ vehicleNo: s.vehicle, driverName: "Driver", driverPhone: "—" }]),
+    supplierUnitPrice: s.finalPrice,
+    finalUnitPrice: s.finalPrice,
+    totalAmount: s.finalPrice * (parseInt(s.qty) || 1),
+    qualityStatus: s.status,
+    qualityResult: s.status === "Quality Checked" ? "No Quality Difference" : undefined,
+    comments: s.comments || "",
+  });
+
+  const handleGrnAction = (s: any) => {
+    if (s.status !== "Quality Checked") {
+      setGrnWarn(s);
+      return;
+    }
+    if (grnGenerated[s.id]) {
+      setGrnPreview(s);
+    } else {
+      setGrnConfirm(s);
+    }
+  };
+
   const buildStockDoc = (s: any): DocData => {
     const vList = stockVehicles
       .filter((v) => v.vehicleNo)
