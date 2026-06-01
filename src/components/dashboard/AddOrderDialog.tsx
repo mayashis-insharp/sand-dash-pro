@@ -172,8 +172,11 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
   );
   const grandTotal = Math.max(0, subtotal - discountVal) + totalCharges;
   const invoiceTotal = Math.max(0, subtotal - discountVal) + invoiceCharges;
+  const availableCredit = selectedCustomer?.credit ?? 0;
+  const creditApplied = useCredit ? Math.min(availableCredit, grandTotal) : 0;
+  const remainingCredit = Math.max(0, availableCredit - creditApplied);
   const paid = parseFloat(paymentAmount || "0");
-  const balance = grandTotal - paid;
+  const balance = Math.max(0, grandTotal - creditApplied) - paid;
 
   const addCharge = () =>
     setCharges((c) => [...c, { id: crypto.randomUUID(), type: "", amount: "", comment: "", addToInvoice: false }]);
