@@ -471,6 +471,35 @@ export function AddOrderDialog({ open, onOpenChange, onSubmitted }: AddOrderDial
             </Section>
 
             <Section icon={Wallet} title="Payment" description="Discounts, method, and amount paid.">
+              {availableCredit > 0 && (
+                <div className="mb-4 rounded-xl border border-success/40 bg-success/10 p-4">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="text-xs space-y-1">
+                      <p className="font-semibold text-success flex items-center gap-1.5">
+                        <Wallet className="h-3.5 w-3.5" /> Customer credit available
+                      </p>
+                      <p className="text-foreground">
+                        Available customer credit:{" "}
+                        <span className="font-mono font-semibold">{fmt(availableCredit)}</span>
+                      </p>
+                      <p className="text-foreground">
+                        Applied to this order:{" "}
+                        <span className="font-mono font-semibold">{fmt(creditApplied)}</span>
+                      </p>
+                      {useCredit && remainingCredit > 0 && (
+                        <p className="text-muted-foreground">
+                          Remaining customer balance after this order:{" "}
+                          <span className="font-mono">{fmt(remainingCredit)}</span>
+                        </p>
+                      )}
+                    </div>
+                    <label className="flex items-center gap-2 text-xs font-medium cursor-pointer select-none">
+                      <Checkbox checked={useCredit} onCheckedChange={(v) => setUseCredit(!!v)} />
+                      <span>Use available customer credit for this order</span>
+                    </label>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Discount">
                   <div className="flex gap-2">
