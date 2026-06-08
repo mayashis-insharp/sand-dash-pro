@@ -174,9 +174,8 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
     </div>
   );
 
-  const InvoiceBlock = (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none">
-      <Header docTitle="Invoice" docNo={invoiceNo} />
+  const InvoiceBody = ({ showFooter = true }: { showFooter?: boolean }) => (
+    <>
       <div className="grid grid-cols-2 gap-4 text-sm mb-4">
         <div>
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{data.party.label}</p>
@@ -222,8 +221,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           )}
         </div>
       </div>
-
-      {/* Approval */}
       <div className="mt-6 rounded-lg border border-border bg-muted/20 p-4">
         <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">Invoice Approval</p>
         <div className="grid grid-cols-3 gap-4 text-xs">
@@ -241,13 +238,19 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           </div>
         </div>
       </div>
-      <AuditFooter />
+      {showFooter && <AuditFooter />}
+    </>
+  );
+
+  const InvoiceBlock = (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none">
+      <Header docTitle="Invoice" docNo={invoiceNo} />
+      <InvoiceBody />
     </div>
   );
 
-  const DeliveryBlock = (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none">
-      <Header docTitle="Delivery Note" docNo={dnNo} />
+  const DeliveryBody = ({ showFooter = true }: { showFooter?: boolean }) => (
+    <>
       <div className="grid grid-cols-2 gap-4 text-sm mb-4">
         <div>
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{data.party.label}</p>
@@ -261,7 +264,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           {data.deliveryDate && <><p className="text-muted-foreground mt-1">Delivery Date</p><p>{data.deliveryDate}</p></>}
         </div>
       </div>
-
       <table className="w-full text-sm mb-4">
         <thead className="bg-muted/40">
           <tr>{["Product", "Quantity", "Price", "Payment Type", "Payment Status"].map(h => <th key={h} className="px-3 py-2 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>)}</tr>
@@ -280,7 +282,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           </tr>
         </tbody>
       </table>
-
       <div className="grid grid-cols-2 gap-4 text-xs mb-4">
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vehicle Details</p>
@@ -292,7 +293,6 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
           <p className="font-semibold mt-1">{data.deliveryDate || data.date}</p>
         </div>
       </div>
-
       <div className="grid grid-cols-2 gap-4 mt-6">
         <div className="rounded-lg border border-border p-4">
           <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">Issued By</p>
@@ -334,6 +334,33 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
             </div>
           </div>
         </div>
+      </div>
+      {showFooter && <AuditFooter />}
+    </>
+  );
+
+  const DeliveryBlock = (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none">
+      <Header docTitle="Delivery Note" docNo={dnNo} />
+      <DeliveryBody />
+    </div>
+  );
+
+  const CombinedBlock = (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-soft print:border-0 print:shadow-none print:break-inside-avoid">
+      <Header docTitle="Invoice  +  Delivery Note" docNo={`${invoiceNo} / ${dnNo}`} />
+      <div className="mb-3">
+        <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-2">Invoice (Top Half)</p>
+        <InvoiceBody showFooter={false} />
+      </div>
+      <div className="my-5 flex items-center gap-3">
+        <div className="flex-1 border-t-2 border-dashed border-border" />
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Cut here</span>
+        <div className="flex-1 border-t-2 border-dashed border-border" />
+      </div>
+      <div>
+        <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-2">Delivery Note (Bottom Half)</p>
+        <DeliveryBody showFooter={false} />
       </div>
       <AuditFooter />
     </div>
@@ -477,16 +504,7 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
 
               <div id="docs-print-area" className="space-y-5 print:space-y-0">
                 {combined ? (
-                  <div className="rounded-2xl border border-border bg-muted/20 p-3 print:p-0 print:border-0 print:bg-transparent">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-1 print:hidden">Combined: Invoice + Delivery Note</p>
-                    {InvoiceBlock}
-                    <div className="my-4 flex items-center gap-3">
-                      <div className="flex-1 border-t-2 border-dashed border-border" />
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Cut here</span>
-                      <div className="flex-1 border-t-2 border-dashed border-border" />
-                    </div>
-                    {DeliveryBlock}
-                  </div>
+                  CombinedBlock
                 ) : (
                   <>
                     {sel.invoice && InvoiceBlock}
