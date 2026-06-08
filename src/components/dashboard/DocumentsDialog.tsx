@@ -504,16 +504,7 @@ export function DocumentsDialog({ open, onOpenChange, data, initialStage = "sele
 
               <div id="docs-print-area" className="space-y-5 print:space-y-0">
                 {combined ? (
-                  <div className="rounded-2xl border border-border bg-muted/20 p-3 print:p-0 print:border-0 print:bg-transparent">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-1 print:hidden">Combined: Invoice + Delivery Note</p>
-                    {InvoiceBlock}
-                    <div className="my-4 flex items-center gap-3">
-                      <div className="flex-1 border-t-2 border-dashed border-border" />
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Cut here</span>
-                      <div className="flex-1 border-t-2 border-dashed border-border" />
-                    </div>
-                    {DeliveryBlock}
-                  </div>
+                  CombinedBlock
                 ) : (
                   <>
                     {sel.invoice && InvoiceBlock}
